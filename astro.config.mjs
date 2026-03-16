@@ -3,9 +3,6 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   output: 'static',
-  vite: {
-    css: {
-      preprocessorOptions: {}
-    }
-  }
+  site: 'https://elcoche2025.github.io',
+  base: '/bancroft-newsletter-astro',
 });
