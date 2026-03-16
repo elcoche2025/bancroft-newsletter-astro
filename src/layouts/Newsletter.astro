@@ -754,7 +754,7 @@ const { title, date } = Astro.props;
   /* ===== ROARS GRID ===== */
   .roars-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     margin-top: 16px;
   }
@@ -766,6 +766,10 @@ const { title, date } = Astro.props;
     border-radius: var(--radius-md);
     border: 1px solid var(--roars-border);
     transition: all 0.25s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
   }
 
   .roars-card:hover {
@@ -774,36 +778,30 @@ const { title, date } = Astro.props;
   }
 
   .roars-classroom {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    font-size: 0.72rem;
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 0.78rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-light);
-    margin-bottom: 6px;
+    color: var(--text);
+    background: var(--roars-border);
   }
 
   .roars-flag {
-    width: 18px;
-    height: 13px;
-    border-radius: 2px;
+    width: 32px;
+    height: 22px;
+    border-radius: 3px;
     object-fit: cover;
+    display: block;
   }
 
   .roars-student {
     font-family: var(--font-display);
-    font-size: 1.15rem;
-    font-weight: 700;
+    font-size: 1.1rem;
+    font-weight: 800;
     color: var(--text);
-  }
-
-  .roars-trophy {
-    font-size: 1.3rem;
-    margin-top: 4px;
-    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
   }
 
   /* ===== REMINDERS ===== */
@@ -1123,8 +1121,11 @@ const { title, date } = Astro.props;
     .section-icon { font-size: 1.2rem; }
 
     /* ROARS grid */
-    .roars-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .roars-card { padding: 14px 8px; }
+    .roars-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .roars-card { padding: 14px 6px; gap: 6px; }
+    .roars-classroom { font-size: 0.68rem; padding: 3px 10px; }
+    .roars-flag { width: 26px; height: 18px; }
+    .roars-student { font-size: 0.82rem; }
 
     /* Reminders */
     .reminder-card { flex-direction: column; gap: 8px; padding: 12px; }
