@@ -1,0 +1,140 @@
+{
+  "schoolName": "Bancroft ES",
+  "classrooms": ["Cartagena", "Colombia", "España", "DR", "Managua", "Venezuela"],
+
+  "rotations": {
+    "Cartagena":  { "A": "Music",   "B": "Science", "C": "PE",      "D": "PE",      "E": "Library", "F": "Art" },
+    "Colombia":   { "A": "Science", "B": "PE",      "C": "PE",      "D": "Library", "E": "Art",     "F": "Music" },
+    "España":     { "A": "PE",      "B": "PE",      "C": "Library", "D": "Art",     "E": "Music",   "F": "Science" },
+    "DR":         { "A": "Library", "B": "Art",     "C": "Music",   "D": "Science", "E": "PE",      "F": "PE" },
+    "Managua":    { "A": "PE",      "B": "Library", "C": "Art",     "D": "Music",   "E": "Science", "F": "PE" },
+    "Venezuela":  { "A": "Art",     "B": "Music",   "C": "Science", "D": "PE",      "E": "PE",      "F": "Library" }
+  },
+
+  "classroomFlags": {
+    "Cartagena": "img:images/flags/cartagena.svg",
+    "Colombia": "img:images/flags/colombia.svg",
+    "España": "img:images/flags/espana.svg",
+    "DR": "img:images/flags/dr.svg",
+    "Managua": "img:images/flags/managua.svg",
+    "Venezuela": "img:images/flags/venezuela.svg"
+  },
+
+  "subjectIcons": {
+    "Music": "🎵",
+    "Science": "🔬",
+    "PE": "🏀",
+    "Library": "📚",
+    "Art": "🎨"
+  },
+
+  "subjectTranslations": {
+    "Music": "Música",
+    "Science": "Ciencias",
+    "PE": "Educación Física",
+    "Library": "Biblioteca",
+    "Art": "Arte"
+  },
+
+  "seasonLogos": {
+    "default": "images/logos/default.png",
+    "bancroft": "images/logos/default.png",
+    "fall": "images/logos/fall.png",
+    "winter": "images/logos/winter.png",
+    "spring": "images/logos/spring.png",
+    "summer": "images/logos/summer.png",
+    "new-year": "images/logos/new-year.png"
+  },
+
+  "quickLinks": [
+    {
+      "icon": "💬",
+      "url": "https://www.parentsquare.com/schools/36694/",
+      "en": "ParentSquare",
+      "es": "ParentSquare"
+    },
+    {
+      "icon": "📅",
+      "url": "https://www.bancroftelementary.org/apps/events/?id=0&v=1&m=1&y=2026",
+      "en": "School Calendar",
+      "es": "Calendario Escolar"
+    },
+    {
+      "icon": "🏫",
+      "url": "https://www.bancroftelementary.org/",
+      "en": "School Website",
+      "es": "Sitio de la Escuela"
+    },
+    {
+      "icon": "🍽️",
+      "url": "https://dcps.nutrislice.com/menu/bancroft-elementary-school/lunch/2026-02-20",
+      "en": "Lunch Menu",
+      "es": "Menú de Almuerzo"
+    }
+  ],
+
+  "labels": {
+    "en": {
+      "title": "First Grade",
+      "subtitle": "Weekly Newsletter",
+      "welcomeHeading": "Hello 1st Grade Families!",
+      "mathHeading": "Math News",
+      "literacyHeading": "Literacy News",
+      "specialsHeading": "Specials Schedule",
+      "roarsHeading": "ROARS",
+      "archiveHeading": "Past Newsletters",
+      "weekOf": "Week of",
+      "noSchool": "No School",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "langToggle": "Español",
+      "dashboardHeading": "School Year at a Glance",
+      "weekXofY": "Week {x} of {y}",
+      "schoolDaysLeft": "school days remaining",
+      "upcomingDates": "Coming Up",
+      "remindersHeading": "Important Reminders",
+      "askHeading": "Ask Your Child About...",
+      "vocabHeading": "Words of the Week",
+      "booksHeading": "Books & Read-Alouds",
+      "printBtn": "Print this week",
+      "shareBtn": "Share",
+      "discussionQuestions": "Discussion Questions",
+      "addToCalendar": "Add to Calendar",
+      "mathDetailsModule": "Module",
+      "mathDetailsTopic": "Topic",
+      "mathDetailsLesson": "Lesson",
+      "linkCopied": "Link copied!",
+      "mySpecialsHeading": "My Specials This Week"
+    },
+    "es": {
+      "title": "Primer Grado",
+      "subtitle": "Boletín Semanal",
+      "welcomeHeading": "¡Hola familias de primer grado!",
+      "mathHeading": "Noticias de Matemáticas",
+      "literacyHeading": "Noticias de Lectura y Escritura",
+      "specialsHeading": "Horario de Especiales",
+      "roarsHeading": "ROARS",
+      "archiveHeading": "Boletines Anteriores",
+      "weekOf": "Semana del",
+      "noSchool": "No Hay Clases",
+      "days": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
+      "langToggle": "English",
+      "dashboardHeading": "El Año Escolar de un Vistazo",
+      "weekXofY": "Semana {x} de {y}",
+      "schoolDaysLeft": "días escolares restantes",
+      "upcomingDates": "Próximos Eventos",
+      "remindersHeading": "Recordatorios Importantes",
+      "askHeading": "Pregúntale a Tu Hijo/a Sobre...",
+      "vocabHeading": "Palabras de la Semana",
+      "booksHeading": "Libros y Lectura en Voz Alta",
+      "printBtn": "Imprimir esta semana",
+      "shareBtn": "Compartir",
+      "discussionQuestions": "Preguntas de Discusión",
+      "addToCalendar": "Agregar al Calendario",
+      "mathDetailsModule": "Módulo",
+      "mathDetailsTopic": "Tema",
+      "mathDetailsLesson": "Lección",
+      "linkCopied": "¡Enlace copiado!",
+      "mySpecialsHeading": "Especiales de Esta Semana"
+    }
+  }
+}
