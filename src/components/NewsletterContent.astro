@@ -342,41 +342,6 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
       </div>
     </section>
 
-    <!-- ROARS -->
-    <section class="section section--roars" id="roars" data-section="roars">
-      <div class="section-header" data-accordion>
-        <span class="section-icon">🐯</span>
-        <h2 class="section-heading" data-en={labelsEn.roarsHeading} data-es={labelsEs.roarsHeading}>
-          {labelsEn.roarsHeading}
-        </h2>
-        <span class="accordion-chevron"></span>
-      </div>
-      <div class="section-content">
-        <p class="section-body" style="margin-bottom: 12px; font-size: 0.88rem; color: var(--text-muted);"
-          data-en="Congratulations to this week's ROARS students for showing outstanding character!"
-          data-es="¡Felicitaciones a los estudiantes ROARS de esta semana por demostrar un carácter excepcional!">
-          Congratulations to this week's ROARS students for showing outstanding character!
-        </p>
-        <div class="roars-grid">
-          {config.classrooms.map(classroom => {
-            const student = weekData.roars[classroom as keyof typeof weekData.roars];
-            const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];
-            const isImg = flag?.startsWith('img:');
-            return student ? (
-              <div class="roars-card">
-                <div class="roars-classroom">
-                  {isImg ? <img src={`${base}/${flag.slice(4)}`} alt={classroom} class="roars-flag" /> : <span>{flag}</span>}
-                  {classroom}
-                </div>
-                <div class="roars-student">{student}</div>
-                <span class="roars-trophy">⭐</span>
-              </div>
-            ) : null;
-          })}
-        </div>
-      </div>
-    </section>
-
     <!-- REMINDERS -->
     {weekData.reminders && weekData.reminders.length > 0 && (
       <section class="section section--reminders" id="reminders" data-section="reminders">
@@ -477,6 +442,41 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
         </div>
       </section>
     )}
+
+    <!-- ROARS -->
+    <section class="section section--roars" id="roars" data-section="roars">
+      <div class="section-header" data-accordion>
+        <span class="section-icon">🐯</span>
+        <h2 class="section-heading" data-en={labelsEn.roarsHeading} data-es={labelsEs.roarsHeading}>
+          {labelsEn.roarsHeading}
+        </h2>
+        <span class="accordion-chevron"></span>
+      </div>
+      <div class="section-content">
+        <p class="section-body" style="margin-bottom: 12px; font-size: 0.88rem; color: var(--text-muted);"
+          data-en="Congratulations to this week's ROARS students for showing outstanding character!"
+          data-es="¡Felicitaciones a los estudiantes ROARS de esta semana por demostrar un carácter excepcional!">
+          Congratulations to this week's ROARS students for showing outstanding character!
+        </p>
+        <div class="roars-grid">
+          {config.classrooms.map(classroom => {
+            const student = weekData.roars[classroom as keyof typeof weekData.roars];
+            const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];
+            const isImg = flag?.startsWith('img:');
+            return student ? (
+              <div class="roars-card">
+                <div class="roars-classroom">
+                  {isImg ? <img src={`${base}/${flag.slice(4)}`} alt={classroom} class="roars-flag" /> : <span>{flag}</span>}
+                  {classroom}
+                </div>
+                <div class="roars-student">{student}</div>
+                <span class="roars-trophy">⭐</span>
+              </div>
+            ) : null;
+          })}
+        </div>
+      </div>
+    </section>
 
   </div><!-- /sections-container -->
 
