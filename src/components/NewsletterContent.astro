@@ -360,9 +360,14 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
         <div class="roars-grid">
           {config.classrooms.map(classroom => {
             const student = weekData.roars[classroom as keyof typeof weekData.roars];
+            const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];
+            const isImg = flag?.startsWith('img:');
             return student ? (
               <div class="roars-card">
-                <div class="roars-classroom">{classroom}</div>
+                <div class="roars-classroom">
+                  {isImg ? <img src={`${base}/${flag.slice(4)}`} alt={classroom} class="roars-flag" /> : <span>{flag}</span>}
+                  {classroom}
+                </div>
                 <div class="roars-student">{student}</div>
                 <span class="roars-trophy">⭐</span>
               </div>

@@ -774,12 +774,23 @@ const { title, date } = Astro.props;
   }
 
   .roars-classroom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
     font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--text-light);
     margin-bottom: 6px;
+  }
+
+  .roars-flag {
+    width: 18px;
+    height: 13px;
+    border-radius: 2px;
+    object-fit: cover;
   }
 
   .roars-student {
