@@ -1,0 +1,22 @@
+---
+import Newsletter from '../layouts/Newsletter.astro';
+import NewsletterContent from '../components/NewsletterContent.astro';
+import config from '../data/config.json';
+import weeksIndex from '../data/weeks/weeks-index.json';
+
+export async function getStaticPaths() {
+  const weeksIndex = (await import('../data/weeks/weeks-index.json')).default;
+  return weeksIndex.map((date: string) => ({
+    params: { week: date },
+  }));
+}
+
+const { week } = Astro.params;
+const weekData = (await import(`../data/weeks/${week}.json`)).default;
+
+const labelsEn = config.labels.en;
+---
+
+<Newsletter title={`${labelsEn.title} — ${labelsEn.subtitle}`} date={weekData.date}>
+  <NewsletterContent weekData={weekData} currentDate={week!} allWeeks={weeksIndex} />
+</Newsletter>

@@ -1,0 +1,31 @@
+{
+  "date": "2026-02-09",
+  "season": "winter",
+  "welcome": {
+    "en": "Happy February! This week, we will be conducting WIDA testing. To help us maintain a focused environment and minimize disruptions, please ensure students arrive at school on time. We appreciate your support!",
+    "es": "¡Feliz febrero! Esta semana estaremos realizando las evaluaciones de WIDA. Para ayudarnos a mantener un ambiente enfocado y minimizar interrupciones, por favor asegúrense de que los estudiantes lleguen a la escuela a tiempo. ¡Agradecemos mucho su apoyo!"
+  },
+  "math": {
+    "en": "This week, we will keep on adding a 2-digit number plus a 1-digit number. And we will begin solving subtraction Math problems with totals between 11 and 19. At home, practice with your student how to subtract 1-digit numbers from 2-digit numbers. For example: 16 – 2 = 14. Have them explain the strategy that they used to help them solve. Encourage them to share in Spanish.",
+    "es": "Esta semana continuaremos sumando números de dos dígitos con números de un dígito y comenzaremos a resolver problemas de resta con resultados entre 11 y 19. En casa, practiquen con su estudiante cómo restar números de un dígito a números de dos dígitos. Por ejemplo: 16 − 2 = 14. Pídale que explique la estrategia que utilizó para resolver el problema y anímele a compartir su razonamiento en español."
+  },
+  "literacy": {
+    "en": "This week in literacy, students will continue exploring family narratives in both Spanish and English. In Spanish (SLA), we will read a new family story to practice asking and answering comprehension questions, and in word study students will learn verb endings -ía, -íamos, -aba, -aban, and -abas, using words like viajaba, jugaban, visitaban, and comíamos in sentences. In English (ELA), we will continue working on Small Moments, or zoomed-in parts of a narrative, and begin using the five senses—smell, taste, touch, sight, and hearing—to add detail to our storytelling. Please continue discussing narratives and small moments at home as students begin telling their own stories.",
+    "es": "Esta semana en lectoescritura, los estudiantes continuarán explorando narrativas familiares en español y en inglés. En español (SLA), leeremos una nueva historia de familia para practicar cómo hacer y responder preguntas de comprensión, y en estudio de palabras aprenderemos verbos con las terminaciones -ía, -íamos, -aba, -aban y -abas, usando palabras como viajaba, jugaban, visitaban y comíamos en oraciones. En inglés (ELA), continuaremos trabajando el concepto de Momentos Pequeños, o partes específicas de una narrativa, y comenzaremos a usar los cinco sentidos—olfato, gusto, tacto, vista y oído—para añadir detalles a nuestras historias. Por favor, continúen conversando en casa sobre narrativas y momentos pequeños mientras los estudiantes comienzan a contar sus propias historias."
+  },
+  "specials": {
+    "monday": "B",
+    "tuesday": "C",
+    "wednesday": "D",
+    "thursday": "E",
+    "friday": "NO SCHOOL"
+  },
+  "roars": {
+    "Cartagena": "Claire-Louise H., Astrid P.",
+    "Colombia": "Chelsey L., Sonia D.",
+    "España": "Mia M., Liam G.",
+    "DR": "Maeve B., Emory B.",
+    "Managua": "Jeremy R., Axel G.",
+    "Venezuela": "Jade S., Harlei D."
+  }
+}
