@@ -482,7 +482,7 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
       <ul>
         {allWeeks.map(weekDate => (
           <li class={weekDate === currentDate ? 'archive-current' : ''}>
-            <a href={`${import.meta.env.BASE_URL}${weekDate}/`}>
+            <a href={`${base}/${weekDate}/`}>
               <span data-en={`Week of ${formatArchiveDate(weekDate, 'en')}`} data-es={`Semana del ${formatArchiveDate(weekDate, 'es')}`}>
                 Week of {formatArchiveDate(weekDate, 'en')}
               </span>
@@ -508,7 +508,7 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
   <ul>
     {allWeeks.map(weekDate => (
       <li class={weekDate === currentDate ? 'archive-current' : ''}>
-        <a href={`${import.meta.env.BASE_URL}${weekDate}/`}>
+        <a href={`${base}/${weekDate}/`}>
           <span data-en={`Week of ${formatArchiveDate(weekDate, 'en')}`} data-es={`Semana del ${formatArchiveDate(weekDate, 'es')}`}>
             Week of {formatArchiveDate(weekDate, 'en')}
           </span>
