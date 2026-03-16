@@ -1042,20 +1042,96 @@ const { title, date } = Astro.props;
   }
 
   /* ===== RESPONSIVE ===== */
-  @media (max-width: 640px) {
-    .site-title { font-size: 2rem; }
-    .section { padding: 24px 20px; }
-    .dashboard { padding: 20px; }
-    .specials-week-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
-    .specials-day-card { padding: 10px 4px; }
-    .specials-day-icon { font-size: 1.2rem; }
-    .specials-day-subject { font-size: 0.72rem; }
-    .roars-grid { grid-template-columns: repeat(2, 1fr); }
-    .classroom-selector { gap: 6px; }
-    .classroom-btn { padding: 6px 12px; font-size: 12px; }
-    .dashboard-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .reminder-card { flex-direction: column; }
+  @media (max-width: 700px) {
+    .page-wrapper { padding: 0 12px 60px; }
+    .site-title { font-size: 1.8rem; }
+    .site-header { padding: 32px 0 20px; }
+
+    /* Compact sections */
+    .section { padding: 20px 16px; margin-bottom: 10px; border-radius: var(--radius-md); }
+    .section.collapsed { padding: 14px 16px; margin-bottom: 8px; }
+
+    /* Smaller headings in collapsed state */
+    .section.collapsed .section-heading { font-size: 1.05rem; }
+    .section.collapsed .section-icon { font-size: 1.15rem; }
+
+    /* Dashboard compact */
+    .dashboard { padding: 16px; margin-bottom: 12px; }
+    .dashboard-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .dashboard-stat { padding: 10px; }
+    .dashboard-stat-value { font-size: 1.4rem; }
+    .upcoming-item { padding: 8px 10px; font-size: 0.82rem; gap: 8px; }
+    .upcoming-date { min-width: 60px; }
+
+    /* Classroom selector: 3-column grid like old version */
+    .classroom-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin: 16px 0;
+    }
+    .classroom-btn {
+      justify-content: center;
+      padding: 8px 10px;
+      font-size: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Jump-to: 2-column grid like old version */
+    .jump-to {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .jump-to-label {
+      grid-column: 1 / -1;
+      margin-bottom: 2px;
+    }
+    .jump-to-link {
+      justify-content: center;
+      padding: 8px 10px;
+      font-size: 0.78rem;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Specials: 3+2 layout instead of 5 across */
+    .specials-week-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .specials-day-card { padding: 12px 6px; }
+    .specials-day-icon { font-size: 1.3rem; }
+    .specials-day-subject { font-size: 0.78rem; }
+    .specials-day-name { font-size: 0.68rem; }
+
+    /* Section heading sizes */
+    .section-heading { font-size: 1.2rem; }
+    .section-icon { font-size: 1.2rem; }
+
+    /* ROARS grid */
+    .roars-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .roars-card { padding: 14px 8px; }
+
+    /* Reminders */
+    .reminder-card { flex-direction: column; gap: 8px; padding: 12px; }
     .reminder-date-badge { flex-direction: row; gap: 6px; min-width: unset; padding: 6px 12px; }
+
+    /* Quick links compact */
+    .quick-links { gap: 6px; margin: 16px 0; }
+    .quick-link { padding: 6px 12px; font-size: 12px; }
+
+    /* Vocab & books compact */
+    .vocab-pills { gap: 6px; margin-top: 12px; }
+    .vocab-pill { padding: 4px 12px; font-size: 0.82rem; }
+    .book-card { padding: 12px; gap: 12px; }
+    .book-icon { font-size: 1.5rem; }
+
+    /* Ask items compact */
+    .ask-item { padding: 10px 10px 10px 34px; font-size: 0.88rem; }
+    .ask-item::before { left: 10px; top: 10px; font-size: 0.82rem; }
   }
 
   /* ===== PRINT ===== */
