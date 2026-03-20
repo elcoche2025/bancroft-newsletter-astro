@@ -81,12 +81,12 @@
   "vocabulary": {
     "en": [
       { "label": "Math", "words": ["compare", "greater than", "less than", "equal to", "tens place", "ones place", "decompose"] },
-      { "label": "SLA", "words": ["habitat", "I had", "I was (location)", "I knew", "I could", "I walked"] },
+      { "label": "SLA", "words": ["habitat", "I had", "I was (location)", "I knew", "I could", "I walked"], "frontLang": "es" },
       { "label": "ELA", "words": ["seeds", "roots", "stem", "flower", "fruit"] }
     ],
     "es": [
       { "label": "Matemáticas", "words": ["comparar", "mayor que", "menor que", "igual a", "posición de las decenas", "posición de las unidades", "descomponer"] },
-      { "label": "SLA", "words": ["hábitat", "tuve", "estuve", "supe", "pude", "anduve"] },
+      { "label": "SLA", "words": ["hábitat", "tuve", "estuve", "supe", "pude", "anduve"], "frontLang": "es" },
       { "label": "ELA", "words": ["semillas", "raíces", "tallo", "flor", "fruto"] }
     ]
   },

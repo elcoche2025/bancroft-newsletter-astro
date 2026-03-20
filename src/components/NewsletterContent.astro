@@ -407,17 +407,23 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
         <div class="section-content">
           {isGrouped ? (
             <div class="vocab-columns">
-              {(weekData.vocabulary.en as {label:string,words:string[]}[]).map((group, gi) => {
-                const esGroup = (weekData.vocabulary.es as {label:string,words:string[]}[])[gi];
+              {(weekData.vocabulary.en as {label:string,words:string[],frontLang?:string}[]).map((enGroup, gi) => {
+                const esGroup = (weekData.vocabulary.es as {label:string,words:string[],frontLang?:string}[])[gi];
+                const frontLang = enGroup.frontLang || esGroup.frontLang;
+                const fGroup = frontLang === 'es' ? esGroup : enGroup;
+                const bGroup = frontLang === 'es' ? enGroup : esGroup;
                 return (
                   <div class="vocab-group">
-                    <div class="vocab-group-label" data-en={group.label} data-es={esGroup.label}>{group.label}</div>
+                    <div class="vocab-group-label" data-en={enGroup.label} data-es={esGroup.label}>{enGroup.label}</div>
                     <div class="vocab-pills">
-                      {group.words.map((word, wi) => (
-                        <span class="vocab-pill-flip" data-en-word={word} data-es-word={esGroup.words[wi]}>
+                      {fGroup.words.map((word, wi) => (
+                        <span class="vocab-pill-flip"
+                          data-en-word={frontLang ? fGroup.words[wi] : enGroup.words[wi]}
+                          data-es-word={frontLang ? bGroup.words[wi] : esGroup.words[wi]}
+                          data-front-lang={frontLang || ''}>
                           <span class="vocab-pill-inner">
                             <span class="vocab-pill-front">{word}</span>
-                            <span class="vocab-pill-back">{esGroup.words[wi]}</span>
+                            <span class="vocab-pill-back">{bGroup.words[wi]}</span>
                           </span>
                         </span>
                       ))}
@@ -828,13 +834,19 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
     // Update vocab flip card fronts/backs when language changes
     function updateVocabLang() {
       const lang = document.documentElement.getAttribute('data-lang') || 'en';
-      const other = lang === 'en' ? 'es' : 'en';
       document.querySelectorAll('.vocab-pill-flip').forEach(card => {
         const front = card.querySelector('.vocab-pill-front');
         const back = card.querySelector('.vocab-pill-back');
+        const forcedFront = card.dataset.frontLang;
         if (front && back && card.dataset.enWord && card.dataset.esWord) {
-          front.textContent = lang === 'en' ? card.dataset.enWord : card.dataset.esWord;
-          back.textContent = lang === 'en' ? card.dataset.esWord : card.dataset.enWord;
+          if (forcedFront) {
+            // Always show this language on front (e.g. SLA always shows Spanish)
+            front.textContent = card.dataset.enWord;
+            back.textContent = card.dataset.esWord;
+          } else {
+            front.textContent = lang === 'en' ? card.dataset.enWord : card.dataset.esWord;
+            back.textContent = lang === 'en' ? card.dataset.esWord : card.dataset.enWord;
+          }
           card.classList.remove('flipped');
         }
       });
