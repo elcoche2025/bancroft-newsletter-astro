@@ -393,7 +393,9 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
     )}
 
     <!-- VOCABULARY -->
-    {weekData.vocabulary && weekData.vocabulary.en.length > 0 && (
+    {weekData.vocabulary && weekData.vocabulary.en.length > 0 && (() => {
+      const isGrouped = typeof weekData.vocabulary.en[0] === 'object' && weekData.vocabulary.en[0].words;
+      return (
       <section class="section section--vocab" id="vocab" data-section="vocab">
         <div class="section-header" data-accordion>
           <span class="section-icon">📝</span>
@@ -403,19 +405,55 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
           <span class="accordion-chevron"></span>
         </div>
         <div class="section-content">
-          <div class="vocab-pills" data-lang-en>
-            {weekData.vocabulary.en.map(word => (
-              <span class="vocab-pill">{word}</span>
-            ))}
-          </div>
-          <div class="vocab-pills" data-lang-es style="display:none">
-            {weekData.vocabulary.es.map(word => (
-              <span class="vocab-pill">{word}</span>
-            ))}
-          </div>
+          {isGrouped ? (
+            <div class="vocab-columns">
+              {(weekData.vocabulary.en as {label:string,words:string[]}[]).map((group, gi) => {
+                const esGroup = (weekData.vocabulary.es as {label:string,words:string[]}[])[gi];
+                return (
+                  <div class="vocab-group">
+                    <div class="vocab-group-label" data-en={group.label} data-es={esGroup.label}>{group.label}</div>
+                    <div class="vocab-pills">
+                      {group.words.map((word, wi) => (
+                        <span class="vocab-pill-flip" data-en-word={word} data-es-word={esGroup.words[wi]}>
+                          <span class="vocab-pill-inner">
+                            <span class="vocab-pill-front">{word}</span>
+                            <span class="vocab-pill-back">{esGroup.words[wi]}</span>
+                          </span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <Fragment>
+              <div class="vocab-pills" data-lang-en>
+                {(weekData.vocabulary.en as string[]).map((word, i) => (
+                  <span class="vocab-pill-flip" data-en-word={word} data-es-word={(weekData.vocabulary.es as string[])[i]}>
+                    <span class="vocab-pill-inner">
+                      <span class="vocab-pill-front">{word}</span>
+                      <span class="vocab-pill-back">{(weekData.vocabulary.es as string[])[i]}</span>
+                    </span>
+                  </span>
+                ))}
+              </div>
+              <div class="vocab-pills" data-lang-es style="display:none">
+                {(weekData.vocabulary.es as string[]).map((word, i) => (
+                  <span class="vocab-pill-flip" data-en-word={(weekData.vocabulary.en as string[])[i]} data-es-word={word}>
+                    <span class="vocab-pill-inner">
+                      <span class="vocab-pill-front">{word}</span>
+                      <span class="vocab-pill-back">{(weekData.vocabulary.en as string[])[i]}</span>
+                    </span>
+                  </span>
+                ))}
+              </div>
+            </Fragment>
+          )}
         </div>
       </section>
-    )}
+      );
+    })()}
 
     <!-- BOOKS -->
     {weekData.books && weekData.books.length > 0 && (
@@ -781,6 +819,34 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
     if (localStorage.getItem('nl-classroom')) {
       reorderSpecials(true);
     }
+
+    // === VOCAB FLIP CARDS ===
+    document.querySelectorAll('.vocab-pill-flip').forEach(card => {
+      card.addEventListener('click', () => card.classList.toggle('flipped'));
+    });
+
+    // Update vocab flip card fronts/backs when language changes
+    function updateVocabLang() {
+      const lang = document.documentElement.getAttribute('data-lang') || 'en';
+      const other = lang === 'en' ? 'es' : 'en';
+      document.querySelectorAll('.vocab-pill-flip').forEach(card => {
+        const front = card.querySelector('.vocab-pill-front');
+        const back = card.querySelector('.vocab-pill-back');
+        if (front && back && card.dataset.enWord && card.dataset.esWord) {
+          front.textContent = lang === 'en' ? card.dataset.enWord : card.dataset.esWord;
+          back.textContent = lang === 'en' ? card.dataset.esWord : card.dataset.enWord;
+          card.classList.remove('flipped');
+        }
+      });
+      // Update group labels
+      document.querySelectorAll('.vocab-group-label[data-en]').forEach(label => {
+        label.textContent = lang === 'en' ? label.dataset.en : label.dataset.es;
+      });
+    }
+
+    const vocabObserver = new MutationObserver(updateVocabLang);
+    vocabObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
+    updateVocabLang();
   });
 
   // Weather — fetch from Open-Meteo for current week only
