@@ -107,14 +107,14 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
         <div class="dashboard-stat-label" data-en="Week" data-es="Semana">Week</div>
       </div>
       <div class="dashboard-stat">
-        <div class="dashboard-stat-value">{progress.remaining}</div>
+        <div class="dashboard-stat-value" id="dashboard-days-remaining">{progress.remaining}</div>
         <div class="dashboard-stat-label" data-en={labelsEn.schoolDaysLeft} data-es={labelsEs.schoolDaysLeft}>
           {labelsEn.schoolDaysLeft}
         </div>
       </div>
     </div>
     <div class="progress-bar-track">
-      <div class="progress-bar-fill" style={`width: ${progress.percent}%`}></div>
+      <div class="progress-bar-fill" id="dashboard-progress-fill" style={`width: ${progress.percent}%`}></div>
     </div>
 
     <div class="dashboard-upcoming-title" data-en={labelsEn.upcomingDates} data-es={labelsEs.upcomingDates}>
@@ -711,7 +711,64 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
   }
 </style>
 
-<script define:vars={{ weekDate: date }}>
+<script define:vars={{ weekDate: date, calendarData: calendar }}>
+  // === LIVE DASHBOARD: recompute remaining school days using today's real date ===
+  // Mirrors the countWeekdays logic in the original script.js so the Astro build
+  // matches the live site even though pages are statically prerendered.
+  (function updateLiveDashboard() {
+    try {
+      const parseDate = (s) => new Date(s + 'T12:00:00');
+      const formatISO = (d) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      };
+
+      const firstDay = parseDate(calendarData.firstDay);
+      const lastDay = parseDate(calendarData.lastDay);
+
+      // Collect no-school dates (individual dates + break ranges)
+      const noSchool = new Set();
+      (calendarData.dates || []).forEach(d => noSchool.add(d.date));
+      (calendarData.breaks || []).forEach(br => {
+        const d = parseDate(br.start);
+        const end = parseDate(br.end);
+        while (d <= end) {
+          noSchool.add(formatISO(d));
+          d.setDate(d.getDate() + 1);
+        }
+      });
+
+      const countWeekdays = (start, end) => {
+        let count = 0;
+        const d = new Date(start);
+        while (d <= end) {
+          const dow = d.getDay();
+          if (dow >= 1 && dow <= 5 && !noSchool.has(formatISO(d))) count++;
+          d.setDate(d.getDate() + 1);
+        }
+        return count;
+      };
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const effectiveToday = today > lastDay ? lastDay : today < firstDay ? firstDay : today;
+
+      const totalSchoolDays = countWeekdays(firstDay, lastDay);
+      const elapsed = countWeekdays(firstDay, effectiveToday);
+      const remaining = Math.max(0, totalSchoolDays - elapsed);
+      const percent = Math.min(100, Math.round((elapsed / totalSchoolDays) * 100));
+
+      const daysEl = document.getElementById('dashboard-days-remaining');
+      if (daysEl) daysEl.textContent = String(remaining);
+      const fillEl = document.getElementById('dashboard-progress-fill');
+      if (fillEl) fillEl.style.width = percent + '%';
+    } catch (err) {
+      console.error('Live dashboard update failed:', err);
+    }
+  })();
+
   // Fix active state on lang buttons
   document.addEventListener('DOMContentLoaded', () => {
     function updateLangBtns() {
