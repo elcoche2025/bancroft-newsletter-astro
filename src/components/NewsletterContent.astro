@@ -717,7 +717,9 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
   // matches the live site even though pages are statically prerendered.
   (function updateLiveDashboard() {
     try {
-      const parseDate = (s) => new Date(s + 'T12:00:00');
+      // Midnight-local parse to match production's countWeekdays semantics
+      // (so "today" itself counts as elapsed when the loop ends at today midnight).
+      const parseDate = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
       const formatISO = (d) => {
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, '0');
