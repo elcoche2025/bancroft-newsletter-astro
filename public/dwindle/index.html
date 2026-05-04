@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="refresh" content="0; url=https://dwindle.mekoce.com/" />
+  <title>Dwindle has moved</title>
+  <script>
+    // Unregister the old service worker so cached responses don't override the redirect.
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations()
+        .then(rs => rs.forEach(r => r.unregister()))
+        .finally(() => { window.location.replace('https://dwindle.mekoce.com/'); });
+    } else {
+      window.location.replace('https://dwindle.mekoce.com/');
+    }
+  </script>
+</head>
+<body>
+  <p>Dwindle has moved to <a href="https://dwindle.mekoce.com/">dwindle.mekoce.com</a>.</p>
+</body>
+</html>
