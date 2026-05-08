@@ -354,7 +354,7 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
         </div>
         <div class="section-content">
           <div class="reminder-list">
-            {weekData.reminders.map(reminder => {
+            {[...weekData.reminders].sort((a, b) => a.date.localeCompare(b.date)).map(reminder => {
               const rd = parseReminderDate(reminder.date);
               return (
                 <div class="reminder-card">
