@@ -1,0 +1,1610 @@
+---
+import config from '../../data/config.json';
+import {
+  textToHTML, formatDate,
+  getSubjectIcon, getSpecialForDay, getSubjectTranslation,
+  getSchoolYearProgress,
+} from '../../lib/utils';
+
+interface Props {
+  weekData: any;
+  currentDate: string;
+  allWeeks: string[];
+  issueNumber: number;
+}
+
+const { weekData, issueNumber } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const date = weekData.date;
+
+// School year progress
+const progress = getSchoolYearProgress(date);
+
+// Day letter keys
+const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const;
+const specials = weekData.specials as Record<string, string>;
+
+// Short subject labels used in the Specials Board cells.
+// Hoisted here (not in the JSX expression) so the TS generic doesn't confuse the Astro parser.
+const nsShortEn: Record<string, string> = { Music: 'Music', Science: 'Sci', PE: 'PE', Library: 'Lib', Art: 'Art' };
+const nsShortEs: Record<string, string> = { Music: 'Mús',   Science: 'Cie', PE: 'EF', Library: 'Bib', Art: 'Arte' };
+
+// Parse reminder date helper
+function parseReminderDate(dateStr: string) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const dayNum = d.getDate();
+  const monthEn = d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  const monthEs = d.toLocaleDateString('es-US', { month: 'short' }).toUpperCase();
+  const dayNameEn = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+  const dayNameEs = d.toLocaleDateString('es-US', { weekday: 'short' }).toUpperCase();
+  return { dayNum, monthEn, monthEs, dayNameEn, dayNameEs };
+}
+
+// Sort reminders ascending
+const sortedReminders = weekData.reminders
+  ? [...weekData.reminders].sort((a: any, b: any) => a.date.localeCompare(b.date))
+  : [];
+
+// ROARS count and classrooms with ROARS this week
+const roarsEntries = config.classrooms
+  .map(c => ({ classroom: c, student: weekData.roars?.[c] }))
+  .filter(e => e.student);
+const roarsCount = roarsEntries.length;
+
+// Pull quote: second sentence of welcome.en, fallback first
+function pullQuote(text: string): string {
+  // Strip HTML tags
+  const plain = text.replace(/<[^>]+>/g, '');
+  const sentences = plain.split(/\.\s+/);
+  const raw = sentences.length > 1 ? sentences[1] : sentences[0];
+  return raw.replace(/["""]/g, '').trim();
+}
+const pullEn = pullQuote(weekData.welcome.en);
+const pullEs = pullQuote(weekData.welcome.es);
+
+// Vocabulary: detect grouped vs flat
+const vocabEn = weekData.vocabulary?.en || [];
+const vocabEs = weekData.vocabulary?.es || [];
+const isGrouped = vocabEn.length > 0 && typeof vocabEn[0] === 'object' && (vocabEn[0] as any).words;
+
+// Build vocab groups for display + translation map for click-to-translate
+interface VocabGroup {
+  labelEn: string;
+  labelEs: string;
+  wordsEn: string[];
+  wordsEs: string[];
+  frontLang?: string;
+}
+
+let vocabGroups: VocabGroup[] = [];
+if (isGrouped) {
+  vocabGroups = (vocabEn as any[]).map((enGroup: any, gi: number) => {
+    const esGroup = (vocabEs as any[])[gi] || { label: enGroup.label, words: [] };
+    return {
+      labelEn: enGroup.label,
+      labelEs: esGroup.label,
+      wordsEn: enGroup.words,
+      wordsEs: esGroup.words,
+      frontLang: enGroup.frontLang || esGroup.frontLang,
+    };
+  });
+} else {
+  vocabGroups = [{
+    labelEn: 'Vocabulary',
+    labelEs: 'Vocabulario',
+    wordsEn: vocabEn as string[],
+    wordsEs: vocabEs as string[],
+    frontLang: undefined,
+  }];
+}
+
+// Build translation map for client script: { word -> translation }
+const translationMap: Record<string, string> = {};
+for (const grp of vocabGroups) {
+  grp.wordsEn.forEach((w: string, i: number) => {
+    translationMap[w] = grp.wordsEs[i] || w;
+    if (grp.wordsEs[i]) translationMap[grp.wordsEs[i]] = w;
+  });
+}
+
+// Has books?
+const hasBooks = weekData.books && weekData.books.length > 0;
+
+// Testing pane: check if first reminder is testing-related
+const firstReminder = sortedReminders[0];
+const isTestingReminder = firstReminder &&
+  /i-ready|testing|assessment/i.test(firstReminder.en);
+
+// Contents sections — built dynamically
+interface ContentItem {
+  id: string;
+  labelEn: string;
+  labelEs: string;
+}
+const contentItems: ContentItem[] = [
+  { id: 'cover', labelEn: 'ROARS · Cover Story', labelEs: 'ROARS · Portada' },
+];
+if (sortedReminders.length > 0) {
+  contentItems.push({ id: 'action', labelEn: 'Datelines', labelEs: 'Fechas Importantes' });
+}
+contentItems.push(
+  { id: 'welcome', labelEn: 'From the Teacher', labelEs: 'De la Maestra' },
+  { id: 'specials', labelEn: 'Specials Board', labelEs: 'Especiales' },
+  { id: 'math', labelEn: 'Mathematics', labelEs: 'Matemáticas' },
+  { id: 'lit', labelEn: 'Literacy', labelEs: 'Lectura y Escritura' },
+);
+if (weekData.askYourChild && weekData.askYourChild.length > 0) {
+  contentItems.push({ id: 'ask', labelEn: 'Ask Your Child', labelEs: 'Pregúntale' });
+}
+if (vocabEn.length > 0) {
+  contentItems.push({ id: 'vocab', labelEn: 'Words of the Week', labelEs: 'Palabras de la Semana' });
+}
+if (hasBooks) {
+  contentItems.push({ id: 'books', labelEn: 'Books & Read-Alouds', labelEs: 'Libros' });
+}
+
+// Specials week header: letter days for Mon-Fri
+const dayLetters = dayKeys.map(d => specials[d] || '?');
+
+// Formatted date
+const dateEn = formatDate(date, 'en');
+const dateEs = formatDate(date, 'es');
+
+// Week specials kicker
+const firstLetter = dayLetters[0];
+const lastLetter = dayLetters[4];
+const weekDateShort = (() => {
+  const d = new Date(date + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+})();
+const weekDateShortEs = (() => {
+  const d = new Date(date + 'T12:00:00');
+  return d.toLocaleDateString('es-US', { month: 'long', day: 'numeric' });
+})();
+---
+
+<div class="ns-wrap">
+
+  <!-- ========== MASTHEAD ========== -->
+  <header class="ns-masthead">
+    <div class="ns-masthead-top">
+      <span><span data-en="Established 2025" data-es="Fundado 2025">Established 2025</span></span>
+      <div class="ns-lang">
+        <button class="lang-btn active" data-set-lang="en">EN</button>
+        <button class="lang-btn" data-set-lang="es">ES</button>
+      </div>
+    </div>
+    <p class="ns-masthead-title">
+      <span data-en="The Bancroft" data-es="El Bancroft">The Bancroft</span>
+    </p>
+    <h1 class="ns-masthead-name">
+      <span data-en="First Grade" data-es="Primer Grado">First Grade</span>
+    </h1>
+    <p class="ns-masthead-tag">
+      <span data-en="A weekly classroom letter, in two languages, for the families of Bancroft Elementary School." data-es="Una carta semanal del aula, en dos idiomas, para las familias de la Escuela Primaria Bancroft.">A weekly classroom letter, in two languages, for the families of Bancroft Elementary School.</span>
+    </p>
+    <div class="ns-masthead-rule">
+      <span class="ns-vol">Vol. I &middot; <span data-en="Issue" data-es="Número">Issue</span> {issueNumber}</span>
+      <span>Washington, DC &middot; <span data-en={dateEn} data-es={dateEs}>{dateEn}</span></span>
+    </div>
+  </header>
+
+  <!-- ========== IN THIS ISSUE ========== -->
+  <nav class="ns-contents" aria-label="Contents">
+    <h2><span data-en="In This Issue" data-es="En Esta Edición">In This Issue</span></h2>
+    <ul class="ns-contents-list">
+      {contentItems.map((item, idx) => (
+        <li>
+          <a href={`#ns-${item.id}`}>
+            <span class="ns-no">{String(idx + 1).padStart(2, '0')}</span>
+            <span class="ns-nm">
+              <span data-en={item.labelEn} data-es={item.labelEs}>{item.labelEn}</span>
+            </span>
+            <span class="ns-dots"></span>
+            <span class="ns-pg">p. {idx + 1}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <!-- ========== AT A GLANCE ========== -->
+  <div class={`ns-glance${isTestingReminder ? ' ns-glance-4' : ' ns-glance-3'}`}>
+    <!-- Pane 1: Week -->
+    <div class="ns-pane">
+      <div class="ns-glance-lbl">
+        <span data-en="Week" data-es="Semana">Week</span>
+      </div>
+      <div class="ns-glance-val">
+        {progress.weekNumber} <em>/ {progress.totalWeeks}</em>
+      </div>
+      <div class="ns-glance-meta">
+        <span data-lang-en>{progress.remaining} days remaining</span>
+        <span data-lang-es style="display:none">{progress.remaining} días restantes</span>
+      </div>
+    </div>
+
+    <!-- Pane 2: Today / Day Letter + Weather -->
+    <div class="ns-pane">
+      <div class="ns-glance-lbl">
+        <span data-en="Today" data-es="Hoy">Today</span>
+      </div>
+      <div class="ns-glance-val" id="ns-today-val">
+        <span data-en={`Day ${dayLetters[0]}`} data-es={`Día ${dayLetters[0]}`}>Day {dayLetters[0]}</span>
+      </div>
+      <div class="ns-glance-meta" id="ns-weather-slot"></div>
+    </div>
+
+    <!-- Pane 3: Up Next -->
+    <div class="ns-pane">
+      <div class="ns-glance-lbl">
+        <span data-en="Up Next" data-es="Próximo">Up Next</span>
+      </div>
+      <div class="ns-glance-val" id="ns-upnext-val">
+        <span data-en={sortedReminders.length > 0 ? sortedReminders[0].en.replace(/<[^>]+>/g, '').split('.')[0] : '—'} data-es={sortedReminders.length > 0 ? sortedReminders[0].es.replace(/<[^>]+>/g, '').split('.')[0] : '—'}>
+          {sortedReminders.length > 0 ? sortedReminders[0].en.replace(/<[^>]+>/g, '').split('.')[0] : '—'}
+        </span>
+      </div>
+      <div class="ns-glance-meta" id="ns-upnext-meta">
+        {sortedReminders.length > 0 && (() => {
+          const rd = parseReminderDate(sortedReminders[0].date);
+          return (
+            <span>
+              <span data-en={`${rd.dayNameEn} ${rd.monthEn} ${rd.dayNum}`} data-es={`${rd.dayNameEs} ${rd.dayNum} ${rd.monthEs}`}>
+                {rd.dayNameEn} {rd.monthEn} {rd.dayNum}
+              </span>
+            </span>
+          );
+        })()}
+      </div>
+    </div>
+
+    <!-- Pane 4: Testing (only if testing reminder) -->
+    {isTestingReminder && (
+      <div class="ns-pane" id="ns-testing-pane">
+        <div class="ns-glance-lbl">
+          <span data-en="Testing" data-es="Evaluaciones">Testing</span>
+        </div>
+        <div class="ns-glance-val ns-testing-val">
+          <span data-en="i-Ready" data-es="i-Ready">i-Ready</span>
+        </div>
+        <div class="ns-glance-meta">
+          <span data-lang-en>This week · SLA</span>
+          <span data-lang-es style="display:none">Esta semana · SLA</span>
+        </div>
+      </div>
+    )}
+  </div>
+
+  <!-- ========== COVER STORY — ROARS ========== -->
+  <section id="ns-cover" class="ns-cover-story">
+    <div class="ns-kicker">
+      <span data-en="This Week's Roars" data-es="Reconocimientos de la Semana">This Week's Roars</span>
+    </div>
+    <h2 data-lang-en>This Week's <em>ROARS</em></h2>
+    <h2 data-lang-es style="display:none">Los <em>ROARS</em> de la Semana</h2>
+    <p class="ns-lede" data-lang-en>Congratulations to this week's 1st grade ROAR winners!</p>
+    <p class="ns-lede" data-lang-es style="display:none">¡Felicitaciones a los ganadores ROAR de primer grado de esta semana!</p>
+
+    <div class="ns-honor-roll">
+      {roarsEntries.map(({ classroom, student }) => {
+        const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];
+        const isImg = flag?.startsWith('img:');
+        return (
+          <div class="ns-honor-row">
+            <div class="ns-flag">
+              {isImg
+                ? <img src={`${base}/${flag.slice(4)}`} alt={classroom} />
+                : <span>{flag}</span>
+              }
+            </div>
+            <div>
+              <div class="ns-room">{classroom}</div>
+              <div class="ns-honor-name">{student}</div>
+            </div>
+            <div class="ns-micro">&#9733;</div>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- ========== No. 02 — ACTION / DATELINES ========== -->
+  {sortedReminders.length > 0 && (
+    <section id="ns-action" class="ns-s-action">
+      <header class="ns-section-head">
+        <div class="ns-section-no">02</div>
+        <div style="flex:1">
+          <h2 class="ns-section-title">
+            <span data-en="Datelines" data-es="Fechas Importantes">Datelines</span>
+          </h2>
+          <div class="ns-section-kicker">
+            <span data-en="What to put on the fridge." data-es="Qué poner en el refrigerador.">What to put on the fridge.</span>
+          </div>
+        </div>
+      </header>
+      <ul class="ns-datelines">
+        {sortedReminders.map((reminder: any, i: number) => {
+          const rd = parseReminderDate(reminder.date);
+          const isFirst = i === 0;
+          return (
+            <li>
+              <div class="ns-when">
+                <span data-en={rd.dayNameEn} data-es={rd.dayNameEs}>{rd.dayNameEn}</span>
+                <span class="ns-when-day">{rd.dayNum}</span>
+              </div>
+              <div class="ns-what">
+                {isFirst
+                  ? <span class="ns-tag"><span data-en="This Week" data-es="Esta Semana">This Week</span></span>
+                  : <span class="ns-tag ns-tag-soft"><span data-en="Coming Up" data-es="Próximo">Coming Up</span></span>
+                }
+                <span data-lang-en set:html={reminder.en} />
+                <span data-lang-es style="display:none" set:html={reminder.es} />
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )}
+
+  <!-- ========== No. 03 — WELCOME ========== -->
+  <section id="ns-welcome" class="ns-s-welcome">
+    <header class="ns-section-head">
+      <div class="ns-section-no">{sortedReminders.length > 0 ? '03' : '02'}</div>
+      <div style="flex:1">
+        <h2 class="ns-section-title">
+          <span data-en="From the Teacher" data-es="De la Maestra">From the Teacher</span>
+        </h2>
+        <div class="ns-section-kicker">
+          <span data-en="A note for this week." data-es="Una nota de esta semana.">A note for this week.</span>
+        </div>
+      </div>
+    </header>
+    <article>
+      <div data-lang-en>
+        <p set:html={textToHTML(weekData.welcome.en)} />
+      </div>
+      <div data-lang-es style="display:none">
+        <p set:html={textToHTML(weekData.welcome.es)} />
+      </div>
+
+      <div class="ns-pull">
+        <span data-lang-en>&ldquo;{pullEn}&rdquo;</span>
+        <span data-lang-es style="display:none">&laquo;{pullEs}&raquo;</span>
+        <span class="ns-pull-attr">
+          <span data-en="From your teacher" data-es="De su maestra">From your teacher</span>
+        </span>
+      </div>
+    </article>
+  </section>
+
+  <!-- ========== No. 04 — SPECIALS BOARD ========== -->
+  <section id="ns-specials" class="ns-s-spec">
+    <header class="ns-section-head">
+      <div class="ns-section-no">{sortedReminders.length > 0 ? '04' : '03'}</div>
+      <div style="flex:1">
+        <h2 class="ns-section-title">
+          <span data-en="The Specials Board" data-es="Tablero de Especiales">The Specials Board</span>
+        </h2>
+        <div class="ns-section-kicker">
+          <span data-lang-en>Week of {weekDateShort} &middot; Days {firstLetter}&ndash;{lastLetter}</span>
+          <span data-lang-es style="display:none">Semana del {weekDateShortEs} &middot; Días {firstLetter}&ndash;{lastLetter}</span>
+        </div>
+      </div>
+    </header>
+    <div class="ns-specials-board">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            {dayKeys.map((day, i) => (
+              <th>
+                <span data-en={['M','T','W','Th','F'][i]} data-es={['L','M','Mi','J','V'][i]}>{['M','T','W','Th','F'][i]}</span>
+                <span class="ns-day-ltr">{specials[day] || '?'}</span>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody id="ns-specials-tbody">
+          {config.classrooms.map((classroom) => {
+            const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];
+            const isImg = flag?.startsWith('img:');
+            return (
+              <tr data-classroom={classroom}>
+                <td class="ns-room-cell">
+                  {isImg
+                    ? <img src={`${base}/${flag.slice(4)}`} alt={classroom} />
+                    : <span>{flag}</span>
+                  }
+                  {classroom}
+                </td>
+                {dayKeys.map((day) => {
+                  const letter = specials[day];
+                  const subject = getSpecialForDay(classroom, letter);
+                  const icon = getSubjectIcon(subject);
+                  // Short labels for the table so all 5 columns fit at phone width.
+                  const en = nsShortEn[subject] || subject;
+                  const es = nsShortEs[subject] || subject;
+                  return (
+                    <td>
+                      <span class="ns-ico">{icon}</span>
+                      <span class="ns-nm" data-en={en} data-es={es}>{en}</span>
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+    <p class="ns-specials-hint">
+      <span data-lang-en>&#9658; Highlighted row is your selected classroom.</span>
+      <span data-lang-es style="display:none">&#9658; La fila resaltada es tu salón seleccionado.</span>
+    </p>
+  </section>
+
+  <!-- ========== No. 05 — MATH ========== -->
+  <section id="ns-math" class="ns-s-math">
+    <header class="ns-section-head">
+      <div class="ns-section-no">{sortedReminders.length > 0 ? '05' : '04'}</div>
+      <div style="flex:1">
+        <h2 class="ns-section-title">
+          <span data-en="Mathematics" data-es="Matemáticas">Mathematics</span>
+        </h2>
+        <div class="ns-section-kicker">
+          <span data-en="What we're learning this week." data-es="Lo que aprendemos esta semana.">What we're learning this week.</span>
+        </div>
+      </div>
+    </header>
+    <article>
+      <div data-lang-en>
+        <p set:html={textToHTML(weekData.math.en)} />
+      </div>
+      <div data-lang-es style="display:none">
+        <p set:html={textToHTML(weekData.math.es)} />
+      </div>
+    </article>
+  </section>
+
+  <!-- ========== No. 06 — LITERACY ========== -->
+  <section id="ns-lit" class="ns-s-lit">
+    <header class="ns-section-head">
+      <div class="ns-section-no">{sortedReminders.length > 0 ? '06' : '05'}</div>
+      <div style="flex:1">
+        <h2 class="ns-section-title">
+          <span data-en="Literacy" data-es="Lectura y Escritura">Literacy</span>
+        </h2>
+        <div class="ns-section-kicker">
+          <span data-en="Reading & writing news." data-es="Noticias de lectura y escritura.">Reading &amp; writing news.</span>
+        </div>
+      </div>
+    </header>
+    <article>
+      <div data-lang-en>
+        <p set:html={textToHTML(weekData.literacy.en)} />
+      </div>
+      <div data-lang-es style="display:none">
+        <p set:html={textToHTML(weekData.literacy.es)} />
+      </div>
+    </article>
+  </section>
+
+  <!-- ========== No. 07 — ASK YOUR CHILD ========== -->
+  {weekData.askYourChild && weekData.askYourChild.length > 0 && (
+    <section id="ns-ask" class="ns-s-ask">
+      <header class="ns-section-head">
+        <div class="ns-section-no">{sortedReminders.length > 0 ? '07' : '06'}</div>
+        <div style="flex:1">
+          <h2 class="ns-section-title">
+            <span data-en="Ask Your Child" data-es="Pregúntale">Ask Your Child</span>
+          </h2>
+          <div class="ns-section-kicker">
+            <span data-en="Three openers for the dinner table." data-es="Tres iniciadores para la cena.">Three openers for the dinner table.</span>
+          </div>
+        </div>
+      </header>
+      <ol class="ns-ask-stack">
+        {weekData.askYourChild.map((item: any) => (
+          <li>
+            <div class="ns-q">
+              <span data-lang-en>{item.en}</span>
+              <span data-lang-es style="display:none">{item.es}</span>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+
+  <!-- ========== No. 08 — VOCABULARY POSTER ========== -->
+  {vocabEn.length > 0 && (
+    <section id="ns-vocab" class="ns-s-vocab">
+      <header class="ns-section-head">
+        <div class="ns-section-no">
+          {(() => {
+            let n = sortedReminders.length > 0 ? 7 : 6;
+            if (!(weekData.askYourChild && weekData.askYourChild.length > 0)) n--;
+            return String(n + (weekData.askYourChild && weekData.askYourChild.length > 0 ? 1 : 0)).padStart(2,'0');
+          })()}
+        </div>
+        <div style="flex:1">
+          <h2 class="ns-section-title">
+            <span data-en="Words of the Week" data-es="Palabras de la Semana">Words of the Week</span>
+          </h2>
+          <div class="ns-section-kicker">
+            <span data-en="Tap any word to translate." data-es="Toca cualquier palabra para traducir.">Tap any word to translate.</span>
+          </div>
+        </div>
+      </header>
+      <div class="ns-vocab-poster">
+        {vocabGroups.map((grp) => (
+          <div class="ns-vocab-group">
+            <div class="ns-vg-label">
+              <span data-en={grp.labelEn} data-es={grp.labelEs}>{grp.labelEn}</span>
+            </div>
+            <div class="ns-vg-words">
+              {(grp.frontLang === 'es' ? grp.wordsEs : grp.wordsEn).map((word: string, wi: number) => {
+                const backWord = grp.frontLang === 'es' ? grp.wordsEn[wi] : grp.wordsEs[wi];
+                return (
+                  <span
+                    data-front={word}
+                    data-back={backWord || word}
+                  >{word}</span>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ========== BOOKS ========== -->
+  {hasBooks && (
+    <section id="ns-books" class="ns-s-books">
+      <header class="ns-section-head">
+        <div class="ns-section-no">
+          {String(contentItems.findIndex(c => c.id === 'books') + 1).padStart(2,'0')}
+        </div>
+        <div style="flex:1">
+          <h2 class="ns-section-title">
+            <span data-en="Books &amp; Read-Alouds" data-es="Libros y Lectura">Books &amp; Read-Alouds</span>
+          </h2>
+          <div class="ns-section-kicker">
+            <span data-en="What we're reading together." data-es="Lo que leemos juntos.">What we're reading together.</span>
+          </div>
+        </div>
+      </header>
+      <div class="ns-books-row">
+        {weekData.books.map((book: any) => (
+          <div class="ns-book">
+            <div class="ns-book-cover">&#128218;</div>
+            <div class="ns-book-meta">
+              <p class="ns-book-title">
+                <span data-en={book.title?.en || book.title} data-es={book.title?.es || book.title}>
+                  {book.title?.en || book.title}
+                </span>
+              </p>
+              <p class="ns-book-author">
+                <span data-en={`by ${book.author}`} data-es={`por ${book.author}`}>by {book.author}</span>
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ========== COLOPHON ========== -->
+  <footer class="ns-colophon">
+    <p><strong>The Bancroft Weekly &middot; First Grade</strong></p>
+    <p>
+      <span data-lang-en>Published Mondays by your 1st grade team at Bancroft Elementary School, Washington, DC. Set in Fraunces &amp; DM Sans. Printed at your kitchen table.</span>
+      <span data-lang-es style="display:none">Publicado los lunes por el equipo de primer grado de la Escuela Primaria Bancroft, Washington DC. Compuesto en Fraunces y DM Sans. Impreso en su mesa de cocina.</span>
+    </p>
+  </footer>
+
+</div><!-- /ns-wrap -->
+
+<!-- ========== INLINE SCRIPT ========== -->
+<script define:vars={{
+  weekDate: date,
+  weekSpecials: specials,
+  allClassrooms: config.classrooms,
+  vocabTranslations: translationMap,
+  remindersData: sortedReminders,
+}}>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ---- 1. LANG BUTTON SYNC (in-theme buttons match layout's setLang) ----
+  function updateNsLangBtns() {
+    var lang = document.documentElement.getAttribute('data-lang') || 'en';
+    document.querySelectorAll('.ns-lang .lang-btn').forEach(function(btn) {
+      btn.classList.toggle('active', btn.dataset.setLang === lang);
+    });
+  }
+  var langObserver = new MutationObserver(updateNsLangBtns);
+  langObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
+  updateNsLangBtns();
+
+  // ---- 2. SPECIALS TABLE: highlight selected classroom row ----
+  function highlightClassroomRow() {
+    var saved = localStorage.getItem('nl-classroom') || allClassrooms[0];
+    document.querySelectorAll('#ns-specials-tbody tr').forEach(function(row) {
+      var isYou = row.getAttribute('data-classroom') === saved;
+      row.classList.toggle('ns-you', isYou);
+    });
+  }
+  highlightClassroomRow();
+  // Re-highlight when classroom changes via global selectClassroom
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'nl-classroom') highlightClassroomRow();
+  });
+  // Patch: observe classroom button clicks in this theme
+  document.querySelectorAll('.classroom-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      setTimeout(highlightClassroomRow, 50);
+    });
+  });
+
+  // ---- 3. AT-A-GLANCE: Today pane — compute real letter day ----
+  var dayKeyMap = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  var dayShortEn = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var dayShortEs = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  function getWeekBounds() {
+    var parts = weekDate.split('-').map(Number);
+    var mon = new Date(parts[0], parts[1]-1, parts[2]);
+    // weekDate is always Monday
+    var fri = new Date(mon); fri.setDate(fri.getDate() + 4);
+    return { mon: mon, fri: fri };
+  }
+  function updateTodayPane() {
+    var bounds = getWeekBounds();
+    var now = new Date();
+    now.setHours(0,0,0,0);
+    if (now >= bounds.mon && now <= bounds.fri) {
+      var dow = now.getDay(); // 1=Mon … 5=Fri
+      var keys = ['monday','tuesday','wednesday','thursday','friday'];
+      var dayIdx = dow - 1; // 0-based
+      var letter = weekSpecials[keys[dayIdx]] || '?';
+      var todayEl = document.getElementById('ns-today-val');
+      if (todayEl) {
+        var lang = document.documentElement.getAttribute('data-lang') || 'en';
+        // Render as a [data-en/data-es]-tagged span so the layout's setLang
+        // can swap correctly when the user toggles language afterward.
+        var visible = lang === 'es' ? ('Día ' + letter) : ('Day ' + letter);
+        todayEl.innerHTML =
+          '<span data-en="Day ' + letter + '" data-es="Día ' + letter + '">' + visible + '</span>';
+      }
+    }
+  }
+  updateTodayPane();
+  langObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
+
+  // ---- 4. AT-A-GLANCE: Up Next pane — first reminder after today ----
+  function updateUpNext() {
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var todayISO = today.toISOString().split('T')[0];
+    var future = remindersData.filter(function(r) { return r.date > todayISO; });
+    if (!future.length) return;
+    var next = future[0];
+    var valEl = document.getElementById('ns-upnext-val');
+    var metaEl = document.getElementById('ns-upnext-meta');
+    if (!valEl || !metaEl) return;
+    var lang = document.documentElement.getAttribute('data-lang') || 'en';
+    var txt = (lang === 'es' ? next.es : next.en).replace(/<[^>]+>/g,'');
+    var shortTitle = txt.split('.')[0].replace(/\s*—.*$/,'').trim();
+    if (shortTitle.length > 40) shortTitle = shortTitle.substring(0,38) + '…';
+    valEl.textContent = shortTitle;
+    // Date meta
+    var d = new Date(next.date + 'T12:00:00');
+    var dow = d.getDay();
+    var dayEn = dayShortEn[dow];
+    var dayEs = dayShortEs[dow];
+    var mon = d.toLocaleDateString('en-US', { month: 'short' });
+    var monEs = d.toLocaleDateString('es-US', { month: 'short' });
+    metaEl.textContent = lang === 'es'
+      ? dayEs + ' ' + d.getDate() + ' ' + monEs
+      : dayEn + ' ' + mon + ' ' + d.getDate();
+  }
+  updateUpNext();
+
+  // ---- 5. WEATHER — Open-Meteo fetch ----
+  (async function fetchWeather() {
+    var parts = weekDate.split('-').map(Number);
+    var weekStart = new Date(parts[0], parts[1]-1, parts[2]);
+    var weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 4);
+    var now = new Date();
+    var diffDays = Math.abs((now.getTime() - weekStart.getTime()) / (1000*60*60*24));
+    if (diffDays > 10) return;
+
+    var lat = 38.9283, lon = -77.0365;
+    var endISO = weekEnd.toISOString().split('T')[0];
+    var weatherCodes = {
+      0:'☀️',1:'🌤️',2:'⛅',3:'☁️',
+      45:'🌫️',48:'🌫️',
+      51:'🌦️',53:'🌧️',55:'🌧️',
+      61:'🌧️',63:'🌧️',65:'🌧️',
+      71:'🌨️',73:'🌨️',75:'🌨️',
+      80:'🌦️',81:'🌧️',82:'🌧️',
+      95:'⛈️',96:'⛈️',99:'⛈️',
+    };
+    try {
+      var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat
+        + '&longitude=' + lon
+        + '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode'
+        + '&temperature_unit=fahrenheit&timezone=America/New_York'
+        + '&start_date=' + weekDate + '&end_date=' + endISO;
+      var resp = await fetch(url);
+      if (!resp.ok) return;
+      var data = await resp.json();
+      var daily = data.daily;
+      if (!daily || !daily.time) return;
+
+      // Fill today's weather slot in pane 2
+      var nowDate = new Date(); nowDate.setHours(0,0,0,0);
+      var nowISO = nowDate.toISOString().split('T')[0];
+      var todayIdx = daily.time.indexOf(nowISO);
+      if (todayIdx === -1) todayIdx = 0; // fallback to Monday
+
+      var high = Math.round(daily.temperature_2m_max[todayIdx]);
+      var code = daily.weathercode[todayIdx];
+      var icon = weatherCodes[code] || '🌡️';
+      var lang = document.documentElement.getAttribute('data-lang') || 'en';
+      var slot = document.getElementById('ns-weather-slot');
+      if (slot) {
+        if (lang === 'es') {
+          var highC = Math.round((high - 32) * 5/9);
+          slot.textContent = highC + '°C ' + icon;
+        } else {
+          slot.textContent = high + '°F ' + icon;
+        }
+      }
+    } catch(e) { /* weather is non-critical */ }
+  })();
+
+  // ---- 6. VOCAB WORD TAP — click to toggle translation ----
+  document.querySelectorAll('.ns-vg-words span').forEach(function(span) {
+    var front = span.getAttribute('data-front') || span.textContent;
+    var back = span.getAttribute('data-back') || '';
+    if (!back || back === front) return;
+    span.style.cursor = 'pointer';
+    span.addEventListener('click', function() {
+      var flipped = span.getAttribute('data-flipped') === '1';
+      span.textContent = flipped ? front : back;
+      span.style.color = flipped ? '' : 'var(--ns-purple)';
+      span.style.fontStyle = flipped ? 'italic' : 'normal';
+      span.setAttribute('data-flipped', flipped ? '0' : '1');
+    });
+  });
+
+});
+</script>
+
+<!-- ========== STYLES ========== -->
+<style is:global>
+
+/* ===== NEWSSTAND THEME B — all rules scoped to html[data-theme="B"] ===== */
+
+html[data-theme="B"] {
+  --ns-paper:      #f6f1e6;
+  --ns-paper-deep: #ede5d2;
+  --ns-ink:        #1c1714;
+  --ns-ink-soft:   #524a40;
+  --ns-ink-faint:  #8b8377;
+  --ns-rule:       #d8cfb8;
+  --ns-gold:       #b8860b;
+  --ns-green:      #2d8a4e;
+  --ns-blue:       #2563a8;
+  --ns-violet:     #6d28d9;
+  --ns-orange:     #c2410c;
+  --ns-red:        #b91c1c;
+  --ns-emerald:    #047857;
+  --ns-purple:     #7c3aed;
+  --ns-fuchsia:    #a21caf;
+}
+
+html[data-theme="B"] body {
+  background: var(--ns-paper);
+  color: var(--ns-ink);
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(rgba(120,90,40,0.04) 1px, transparent 1px),
+    radial-gradient(rgba(120,90,40,0.025) 1px, transparent 1px);
+  background-size: 14px 14px, 23px 23px;
+  background-position: 0 0, 7px 11px;
+}
+
+/* ===== WRAPPER ===== */
+html[data-theme="B"] .ns-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 18px 60px;
+}
+
+/* ===== MASTHEAD ===== */
+html[data-theme="B"] .ns-masthead {
+  border-bottom: 3px double var(--ns-ink);
+  padding: 14px 0 10px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+html[data-theme="B"] .ns-masthead-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ns-ink-soft);
+  margin-bottom: 10px;
+}
+
+html[data-theme="B"] .ns-lang {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--ns-paper-deep);
+  border: 1px solid var(--ns-rule);
+  border-radius: 100px;
+  padding: 2px;
+}
+
+html[data-theme="B"] .ns-lang .lang-btn {
+  border: 0;
+  background: transparent;
+  padding: 4px 10px;
+  font: 700 0.66rem "DM Sans", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ns-ink-soft);
+  cursor: pointer;
+  border-radius: 100px;
+  transition: background 0.15s, color 0.15s;
+}
+
+html[data-theme="B"] .ns-lang .lang-btn.active {
+  background: var(--ns-ink);
+  color: var(--ns-paper);
+}
+
+html[data-theme="B"] .ns-masthead-title {
+  font: italic 600 1.05rem/1 "Fraunces", Georgia, serif;
+  color: var(--ns-ink-soft);
+  margin: 0 0 -2px;
+  letter-spacing: 0.02em;
+}
+
+html[data-theme="B"] .ns-masthead-name {
+  font: 900 3.4rem/0.95 "Fraunces", Georgia, serif;
+  letter-spacing: -0.035em;
+  margin: 4px 0;
+  font-variation-settings: "opsz" 144;
+}
+
+html[data-theme="B"] .ns-masthead-tag {
+  font: italic 400 1rem/1.5 "Fraunces", Georgia, serif;
+  color: var(--ns-ink-soft);
+  margin: 0 0 12px;
+  max-width: 32ch;
+}
+
+html[data-theme="B"] .ns-masthead-rule {
+  border-top: 1px solid var(--ns-ink);
+  padding-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ns-ink-soft);
+}
+
+html[data-theme="B"] .ns-vol {
+  font-family: "Fraunces", Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.92rem;
+  color: var(--ns-ink);
+}
+
+/* ===== CONTENTS ===== */
+html[data-theme="B"] .ns-contents {
+  background: var(--ns-paper-deep);
+  padding: 18px 20px;
+  margin-bottom: 28px;
+  border: 1px solid var(--ns-rule);
+  position: relative;
+}
+
+html[data-theme="B"] .ns-contents::before {
+  content: "✦";
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  transform: translateX(-50%);
+  background: var(--ns-paper);
+  padding: 0 8px;
+  font-size: 0.8rem;
+  color: var(--ns-ink-faint);
+}
+
+html[data-theme="B"] .ns-contents h2 {
+  font: italic 600 1.1rem/1 "Fraunces", Georgia, serif;
+  margin: 0 0 12px;
+  color: var(--ns-ink);
+  text-align: center;
+}
+
+html[data-theme="B"] .ns-contents-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+html[data-theme="B"] .ns-contents-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 0.92rem;
+}
+
+html[data-theme="B"] .ns-contents-list a {
+  display: contents;
+  color: inherit;
+  text-decoration: none;
+}
+
+html[data-theme="B"] .ns-contents-list a:hover .ns-nm {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+html[data-theme="B"] .ns-no {
+  font: 700 0.72rem "DM Sans", sans-serif;
+  color: var(--ns-ink-faint);
+  letter-spacing: 0.06em;
+  min-width: 28px;
+}
+
+html[data-theme="B"] .ns-nm {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+}
+
+html[data-theme="B"] .ns-dots {
+  flex: 1;
+  border-bottom: 1px dotted var(--ns-rule);
+  align-self: end;
+  transform: translateY(-4px);
+}
+
+html[data-theme="B"] .ns-pg {
+  font: 700 0.78rem "DM Sans", sans-serif;
+  color: var(--ns-ink-soft);
+}
+
+/* ===== AT A GLANCE ===== */
+html[data-theme="B"] .ns-glance {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 28px;
+  border-top: 1px solid var(--ns-ink);
+  border-bottom: 1px solid var(--ns-ink);
+  padding: 16px 0;
+}
+
+html[data-theme="B"] .ns-glance-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+html[data-theme="B"] .ns-glance-4 {
+  grid-template-columns: 1fr 1fr;
+}
+
+html[data-theme="B"] .ns-pane {
+  padding: 0 6px;
+}
+
+html[data-theme="B"] .ns-pane + .ns-pane {
+  border-left: 1px solid var(--ns-rule);
+}
+
+html[data-theme="B"] .ns-glance-lbl {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ns-ink-faint);
+  margin-bottom: 4px;
+}
+
+html[data-theme="B"] .ns-glance-val {
+  font: 700 1rem/1.2 "Fraunces", Georgia, serif;
+  color: var(--ns-ink);
+}
+
+html[data-theme="B"] .ns-glance-val em {
+  font-style: italic;
+  color: var(--ns-red);
+  font-weight: 600;
+}
+
+html[data-theme="B"] .ns-testing-val {
+  color: var(--ns-red);
+}
+
+html[data-theme="B"] .ns-glance-meta {
+  font-size: 0.74rem;
+  color: var(--ns-ink-soft);
+  margin-top: 2px;
+}
+
+/* ===== SECTION STRUCTURE ===== */
+html[data-theme="B"] .ns-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 36px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ns-ink);
+}
+
+html[data-theme="B"] .ns-section-no {
+  font: italic 800 2.2rem/1 "Fraunces", Georgia, serif;
+  color: var(--accent, var(--ns-ink));
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+
+html[data-theme="B"] .ns-section-no::before {
+  content: "No. ";
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.7em;
+  color: var(--ns-ink-faint);
+}
+
+html[data-theme="B"] .ns-section-title {
+  font: 700 1.65rem/1.05 "Fraunces", Georgia, serif;
+  margin: 0;
+  letter-spacing: -0.02em;
+  flex: 1;
+}
+
+html[data-theme="B"] .ns-section-kicker {
+  font: italic 500 0.92rem "Fraunces", Georgia, serif;
+  color: var(--ns-ink-soft);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* ===== ACCENT COLORS PER SECTION ===== */
+html[data-theme="B"] .ns-s-welcome { --accent: var(--ns-gold); }
+html[data-theme="B"] .ns-s-action  { --accent: var(--ns-red); }
+html[data-theme="B"] .ns-s-spec    { --accent: var(--ns-violet); }
+html[data-theme="B"] .ns-s-math    { --accent: var(--ns-green); }
+html[data-theme="B"] .ns-s-lit     { --accent: var(--ns-blue); }
+html[data-theme="B"] .ns-s-ask     { --accent: var(--ns-emerald); }
+html[data-theme="B"] .ns-s-vocab   { --accent: var(--ns-purple); }
+html[data-theme="B"] .ns-s-books   { --accent: var(--ns-fuchsia); }
+
+/* ===== COVER STORY (ROARS) ===== */
+html[data-theme="B"] .ns-cover-story {
+  background: #fff5ed;
+  border: 1px solid #fdba74;
+  padding: 22px 20px 24px;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+html[data-theme="B"] .ns-kicker {
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ns-orange);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+html[data-theme="B"] .ns-kicker::before,
+html[data-theme="B"] .ns-kicker::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #fdba74;
+}
+
+html[data-theme="B"] .ns-cover-story h2 {
+  font: 800 2rem/1 "Fraunces", Georgia, serif;
+  margin: 0 0 6px;
+  text-align: center;
+  color: var(--ns-ink);
+  letter-spacing: -0.025em;
+}
+
+html[data-theme="B"] .ns-cover-story h2 em {
+  font-style: italic;
+  color: var(--ns-orange);
+}
+
+html[data-theme="B"] .ns-lede {
+  text-align: center;
+  font: italic 400 0.98rem/1.5 "Fraunces", Georgia, serif;
+  color: var(--ns-ink-soft);
+  margin: 0 auto 16px;
+  max-width: 36ch;
+}
+
+html[data-theme="B"] .ns-honor-roll {
+  border-top: 1px solid #fdba74;
+}
+
+html[data-theme="B"] .ns-honor-row {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(253,186,116,0.5);
+}
+
+html[data-theme="B"] .ns-honor-row:last-child {
+  border-bottom: 0;
+}
+
+html[data-theme="B"] .ns-flag {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #fdba74;
+  background: var(--ns-paper);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+html[data-theme="B"] .ns-flag img {
+  width: 24px;
+  height: 18px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+html[data-theme="B"] .ns-honor-name {
+  font: 800 1.4rem/1 "Fraunces", Georgia, serif;
+  letter-spacing: -0.015em;
+}
+
+html[data-theme="B"] .ns-room {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ns-orange);
+}
+
+html[data-theme="B"] .ns-micro {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ns-ink-faint);
+}
+
+/* ===== ARTICLE BODY ===== */
+html[data-theme="B"] article p {
+  margin: 0 0 14px;
+  line-height: 1.7;
+  font-size: 0.96rem;
+}
+
+html[data-theme="B"] article p:first-of-type::first-letter {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 3.4rem;
+  float: left;
+  line-height: 0.9;
+  padding: 4px 6px 0 0;
+  color: var(--accent, var(--ns-ink));
+}
+
+html[data-theme="B"] article b { font-weight: 700; }
+html[data-theme="B"] article i { font-style: italic; }
+
+/* ===== PULL QUOTE ===== */
+html[data-theme="B"] .ns-pull {
+  margin: 22px -6px;
+  padding: 18px 24px;
+  border-top: 1px solid var(--ns-ink);
+  border-bottom: 1px solid var(--ns-ink);
+  font: italic 500 1.3rem/1.35 "Fraunces", Georgia, serif;
+  color: var(--ns-ink);
+  text-align: center;
+  letter-spacing: -0.015em;
+}
+
+html[data-theme="B"] .ns-pull-attr {
+  display: block;
+  margin-top: 10px;
+  font: 700 0.66rem "DM Sans", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ns-ink-faint);
+  font-style: normal;
+}
+
+/* ===== DATELINES (ACTION) ===== */
+html[data-theme="B"] .ns-datelines {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+html[data-theme="B"] .ns-datelines li {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--ns-rule);
+  align-items: baseline;
+}
+
+html[data-theme="B"] .ns-datelines li:last-child {
+  border-bottom: 0;
+}
+
+html[data-theme="B"] .ns-when {
+  font: 800 0.78rem/1 "DM Sans", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ns-ink-soft);
+}
+
+html[data-theme="B"] .ns-when-day {
+  display: block;
+  font: 800 2rem/1 "Fraunces", Georgia, serif;
+  color: var(--ns-ink);
+  letter-spacing: -0.02em;
+  margin-top: 2px;
+}
+
+html[data-theme="B"] .ns-what {
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+html[data-theme="B"] .ns-what b { font-weight: 700; }
+
+html[data-theme="B"] .ns-tag {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #fff;
+  background: var(--ns-gold);
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+
+html[data-theme="B"] .ns-tag.ns-tag-soft {
+  background: var(--ns-paper-deep);
+  color: var(--ns-ink-soft);
+}
+
+/* ===== SPECIALS BOARD ===== */
+html[data-theme="B"] .ns-specials-board {
+  border: 1px solid var(--ns-ink);
+  background: #fff;
+  /* Allow horizontal scroll on narrow viewports when content overflows
+     (e.g., longer Spanish subject labels) instead of clipping. */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+html[data-theme="B"] .ns-specials-board table {
+  min-width: 360px;
+}
+
+html[data-theme="B"] .ns-specials-board table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+html[data-theme="B"] .ns-specials-board th,
+html[data-theme="B"] .ns-specials-board td {
+  padding: 9px 6px;
+  text-align: center;
+  font-size: 0.84rem;
+  border-bottom: 1px solid var(--ns-rule);
+}
+
+html[data-theme="B"] .ns-specials-board th {
+  background: var(--ns-ink);
+  color: var(--ns-paper);
+  font: 800 0.66rem/1.1 "DM Sans", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 10px 6px;
+}
+
+html[data-theme="B"] .ns-day-ltr {
+  display: block;
+  font-weight: 500;
+  opacity: 0.65;
+  font-size: 0.6rem;
+  margin-top: 2px;
+}
+
+html[data-theme="B"] .ns-specials-board td.ns-room-cell,
+html[data-theme="B"] .ns-room-cell {
+  text-align: left;
+  font: 700 0.86rem "Fraunces", Georgia, serif;
+  color: var(--ns-ink);
+  padding-left: 14px;
+}
+
+html[data-theme="B"] .ns-room-cell img {
+  width: 16px;
+  height: 12px;
+  vertical-align: -1px;
+  margin-right: 6px;
+  border-radius: 2px;
+}
+
+html[data-theme="B"] .ns-ico {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+html[data-theme="B"] .ns-nm {
+  font-size: 0.68rem;
+  color: var(--ns-ink-faint);
+  display: block;
+  margin-top: 2px;
+}
+
+html[data-theme="B"] .ns-specials-board tr.ns-you td {
+  background: #f5f0ff;
+}
+
+html[data-theme="B"] .ns-specials-board tr.ns-you td.ns-room-cell {
+  color: var(--ns-violet);
+  position: relative;
+}
+
+html[data-theme="B"] .ns-specials-board tr.ns-you td.ns-room-cell::before {
+  content: "▸";
+  position: absolute;
+  left: 2px;
+  color: var(--ns-violet);
+}
+
+html[data-theme="B"] .ns-specials-hint {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: var(--ns-ink-faint);
+  font-style: italic;
+}
+
+/* ===== ASK YOUR CHILD ===== */
+html[data-theme="B"] .ns-ask-stack {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: q;
+}
+
+html[data-theme="B"] .ns-ask-stack li {
+  counter-increment: q;
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--ns-rule);
+  align-items: start;
+}
+
+html[data-theme="B"] .ns-ask-stack li:last-child {
+  border-bottom: 0;
+}
+
+html[data-theme="B"] .ns-ask-stack li::before {
+  content: counter(q, decimal-leading-zero);
+  font: italic 800 1.8rem/1 "Fraunces", Georgia, serif;
+  color: var(--ns-emerald);
+  letter-spacing: -0.02em;
+}
+
+html[data-theme="B"] .ns-q {
+  font: italic 500 1.05rem/1.45 "Fraunces", Georgia, serif;
+  color: var(--ns-ink);
+}
+
+/* ===== VOCABULARY POSTER ===== */
+html[data-theme="B"] .ns-vocab-poster {
+  background: var(--ns-paper-deep);
+  border: 1px solid var(--ns-rule);
+  padding: 20px 16px 18px;
+  text-align: center;
+  position: relative;
+}
+
+html[data-theme="B"] .ns-vocab-poster::before,
+html[data-theme="B"] .ns-vocab-poster::after {
+  content: "✦";
+  color: var(--ns-purple);
+  font-size: 0.8rem;
+  position: absolute;
+  top: 10px;
+}
+
+html[data-theme="B"] .ns-vocab-poster::before { left: 14px; }
+html[data-theme="B"] .ns-vocab-poster::after  { right: 14px; }
+
+html[data-theme="B"] .ns-vocab-group {
+  margin-bottom: 18px;
+}
+
+html[data-theme="B"] .ns-vocab-group:last-child {
+  margin-bottom: 0;
+}
+
+html[data-theme="B"] .ns-vg-label {
+  font: 700 0.66rem "DM Sans", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ns-ink-faint);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+html[data-theme="B"] .ns-vg-label::before,
+html[data-theme="B"] .ns-vg-label::after {
+  content: "";
+  flex: 0 0 24px;
+  height: 1px;
+  background: var(--ns-rule);
+}
+
+html[data-theme="B"] .ns-vg-words {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+  font: italic 500 1.2rem/1.5 "Fraunces", Georgia, serif;
+  color: var(--ns-ink);
+}
+
+html[data-theme="B"] .ns-vg-words span {
+  cursor: pointer;
+  transition: color 0.2s;
+  position: relative;
+}
+
+html[data-theme="B"] .ns-vg-words span:hover {
+  color: var(--ns-purple);
+}
+
+html[data-theme="B"] .ns-vg-words span + span::before {
+  content: "·";
+  color: var(--ns-rule);
+  margin-right: 14px;
+  margin-left: -10px;
+}
+
+/* ===== BOOKS ===== */
+html[data-theme="B"] .ns-books-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+html[data-theme="B"] .ns-book {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  background: var(--ns-paper-deep);
+  border: 1px solid var(--ns-rule);
+}
+
+html[data-theme="B"] .ns-book-cover {
+  width: 48px;
+  height: 64px;
+  background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%);
+  border: 1px solid var(--ns-fuchsia);
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+html[data-theme="B"] .ns-book-title {
+  font: 700 0.88rem "Fraunces", Georgia, serif;
+  line-height: 1.2;
+  margin: 0 0 4px;
+}
+
+html[data-theme="B"] .ns-book-author {
+  font: italic 400 0.78rem "Fraunces", Georgia, serif;
+  color: var(--ns-ink-soft);
+}
+
+/* ===== COLOPHON ===== */
+html[data-theme="B"] .ns-colophon {
+  margin-top: 60px;
+  padding-top: 20px;
+  border-top: 3px double var(--ns-ink);
+  text-align: center;
+  font-size: 0.74rem;
+  color: var(--ns-ink-faint);
+  line-height: 1.6;
+}
+
+html[data-theme="B"] .ns-colophon strong {
+  color: var(--ns-ink);
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 700;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 720px) {
+  html[data-theme="B"] .ns-glance-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  html[data-theme="B"] .ns-glance-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  html[data-theme="B"] .ns-masthead-name {
+    font-size: 4.6rem;
+  }
+  html[data-theme="B"] .ns-books-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ===== PRINT ===== */
+@media print {
+  html[data-theme="B"] .ns-lang {
+    display: none !important;
+  }
+  html[data-theme="B"] .ns-cover-story,
+  html[data-theme="B"] .ns-section-head,
+  html[data-theme="B"] .ns-vocab-poster,
+  html[data-theme="B"] .ns-specials-board {
+    break-inside: avoid;
+  }
+  html[data-theme="B"] .ns-pull {
+    break-inside: avoid;
+  }
+  html[data-theme="B"] body {
+    background: #fff;
+    background-image: none;
+  }
+}
+
+</style>

@@ -1,15 +1,30 @@
 ---
 import Newsletter from '../layouts/Newsletter.astro';
 import NewsletterContent from '../components/NewsletterContent.astro';
+import TodayFirst from '../components/themes/TodayFirst.astro';
+import Newsstand from '../components/themes/Newsstand.astro';
+import Pocket from '../components/themes/Pocket.astro';
 import config from '../data/config.json';
 import weeksIndex from '../data/weeks/weeks-index.json';
 
 const latestDate = weeksIndex[0];
 const weekData = (await import(`../data/weeks/${latestDate}.json`)).default;
+const issueNumber = weeksIndex.length - weeksIndex.indexOf(latestDate); // 1-based, oldest = 1
 
 const labelsEn = config.labels.en;
 ---
 
 <Newsletter title={`${labelsEn.title} — ${labelsEn.subtitle}`} date={weekData.date}>
-  <NewsletterContent weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} />
+  <div class="nl-theme" data-variant="A">
+    <TodayFirst weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} issueNumber={issueNumber} />
+  </div>
+  <div class="nl-theme" data-variant="B">
+    <Newsstand weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} issueNumber={issueNumber} />
+  </div>
+  <div class="nl-theme" data-variant="C">
+    <Pocket weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} issueNumber={issueNumber} />
+  </div>
+  <div class="nl-theme" data-variant="classic">
+    <NewsletterContent weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} />
+  </div>
 </Newsletter>

@@ -1,0 +1,2196 @@
+---
+import config from '../../data/config.json';
+import calendar from '../../data/calendar.json';
+import {
+  textToHTML, formatDate, formatDateShort,
+  getSubjectIcon, getSpecialForDay, getSubjectTranslation,
+  getSchoolYearProgress,
+} from '../../lib/utils';
+
+interface Props {
+  weekData: any;
+  currentDate: string;
+  allWeeks: string[];
+  issueNumber: number;
+}
+
+const { weekData, currentDate, allWeeks, issueNumber } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const date = weekData.date;
+const season = weekData.season || 'spring';
+const logo = config.seasonLogos[season as keyof typeof config.seasonLogos] || config.seasonLogos.default;
+
+// School year progress (server-side; client script refreshes with today's real date)
+const progress = getSchoolYearProgress(date);
+
+// Specials day keys
+const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const;
+const specials = weekData.specials as Record<string, string>;
+
+// Day short names for the specials grid
+const dayShortEn = ['M', 'T', 'W', 'Th', 'F'];
+const dayShortEs = ['L', 'M', 'Mi', 'J', 'V'];
+
+// Full day names for subject translations (bilingual abbreviations for peek)
+const dayAbbrevEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const dayAbbrevEs = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'];
+
+// Subject short labels for the specials peek line
+const subjectShortEn: Record<string, string> = { Music: 'Mus', Science: 'Sci', PE: 'PE', Library: 'Lib', Art: 'Art' };
+const subjectShortEs: Record<string, string> = { Music: 'Mús', Science: 'Cie', PE: 'EF', Library: 'Bib', Art: 'Arte' };
+
+// Helper: parse a reminder date
+function parseReminderDate(dateStr: string) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return {
+    month: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+    monthEs: d.toLocaleDateString('es-US', { month: 'short' }).toUpperCase(),
+    day: d.getDate(),
+  };
+}
+
+// Sort reminders by date
+const sortedReminders = weekData.reminders
+  ? [...weekData.reminders].sort((a: any, b: any) => a.date.localeCompare(b.date))
+  : [];
+
+// Reminder count badge
+const reminderCount = sortedReminders.length;
+
+// Build reminder peek text (up to 3 summaries: "MMM D · …" shape)
+function buildReminderPeekEn(reminders: any[]): string {
+  if (!reminders.length) return '';
+  const parts = reminders.slice(0, 3).map((r: any) => {
+    const d = new Date(r.date + 'T12:00:00');
+    const mon = d.toLocaleDateString('en-US', { month: 'short' });
+    const day = d.getDate();
+    // Extract bold text or first 40 chars as summary
+    const raw: string = r.en || '';
+    const boldMatch = raw.match(/<b>([^<]{1,60})<\/b>/);
+    const summary = boldMatch ? boldMatch[1].replace(/\s*—.*/, '').replace(/\s*·.*/, '').trim() : raw.replace(/<[^>]+>/g, '').slice(0, 40).trim();
+    return `${mon} ${day} · ${summary.slice(0, 28)}`;
+  });
+  return parts.join(' · ');
+}
+
+function buildReminderPeekEs(reminders: any[]): string {
+  if (!reminders.length) return '';
+  const parts = reminders.slice(0, 3).map((r: any) => {
+    const d = new Date(r.date + 'T12:00:00');
+    const mon = d.toLocaleDateString('es-US', { month: 'short' });
+    const day = d.getDate();
+    const raw: string = r.es || r.en || '';
+    const boldMatch = raw.match(/<b>([^<]{1,60})<\/b>/);
+    const summary = boldMatch ? boldMatch[1].replace(/\s*—.*/, '').replace(/\s*·.*/, '').trim() : raw.replace(/<[^>]+>/g, '').slice(0, 40).trim();
+    return `${mon} ${day} · ${summary.slice(0, 28)}`;
+  });
+  return parts.join(' · ');
+}
+
+const reminderPeekEn = reminderCount
+  ? buildReminderPeekEn(sortedReminders)
+  : '';
+const reminderPeekEs = reminderCount
+  ? buildReminderPeekEs(sortedReminders)
+  : '';
+
+// Status bar text from first reminder (truncated to ~120 chars)
+const firstReminder = sortedReminders[0];
+function truncateHTML(html: string, maxLen: number): string {
+  const stripped = html.replace(/<[^>]+>/g, '');
+  return stripped.length > maxLen ? stripped.slice(0, maxLen).trim() + '…' : stripped;
+}
+const statusTextEn = firstReminder
+  ? truncateHTML(firstReminder.en, 120)
+  : '';
+const statusTextEs = firstReminder
+  ? truncateHTML(firstReminder.es || firstReminder.en, 120)
+  : '';
+
+// "Up Next" should be the earliest reminder whose date is >= the newsletter week start.
+// At build time we don't know view-time "today"; the client script will recompute live.
+// Server-side pick: first reminder on/after weekData.date; fall back to firstReminder.
+const weekStartISO = weekData.date;
+const upNextReminder =
+  sortedReminders.find((r: any) => r.date >= weekStartISO) || firstReminder;
+
+// Up Next short label from the chosen reminder (avoids regex-with-tags in template JSX expressions,
+// which confuse the Astro parser into thinking <b> is a tag).
+function extractUpNextLabel(html: string, fallback: string): string {
+  if (!html) return fallback;
+  // Allow up to 120 chars between <b>...</b> so longer bold spans still match.
+  const tagPattern = '<' + 'b>' + '([^<]{1,120})' + '<\\/b>';
+  const boldMatch = html.match(new RegExp(tagPattern));
+  const raw = boldMatch ? boldMatch[1] : html.replace(/<[^>]+>/g, '');
+  return raw.split('—')[0].split('·')[0].trim().slice(0, 30);
+}
+const upNextLabelEn = upNextReminder
+  ? extractUpNextLabel(upNextReminder.en, upNextReminder.date)
+  : '';
+const upNextLabelEs = upNextReminder
+  ? extractUpNextLabel(upNextReminder.es || upNextReminder.en, upNextLabelEn)
+  : '';
+const upNextRD = upNextReminder ? parseReminderDate(upNextReminder.date) : null;
+
+// ROARS count
+const roarsCount = weekData.roars
+  ? Object.values(weekData.roars).filter(Boolean).length
+  : 0;
+
+// Vocab count
+let vocabCount = 0;
+if (weekData.vocabulary && weekData.vocabulary.en) {
+  const enVocab = weekData.vocabulary.en;
+  if (Array.isArray(enVocab)) {
+    if (typeof enVocab[0] === 'string') {
+      vocabCount = enVocab.length;
+    } else {
+      vocabCount = (enVocab as any[]).reduce((sum: number, g: any) => sum + (g.words?.length || 0), 0);
+    }
+  }
+}
+
+// Vocab grouped detection
+const isVocabGrouped = weekData.vocabulary?.en && Array.isArray(weekData.vocabulary.en) &&
+  typeof weekData.vocabulary.en[0] === 'object' && weekData.vocabulary.en[0].words;
+
+// Build vocab flip lookup for flat arrays (injected into client script)
+type VocabPair = { en: string; es: string };
+const vocabPairs: VocabPair[] = [];
+if (weekData.vocabulary?.en) {
+  const enArr = weekData.vocabulary.en;
+  const esArr = weekData.vocabulary.es;
+  if (!isVocabGrouped) {
+    (enArr as string[]).forEach((w: string, i: number) => {
+      vocabPairs.push({ en: w, es: (esArr as string[])[i] || w });
+    });
+  } else {
+    (enArr as any[]).forEach((grp: any, gi: number) => {
+      const esGrp = (esArr as any[])[gi];
+      const frontLang = grp.frontLang || esGrp?.frontLang;
+      grp.words.forEach((word: string, wi: number) => {
+        const esWord = esGrp?.words?.[wi] || word;
+        if (frontLang === 'es') {
+          // front is ES
+          vocabPairs.push({ en: esGrp.words[wi] || word, es: word });
+        } else {
+          vocabPairs.push({ en: word, es: esWord });
+        }
+      });
+    });
+  }
+}
+
+// Default classroom for specials (server-side = first; client updates from localStorage)
+const defaultClassroom = config.classrooms[0];
+
+// Build server-side specials peek for default classroom
+function buildSpecialsPeekEn(classroom: string): string {
+  return dayKeys.map((day, i) => {
+    const letter = specials[day];
+    const subject = getSpecialForDay(classroom, letter);
+    const short = subjectShortEn[subject] || subject;
+    return `${dayAbbrevEn[i]} ${short}`;
+  }).join(' · ');
+}
+function buildSpecialsPeekEs(classroom: string): string {
+  return dayKeys.map((day, i) => {
+    const letter = specials[day];
+    const subject = getSpecialForDay(classroom, letter);
+    const short = subjectShortEs[subject] || subject;
+    return `${dayAbbrevEs[i]} ${short}`;
+  }).join(' · ');
+}
+
+const defaultSpecialsPeekEn = buildSpecialsPeekEn(defaultClassroom);
+const defaultSpecialsPeekEs = buildSpecialsPeekEs(defaultClassroom);
+
+// Formatted dates
+const formattedDateEn = formatDate(date, 'en');
+const formattedDateEs = formatDate(date, 'es');
+
+// For hero: the week's Monday is always the date
+// We'll use the date itself for display (it's Monday of the week)
+const weekDateObj = new Date(date + 'T12:00:00');
+const heroMonthEn = weekDateObj.toLocaleDateString('en-US', { month: 'short' });
+const heroMonthEs = weekDateObj.toLocaleDateString('es-US', { month: 'short' });
+const heroDay = weekDateObj.getDate();
+
+// Flag helper
+function getFlag(classroom: string): { isImg: boolean; src?: string; emoji?: string } {
+  const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];
+  if (flag?.startsWith('img:')) {
+    return { isImg: true, src: `${base}/${flag.slice(4)}` };
+  }
+  return { isImg: false, emoji: flag };
+}
+
+// Books conditional
+const hasBooks = weekData.books && weekData.books.length > 0;
+const hasAsk = weekData.askYourChild && weekData.askYourChild.length > 0;
+const hasVocab = weekData.vocabulary && weekData.vocabulary.en && weekData.vocabulary.en.length > 0;
+const hasRoars = roarsCount > 0;
+
+// Ask count
+const askCount = weekData.askYourChild?.length || 0;
+
+// Week N/total for header
+const weekNum = progress.weekNumber;
+const weekTotal = progress.totalWeeks;
+---
+
+<div class="pk-app">
+
+  <!-- ===== STICKY HEADER ===== -->
+  <header class="pk-sticky">
+    <div class="pk-sticky-row">
+      <div class="pk-seal">
+        {logo && <img src={`${base}/${logo}`} alt="Bancroft" />}
+      </div>
+      <div class="pk-sticky-text">
+        <div class="pk-ttl display">
+          <span data-en="1st Grade · Bancroft" data-es="1er Grado · Bancroft">1st Grade · Bancroft</span>
+        </div>
+        <div class="pk-sub">
+          <span
+            data-en={`Week of ${formattedDateEn} · Week ${weekNum}/${weekTotal}`}
+            data-es={`Semana del ${formattedDateEs} · ${weekNum}/${weekTotal}`}
+          >Week of {formattedDateEn} · Week {weekNum}/{weekTotal}</span>
+        </div>
+      </div>
+      <div class="pk-lang-pill">
+        <button class="lang-btn" data-set-lang="en">EN</button>
+        <button class="lang-btn" data-set-lang="es">ES</button>
+      </div>
+    </div>
+    <div class="pk-prog-strip">
+      <div class="pk-prog-label">
+        <strong id="pk-days-elapsed">{progress.elapsedSchoolDays}</strong>
+        <span data-en={` of ${progress.totalSchoolDays}`} data-es={` de ${progress.totalSchoolDays}`}> of {progress.totalSchoolDays}</span>
+      </div>
+      <div class="pk-prog-track">
+        <div class="pk-prog-fill" id="pk-prog-fill" style={`width: ${progress.percent}%`}></div>
+      </div>
+      <div class="pk-prog-label">
+        <strong id="pk-days-remaining">{progress.remaining}</strong>
+        <span data-en=" left" data-es=" restan"> left</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== ADD TO HOME SCREEN PROMPT ===== -->
+  <div class="pk-ath" id="pk-ath">
+    <div class="pk-ath-ico">📲</div>
+    <div class="pk-ath-body">
+      <span
+        data-en={'<strong>Add to Home Screen</strong> for one-tap access every Monday.'}
+        data-es={'<strong>Añadir a la pantalla de inicio</strong> para acceso fácil cada lunes.'}>
+        <strong>Add to Home Screen</strong> for one-tap access every Monday.
+      </span>
+    </div>
+    <button class="pk-ath-x" id="pk-ath-dismiss" aria-label="Dismiss">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ===== HERO TODAY ===== -->
+  <section class="pk-hero">
+    <div class="pk-hero-kicker">
+      <span data-en="Today · Monday" data-es="Hoy · Lunes" id="pk-hero-kicker-text">Today · Monday</span>
+    </div>
+    <div class="pk-hero-date display">
+      <em id="pk-hero-month">{heroMonthEn}</em>&nbsp;<span id="pk-hero-day">{heroDay}</span>
+    </div>
+    <div class="pk-hero-weather" id="pk-hero-weather">
+      <span data-en="Dismissal 3:15 pm" data-es="Salida 3:15 pm">Dismissal 3:15 pm</span>
+    </div>
+    <div class="pk-hero-stats">
+      <div class="pk-hero-chip">
+        <div class="pk-chip-lbl">
+          <span data-en="Today's Special" data-es="Especial Hoy">Today's Special</span>
+        </div>
+        <div class="pk-chip-val" id="pk-today-special">
+          {/* Neutral fallback: just "Day F". Filled with the real subject by JS once
+              the user picks their classroom (otherwise this would mislead parents). */}
+          <span class="pk-chip-e">📅</span>
+          <span data-en={`Day ${specials['monday']}`} data-es={`Día ${specials['monday']}`}>
+            Day {specials['monday']}
+          </span>
+        </div>
+      </div>
+      <div class="pk-hero-chip">
+        <div class="pk-chip-lbl">
+          <span data-en="Up Next" data-es="Próximo">Up Next</span>
+        </div>
+        <div class="pk-chip-val" id="pk-up-next">
+          <!-- filled by JS from reminders -->
+          {upNextReminder && upNextRD ? (
+            <Fragment>
+              <span class="pk-chip-e">📌</span>
+              <span
+                data-en={`${upNextLabelEn} · ${upNextRD.month} ${upNextRD.day}`}
+                data-es={`${upNextLabelEs} · ${upNextRD.monthEs} ${upNextRD.day}`}>
+                {upNextLabelEn} · {upNextRD.month} {upNextRD.day}
+              </span>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <span class="pk-chip-e">📅</span>
+              <span data-en="See reminders" data-es="Ver recordatorios">See reminders</span>
+            </Fragment>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STATUS BAR ===== -->
+  {firstReminder && (
+    <button class="pk-status-bar" id="pk-status-bar" aria-label="Go to reminders">
+      <span class="pk-pulse"></span>
+      <div class="pk-status-txt">
+        <span data-en={statusTextEn} data-es={statusTextEs}>{statusTextEn}</span>
+      </div>
+      <svg class="pk-status-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+  )}
+
+  <!-- ===== QUICK LINKS ===== -->
+  <div class="pk-ql-row">
+    {config.quickLinks.map(link => (
+      <a class="pk-ql" href={link.url} target="_blank" rel="noopener">
+        <span class="pk-ql-e">{link.icon}</span>
+        <span data-en={link.en} data-es={link.es}>{link.en}</span>
+      </a>
+    ))}
+  </div>
+
+  <!-- ===== CARD STACK ===== -->
+  <div class="pk-stack">
+
+    <!-- REMINDERS -->
+    {reminderCount > 0 && (
+      <details class="pk-card pk-action" open id="pk-card-reminders">
+        <summary class="pk-card-head">
+          <div class="pk-card-icon">📌</div>
+          <div class="pk-card-meta">
+            <h3 class="pk-card-title">
+              <span data-en="Reminders" data-es="Recordatorios">Reminders</span>
+            </h3>
+            <div class="pk-card-peek">
+              <span data-en={reminderPeekEn || `${reminderCount} reminders`} data-es={reminderPeekEs || `${reminderCount} recordatorios`}>
+                {reminderPeekEn || `${reminderCount} reminders`}
+              </span>
+            </div>
+          </div>
+          <div class="pk-card-trail">
+            <span class="pk-card-badge">{reminderCount}</span>
+            <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </summary>
+        <div class="pk-card-body">
+          <ul class="pk-rem-list">
+            {sortedReminders.map((reminder: any) => {
+              const rd = parseReminderDate(reminder.date);
+              const isNow = reminder.date === date;
+              return (
+                <li class={isNow ? 'pk-rem-now' : ''}>
+                  <div class="pk-rem-badge">
+                    <div class="pk-rem-m">
+                      <span data-en={rd.month} data-es={rd.monthEs}>{rd.month}</span>
+                    </div>
+                    <div class="pk-rem-d">{rd.day}</div>
+                  </div>
+                  <div class="pk-rem-text">
+                    <span data-en={reminder.en} data-es={reminder.es || reminder.en} set:html={reminder.en} />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </details>
+    )}
+
+    <!-- SPECIALS -->
+    <details class="pk-card pk-specials" open id="pk-card-specials">
+      <summary class="pk-card-head">
+        <div class="pk-card-icon">🎨</div>
+        <div class="pk-card-meta">
+          <h3 class="pk-card-title">
+            <span data-en="Specials" data-es="Especiales">Specials</span>
+          </h3>
+          <div class="pk-card-peek" id="pk-specials-peek">
+            <span data-en="Tap your child's class" data-es="Toca el salón de tu hijo/a">Tap your child's class</span>
+          </div>
+        </div>
+        <div class="pk-card-trail">
+          <span class="pk-card-badge" id="pk-specials-badge" hidden></span>
+          <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </summary>
+      <div class="pk-card-body">
+        <!-- Room tabs -->
+        <div class="pk-room-tabs" role="tablist" aria-label="Classroom">
+          {config.classrooms.map(classroom => {
+            const fl = getFlag(classroom);
+            return (
+              <button
+                class="pk-room-tab"
+                data-classroom={classroom}
+                role="tab"
+                aria-selected="false"
+              >
+                {fl.isImg
+                  ? <img src={fl.src} alt="" width="14" height="10" />
+                  : <span>{fl.emoji}</span>
+                }
+                {classroom}
+              </button>
+            );
+          })}
+        </div>
+        <!-- 5-day specials mini grid. Renders with just day letters + a "Day X" hint;
+             JS fills in icons/subjects once the family picks their classroom above. -->
+        <div class="pk-spec-row" id="pk-spec-grid">
+          {dayKeys.map((day, i) => {
+            const letter = specials[day];
+            return (
+              <div class="pk-spec-cell" data-day-index={i}>
+                <div class="pk-spec-d">
+                  <span data-en={dayShortEn[i]} data-es={dayShortEs[i]}>{dayShortEn[i]}</span>
+                </div>
+                <div class="pk-spec-e" data-subject-icon>📅</div>
+                <div class="pk-spec-s">
+                  <span data-en={`Day ${letter}`} data-es={`Día ${letter}`} data-subject-label>Day {letter}</span>
+                </div>
+                <div class="pk-spec-l" data-letter-label>{letter}</div>
+              </div>
+            );
+          })}
+        </div>
+        <!-- Full grid (all 6 classrooms) -->
+        <div class="pk-full-mini">
+          <span data-en="Compare all 6 classrooms · " data-es="Comparar los 6 salones · ">Compare all 6 classrooms · </span>
+          <a href="#pk-full-table-section" id="pk-full-grid-toggle" aria-expanded="false">
+            <span data-en="Open full grid" data-es="Abrir cuadrícula">Open full grid</span>
+          </a>
+        </div>
+        <!-- Full grid table (initially hidden) -->
+        <div id="pk-full-table-section" class="pk-full-table-wrap" hidden aria-hidden="true">
+          <div style="overflow-x: auto; margin-top: 12px;">
+            <table class="pk-full-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  {dayKeys.map((day, i) => (
+                    <th>
+                      <span data-en={dayAbbrevEn[i]} data-es={dayAbbrevEs[i]}>{dayAbbrevEn[i]}</span>
+                      <br /><small>Day {specials[day]}</small>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {config.classrooms.map(classroom => (
+                  <tr>
+                    <td class="pk-ft-room">{classroom}</td>
+                    {dayKeys.map(day => {
+                      const letter = specials[day];
+                      const subject = getSpecialForDay(classroom, letter);
+                      const icon = getSubjectIcon(subject);
+                      const trans = getSubjectTranslation(subject);
+                      return (
+                        <td class="pk-ft-cell">
+                          <span style="font-size: 1rem;">{icon}</span>
+                          <br />
+                          <small data-en={subject} data-es={trans}>{subject}</small>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- WELCOME -->
+    <details class="pk-card pk-welcome">
+      <summary class="pk-card-head">
+        <div class="pk-card-icon">👋</div>
+        <div class="pk-card-meta">
+          <h3 class="pk-card-title">
+            <span data-en="From the Teacher" data-es="De la Maestra">From the Teacher</span>
+          </h3>
+          <div class="pk-card-peek">
+            <span
+              data-en={weekData.welcome.en.replace(/<[^>]+>/g, '').slice(0, 80)}
+              data-es={weekData.welcome.es.replace(/<[^>]+>/g, '').slice(0, 80)}
+            >
+              {weekData.welcome.en.replace(/<[^>]+>/g, '').slice(0, 80)}
+            </span>
+          </div>
+        </div>
+        <div class="pk-card-trail">
+          <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </summary>
+      <div class="pk-card-body pk-prose">
+        <div data-lang-en set:html={`<p>${textToHTML(weekData.welcome.en)}</p>`} />
+        <div data-lang-es style="display:none" set:html={`<p>${textToHTML(weekData.welcome.es)}</p>`} />
+      </div>
+    </details>
+
+    <!-- MATH -->
+    <details class="pk-card pk-math">
+      <summary class="pk-card-head">
+        <div class="pk-card-icon">🔢</div>
+        <div class="pk-card-meta">
+          <h3 class="pk-card-title">
+            <span data-en="Math" data-es="Matemáticas">Math</span>
+          </h3>
+          <div class="pk-card-peek">
+            <span
+              data-en={weekData.math.en.replace(/<[^>]+>/g, '').slice(0, 80)}
+              data-es={weekData.math.es.replace(/<[^>]+>/g, '').slice(0, 80)}
+            >
+              {weekData.math.en.replace(/<[^>]+>/g, '').slice(0, 80)}
+            </span>
+          </div>
+        </div>
+        <div class="pk-card-trail">
+          <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </summary>
+      <div class="pk-card-body pk-prose">
+        <div data-lang-en set:html={`<p>${textToHTML(weekData.math.en)}</p>`} />
+        <div data-lang-es style="display:none" set:html={`<p>${textToHTML(weekData.math.es)}</p>`} />
+      </div>
+    </details>
+
+    <!-- LITERACY -->
+    <details class="pk-card pk-lit">
+      <summary class="pk-card-head">
+        <div class="pk-card-icon">📖</div>
+        <div class="pk-card-meta">
+          <h3 class="pk-card-title">
+            <span data-en="Literacy" data-es="Lectura">Literacy</span>
+          </h3>
+          <div class="pk-card-peek">
+            <span
+              data-en={weekData.literacy.en.replace(/<[^>]+>/g, '').slice(0, 80)}
+              data-es={weekData.literacy.es.replace(/<[^>]+>/g, '').slice(0, 80)}
+            >
+              {weekData.literacy.en.replace(/<[^>]+>/g, '').slice(0, 80)}
+            </span>
+          </div>
+        </div>
+        <div class="pk-card-trail">
+          <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </summary>
+      <div class="pk-card-body pk-prose">
+        <div data-lang-en set:html={`<p>${textToHTML(weekData.literacy.en)}</p>`} />
+        <div data-lang-es style="display:none" set:html={`<p>${textToHTML(weekData.literacy.es)}</p>`} />
+      </div>
+    </details>
+
+    <!-- ASK YOUR CHILD -->
+    {hasAsk && (
+      <details class="pk-card pk-ask">
+        <summary class="pk-card-head">
+          <div class="pk-card-icon">💬</div>
+          <div class="pk-card-meta">
+            <h3 class="pk-card-title">
+              <span data-en="Ask Your Child" data-es="Pregúntale">Ask Your Child</span>
+            </h3>
+            <div class="pk-card-peek">
+              <span
+                data-en={`${askCount} conversation starters for tonight`}
+                data-es={`${askCount} preguntas para esta noche`}
+              >
+                {askCount} conversation starters for tonight
+              </span>
+            </div>
+          </div>
+          <div class="pk-card-trail">
+            <span class="pk-card-badge">{askCount}</span>
+            <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </summary>
+        <div class="pk-card-body">
+          <ul class="pk-ask-bubbles">
+            {weekData.askYourChild.map((item: any) => (
+              <li data-en={item.en} data-es={item.es}>{item.en}</li>
+            ))}
+          </ul>
+        </div>
+      </details>
+    )}
+
+    <!-- VOCABULARY -->
+    {hasVocab && (
+      <details class="pk-card pk-vocab">
+        <summary class="pk-card-head">
+          <div class="pk-card-icon">📝</div>
+          <div class="pk-card-meta">
+            <h3 class="pk-card-title">
+              <span data-en="Words of the Week" data-es="Palabras">Words of the Week</span>
+            </h3>
+            <div class="pk-card-peek">
+              <span
+                data-en={`${vocabCount} words · tap to flip EN ⇄ ES`}
+                data-es={`${vocabCount} palabras · toca para girar`}
+              >
+                {vocabCount} words · tap to flip EN ⇄ ES
+              </span>
+            </div>
+          </div>
+          <div class="pk-card-trail">
+            <span class="pk-card-badge">{vocabCount}</span>
+            <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </summary>
+        <div class="pk-card-body">
+          {isVocabGrouped ? (
+            (weekData.vocabulary.en as any[]).map((enGroup: any, gi: number) => {
+              const esGroup = (weekData.vocabulary.es as any[])[gi];
+              const frontLang = enGroup.frontLang || esGroup?.frontLang;
+              // front face: ES if frontLang='es', else EN
+              const frontGroup = frontLang === 'es' ? esGroup : enGroup;
+              const backGroup = frontLang === 'es' ? enGroup : esGroup;
+              return (
+                <div class="pk-vocab-group">
+                  <div class="pk-vg-label">
+                    <span data-en={enGroup.label} data-es={esGroup?.label || enGroup.label}>{enGroup.label}</span>
+                  </div>
+                  <div class="pk-vg-pills">
+                    {frontGroup.words.map((word: string, wi: number) => (
+                      <span
+                        class="pk-vp"
+                        data-en-word={frontLang === 'es' ? backGroup?.words?.[wi] || word : word}
+                        data-es-word={frontLang === 'es' ? word : backGroup?.words?.[wi] || word}
+                        data-front-lang={frontLang || ''}
+                      >
+                        {word}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div class="pk-vocab-group">
+              <div class="pk-vg-pills">
+                {(weekData.vocabulary.en as string[]).map((word: string, i: number) => (
+                  <span
+                    class="pk-vp"
+                    data-en-word={word}
+                    data-es-word={(weekData.vocabulary.es as string[])[i] || word}
+                    data-front-lang=""
+                  >
+                    {word}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </details>
+    )}
+
+    <!-- BOOKS -->
+    {hasBooks && (
+      <details class="pk-card pk-books">
+        <summary class="pk-card-head">
+          <div class="pk-card-icon">📚</div>
+          <div class="pk-card-meta">
+            <h3 class="pk-card-title">
+              <span data-en="Books &amp; Read-Alouds" data-es="Libros y Lectura">Books &amp; Read-Alouds</span>
+            </h3>
+            <div class="pk-card-peek">
+              <span
+                data-en={`${weekData.books.length} book${weekData.books.length !== 1 ? 's' : ''} this week`}
+                data-es={`${weekData.books.length} libro${weekData.books.length !== 1 ? 's' : ''} esta semana`}
+              >
+                {weekData.books.length} book{weekData.books.length !== 1 ? 's' : ''} this week
+              </span>
+            </div>
+          </div>
+          <div class="pk-card-trail">
+            <span class="pk-card-badge">{weekData.books.length}</span>
+            <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </summary>
+        <div class="pk-card-body">
+          <div class="pk-books-list">
+            {weekData.books.map((book: any) => (
+              <div class="pk-book-card">
+                <span class="pk-book-ico">📕</span>
+                <div>
+                  <div class="pk-book-title" data-en={book.title.en} data-es={book.title.es}>{book.title.en}</div>
+                  <div class="pk-book-author" data-en={`by ${book.author}`} data-es={`por ${book.author}`}>by {book.author}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </details>
+    )}
+
+    <!-- ROARS -->
+    {hasRoars && (
+      <details class="pk-card pk-roars" open>
+        <summary class="pk-card-head">
+          <div class="pk-card-icon">🐯</div>
+          <div class="pk-card-meta">
+            <h3 class="pk-card-title">ROARS</h3>
+            <div class="pk-card-peek">
+              <span
+                data-en={`${roarsCount} shout-out${roarsCount !== 1 ? 's' : ''} this week`}
+                data-es={`${roarsCount} reconocimiento${roarsCount !== 1 ? 's' : ''}`}
+              >
+                {roarsCount} shout-out{roarsCount !== 1 ? 's' : ''} this week
+              </span>
+            </div>
+          </div>
+          <div class="pk-card-trail">
+            <span class="pk-card-badge">★ {roarsCount}</span>
+            <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </summary>
+        <div class="pk-card-body">
+          <p class="pk-roars-line">
+            <span data-en="Congratulations to this week's character stars!" data-es="¡Felicitaciones a las estrellas de la semana!">
+              Congratulations to this week's character stars!
+            </span>
+          </p>
+          <div class="pk-roars-pocket">
+            {config.classrooms.map(classroom => {
+              const student = weekData.roars?.[classroom as keyof typeof weekData.roars];
+              if (!student) return null;
+              const fl = getFlag(classroom);
+              return (
+                <div class="pk-rp">
+                  <div class="pk-rp-ribbon">
+                    {fl.isImg
+                      ? <img src={fl.src} alt={classroom} width="18" height="14" />
+                      : <span>{fl.emoji}</span>
+                    }
+                  </div>
+                  <div class="pk-rp-nm">{student}</div>
+                  <div class="pk-rp-rm">{classroom}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </details>
+    )}
+
+  </div><!-- /pk-stack -->
+
+  <!-- ===== FOOTER ===== -->
+  <div class="pk-foot">
+    <div class="pk-foot-dots">
+      {allWeeks.map((w, i) => (
+        <div class={`pk-foot-dot${w === currentDate ? ' pk-foot-dot-current' : ''}`}></div>
+      ))}
+    </div>
+    <p class="pk-foot-name display">Bancroft 1st Grade Weekly</p>
+    <p class="pk-foot-issue">
+      <span
+        data-en={`Issue ${issueNumber} · ${formatDate(date, 'en')}`}
+        data-es={`Edición ${issueNumber} · ${formatDate(date, 'es')}`}
+      >
+        Issue {issueNumber} · {formatDate(date, 'en')}
+      </span>
+    </p>
+  </div>
+
+</div><!-- /pk-app -->
+
+<style is:global>
+  /* ========================================================
+     POCKET THEME (Theme C) — all rules scoped to html[data-theme="C"]
+     Class prefix: .pk-
+     ======================================================== */
+
+  html[data-theme="C"] body {
+    background: #f6f1e6;
+    color: #1a1a2e;
+    font-family: "DM Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 600px) {
+    html[data-theme="C"] body {
+      padding: 24px 12px;
+    }
+  }
+
+  html[data-theme="C"] .display {
+    font-family: "Fraunces", Georgia, serif;
+    font-optical-sizing: auto;
+  }
+
+  /* ===== APP SHELL ===== */
+  html[data-theme="C"] .pk-app {
+    max-width: 430px;
+    margin: 0 auto;
+    background: #fefcf8;
+    min-height: 100vh;
+    box-shadow: 0 14px 32px rgba(20,16,8,.08), 0 4px 10px rgba(20,16,8,.04);
+    padding: 0 0 24px;
+    position: relative;
+  }
+
+  @media (min-width: 600px) {
+    html[data-theme="C"] .pk-app {
+      border-radius: 36px;
+      overflow: hidden;
+      min-height: auto;
+      padding-bottom: 32px;
+    }
+  }
+
+  /* ===== STICKY HEADER ===== */
+  html[data-theme="C"] .pk-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: rgba(254, 252, 248, 0.92);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    padding: 12px 16px 8px;
+    border-bottom: 1px solid #f0ede6;
+  }
+
+  html[data-theme="C"] .pk-sticky-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  html[data-theme="C"] .pk-seal {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #fef9ee;
+    border: 2px solid #fefcf8;
+    box-shadow: 0 1px 2px rgba(20,16,8,.05);
+    flex-shrink: 0;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+
+  html[data-theme="C"] .pk-seal img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+  }
+
+  html[data-theme="C"] .pk-sticky-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  html[data-theme="C"] .pk-ttl {
+    font-size: 1.02rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+
+  html[data-theme="C"] .pk-sub {
+    font-size: 0.7rem;
+    color: #5e5e80;
+    font-weight: 600;
+    margin-top: 1px;
+  }
+
+  /* Language pill */
+  html[data-theme="C"] .pk-lang-pill {
+    display: inline-flex;
+    background: #f6f1e6;
+    border: 1px solid #e8e5dd;
+    border-radius: 100px;
+    padding: 2px;
+  }
+
+  html[data-theme="C"] .pk-lang-pill .lang-btn,
+  html[data-theme="C"] .lang-btn[data-set-lang] {
+    border: 0;
+    background: transparent;
+    padding: 5px 10px;
+    font: 700 0.7rem "DM Sans", system-ui, sans-serif;
+    color: #5e5e80;
+    cursor: pointer;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  html[data-theme="C"] .pk-lang-pill .lang-btn.active,
+  html[data-theme="C"] .pk-lang-pill .lang-btn[data-set-lang].pk-active {
+    background: #1a1a2e;
+    color: #fef9ee;
+  }
+
+  /* Progress strip */
+  html[data-theme="C"] .pk-prog-strip {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #5e5e80;
+  }
+
+  html[data-theme="C"] .pk-prog-label strong {
+    color: #1a1a2e;
+    font-weight: 700;
+  }
+
+  html[data-theme="C"] .pk-prog-track {
+    flex: 1;
+    height: 3px;
+    background: #f0ede6;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  html[data-theme="C"] .pk-prog-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2d8a4e 0%, #2563a8 50%, #6d28d9 100%);
+    border-radius: 100px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ===== ADD TO HOME SCREEN ===== */
+  html[data-theme="C"] .pk-ath {
+    margin: 12px 16px 0;
+    padding: 10px 12px;
+    background: #ffffff;
+    border: 1px solid #e8e5dd;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.78rem;
+    box-shadow: 0 1px 2px rgba(20,16,8,.05);
+  }
+
+  html[data-theme="C"] .pk-ath.pk-hidden { display: none; }
+
+  html[data-theme="C"] .pk-ath-ico {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #fdf4ff, #fef9ee);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    border: 1px solid #e8e5dd;
+    font-size: 1rem;
+  }
+
+  html[data-theme="C"] .pk-ath-body {
+    flex: 1;
+    line-height: 1.35;
+    color: #5e5e80;
+  }
+
+  html[data-theme="C"] .pk-ath-body strong { color: #1a1a2e; font-weight: 700; }
+
+  html[data-theme="C"] .pk-ath-x {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 0;
+    background: #f6f1e6;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    color: #9090ad;
+    flex-shrink: 0;
+  }
+
+  /* ===== HERO TODAY ===== */
+  html[data-theme="C"] .pk-hero {
+    margin: 14px 16px 0;
+    padding: 18px 18px 16px;
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at top right, rgba(240, 214, 138, 0.4), transparent 70%),
+      linear-gradient(135deg, #fef9ee 0%, #fff8e7 100%);
+    border: 1px solid #f0d68a;
+    position: relative;
+  }
+
+  html[data-theme="C"] .pk-hero-kicker {
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #b8860b;
+    margin-bottom: 4px;
+  }
+
+  html[data-theme="C"] .pk-hero-date {
+    font-size: 1.7rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    margin-bottom: 3px;
+  }
+
+  html[data-theme="C"] .pk-hero-date em {
+    font-style: italic;
+    font-weight: 600;
+    color: #b8860b;
+  }
+
+  html[data-theme="C"] .pk-hero-weather {
+    font-size: 0.82rem;
+    color: #5e5e80;
+    margin-bottom: 14px;
+  }
+
+  html[data-theme="C"] .pk-hero-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  html[data-theme="C"] .pk-hero-chip {
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(240, 214, 138, 0.5);
+    backdrop-filter: blur(8px);
+    border-radius: 14px;
+    padding: 9px 11px;
+  }
+
+  html[data-theme="C"] .pk-chip-lbl {
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #9090ad;
+  }
+
+  html[data-theme="C"] .pk-chip-val {
+    font-size: 0.86rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  html[data-theme="C"] .pk-chip-e { font-size: 1rem; }
+
+  /* ===== STATUS BAR ===== */
+  html[data-theme="C"] .pk-status-bar {
+    margin: 12px 16px 0;
+    padding: 11px 14px;
+    background: #b91c1c;
+    color: #fff;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 14px rgba(185, 28, 28, 0.18);
+    border: 0;
+    width: calc(100% - 32px);
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+  }
+
+  html[data-theme="C"] .pk-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6);
+    animation: pk-pulse 2s ease-out infinite;
+  }
+
+  @keyframes pk-pulse {
+    0%   { box-shadow: 0 0 0 0   rgba(255, 255, 255, 0.55); }
+    70%  { box-shadow: 0 0 0 9px rgba(255, 255, 255, 0); }
+    100% { box-shadow: 0 0 0 0   rgba(255, 255, 255, 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html[data-theme="C"] .pk-pulse { animation: none; }
+  }
+
+  html[data-theme="C"] .pk-status-txt {
+    flex: 1;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  html[data-theme="C"] .pk-status-chev { opacity: 0.7; }
+
+  /* ===== QUICK LINKS ===== */
+  html[data-theme="C"] .pk-ql-row {
+    margin: 14px 16px 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  html[data-theme="C"] .pk-ql {
+    background: #ffffff;
+    border: 1px solid #e8e5dd;
+    border-radius: 14px;
+    padding: 10px 4px;
+    text-align: center;
+    text-decoration: none;
+    color: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.66rem;
+    font-weight: 600;
+    line-height: 1.15;
+    transition: box-shadow 0.15s;
+  }
+
+  html[data-theme="C"] .pk-ql:hover {
+    box-shadow: 0 4px 12px rgba(20,16,8,.06);
+  }
+
+  html[data-theme="C"] .pk-ql-e { font-size: 1.15rem; }
+
+  /* ===== CARD STACK ===== */
+  html[data-theme="C"] .pk-stack {
+    padding: 14px 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  html[data-theme="C"] .pk-card {
+    background: #ffffff;
+    border: 1px solid #e8e5dd;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+  }
+
+  html[data-theme="C"] .pk-card:hover {
+    box-shadow: 0 4px 12px rgba(20,16,8,.06), 0 2px 4px rgba(20,16,8,.03);
+  }
+
+  /* Card head (the <summary>) */
+  html[data-theme="C"] .pk-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+  }
+
+  html[data-theme="C"] .pk-card-head::-webkit-details-marker { display: none; }
+
+  html[data-theme="C"] .pk-card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+  }
+
+  html[data-theme="C"] .pk-card-meta {
+    flex: 1;
+    min-width: 0;
+  }
+
+  html[data-theme="C"] .pk-card-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.04rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  html[data-theme="C"] .pk-card-peek {
+    font-size: 0.76rem;
+    color: #5e5e80;
+    margin-top: 2px;
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  html[data-theme="C"] .pk-card-trail {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  html[data-theme="C"] .pk-card-badge {
+    font-size: 0.62rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: #f6f1e6;
+    color: #5e5e80;
+  }
+
+  html[data-theme="C"] .pk-card-chev {
+    color: #9090ad;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  html[data-theme="C"] .pk-card[open] .pk-card-chev {
+    transform: rotate(180deg);
+  }
+
+  html[data-theme="C"] .pk-card-body {
+    padding: 0 16px 16px;
+    border-top: 1px solid #f0ede6;
+    display: none;
+  }
+
+  html[data-theme="C"] .pk-card[open] .pk-card-body {
+    display: block;
+  }
+
+  html[data-theme="C"] .pk-card-body > *:first-child {
+    margin-top: 14px;
+  }
+
+  /* ===== Per-card accent colors ===== */
+  html[data-theme="C"] .pk-action .pk-card-icon  { background: #fef2f2; color: #b91c1c; }
+  html[data-theme="C"] .pk-action .pk-card-title { color: #b91c1c; }
+  html[data-theme="C"] .pk-action .pk-card-badge { background: #b91c1c; color: #fff; }
+
+  html[data-theme="C"] .pk-specials .pk-card-icon  { background: #f3f0fa; color: #6d28d9; }
+  html[data-theme="C"] .pk-specials .pk-card-title { color: #6d28d9; }
+
+  html[data-theme="C"] .pk-welcome .pk-card-icon  { background: #fef9ee; color: #b8860b; }
+  html[data-theme="C"] .pk-welcome .pk-card-title { color: #b8860b; }
+
+  html[data-theme="C"] .pk-math .pk-card-icon  { background: #f0faf0; color: #2d8a4e; }
+  html[data-theme="C"] .pk-math .pk-card-title { color: #2d8a4e; }
+
+  html[data-theme="C"] .pk-lit .pk-card-icon  { background: #eef4fd; color: #2563a8; }
+  html[data-theme="C"] .pk-lit .pk-card-title { color: #2563a8; }
+
+  html[data-theme="C"] .pk-ask .pk-card-icon  { background: #ecfdf5; color: #047857; }
+  html[data-theme="C"] .pk-ask .pk-card-title { color: #047857; }
+
+  html[data-theme="C"] .pk-vocab .pk-card-icon  { background: #f5f3ff; color: #7c3aed; }
+  html[data-theme="C"] .pk-vocab .pk-card-title { color: #7c3aed; }
+
+  html[data-theme="C"] .pk-roars .pk-card-icon  { background: #fff5ed; color: #c2410c; }
+  html[data-theme="C"] .pk-roars .pk-card-title { color: #c2410c; }
+
+  html[data-theme="C"] .pk-books .pk-card-icon  { background: #eef4fd; color: #2563a8; }
+  html[data-theme="C"] .pk-books .pk-card-title { color: #2563a8; }
+
+  /* ===== REMINDERS ===== */
+  html[data-theme="C"] .pk-rem-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  html[data-theme="C"] .pk-rem-list li {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #e8e5dd;
+  }
+
+  html[data-theme="C"] .pk-rem-list li:last-child { border-bottom: 0; }
+
+  html[data-theme="C"] .pk-rem-badge {
+    width: 44px;
+    flex-shrink: 0;
+    background: #b91c1c;
+    color: #fff;
+    border-radius: 10px;
+    text-align: center;
+    padding: 5px 4px;
+  }
+
+  html[data-theme="C"] .pk-rem-now .pk-rem-badge {
+    box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.18);
+  }
+
+  html[data-theme="C"] .pk-rem-m {
+    font-size: 0.56rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+    text-transform: uppercase;
+  }
+
+  html[data-theme="C"] .pk-rem-d {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  html[data-theme="C"] .pk-rem-text {
+    font-size: 0.86rem;
+    line-height: 1.45;
+    flex: 1;
+  }
+
+  html[data-theme="C"] .pk-rem-text b { font-weight: 700; }
+
+  /* ===== SPECIALS ===== */
+  html[data-theme="C"] .pk-room-tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  html[data-theme="C"] .pk-room-tabs::-webkit-scrollbar { display: none; }
+
+  html[data-theme="C"] .pk-room-tab {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: #f6f1e6;
+    border: 1px solid #e8e5dd;
+    border-radius: 100px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #5e5e80;
+    cursor: pointer;
+    white-space: nowrap;
+    min-height: 30px;
+    font-family: "DM Sans", system-ui, sans-serif;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  html[data-theme="C"] .pk-room-tab img { border-radius: 2px; }
+
+  html[data-theme="C"] .pk-room-tab.pk-active {
+    background: #6d28d9;
+    color: #fff;
+    border-color: #6d28d9;
+  }
+
+  html[data-theme="C"] .pk-spec-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    margin-bottom: 12px;
+  }
+
+  html[data-theme="C"] .pk-spec-cell {
+    background: #f3f0fa;
+    border: 1px solid #e8e5dd;
+    border-radius: 10px;
+    text-align: center;
+    padding: 7px 2px;
+    position: relative;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  html[data-theme="C"] .pk-spec-cell.pk-today {
+    background: #6d28d9;
+    color: #fff;
+    border-color: #6d28d9;
+  }
+
+  html[data-theme="C"] .pk-spec-d {
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    opacity: 0.75;
+    text-transform: uppercase;
+  }
+
+  html[data-theme="C"] .pk-spec-e {
+    font-size: 1.1rem;
+    margin: 2px 0 1px;
+  }
+
+  html[data-theme="C"] .pk-spec-s {
+    font-size: 0.62rem;
+    font-weight: 600;
+  }
+
+  html[data-theme="C"] .pk-spec-l {
+    position: absolute;
+    top: 2px;
+    right: 3px;
+    font-size: 0.5rem;
+    font-weight: 800;
+    opacity: 0.55;
+  }
+
+  html[data-theme="C"] .pk-full-mini {
+    background: #f3f0fa;
+    border-radius: 10px;
+    padding: 8px;
+    font-size: 0.7rem;
+    color: #5e5e80;
+    text-align: center;
+  }
+
+  html[data-theme="C"] .pk-full-mini a {
+    color: #6d28d9;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  html[data-theme="C"] .pk-full-table-wrap { margin-top: 0; }
+
+  html[data-theme="C"] .pk-full-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.78rem;
+  }
+
+  html[data-theme="C"] .pk-full-table th {
+    padding: 8px 6px;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #5e5e80;
+    border-bottom: 2px solid #e8e5dd;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  html[data-theme="C"] .pk-full-table th:first-child { text-align: left; }
+  html[data-theme="C"] .pk-full-table th small { font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+  html[data-theme="C"] .pk-ft-room {
+    padding: 8px 6px;
+    font-weight: 700;
+    white-space: nowrap;
+    border-bottom: 1px solid #f0ede6;
+    color: #1a1a2e;
+    font-size: 0.76rem;
+  }
+
+  html[data-theme="C"] .pk-ft-cell {
+    text-align: center;
+    padding: 8px 6px;
+    border-bottom: 1px solid #f0ede6;
+    line-height: 1.3;
+  }
+
+  html[data-theme="C"] .pk-ft-cell small {
+    font-size: 0.68rem;
+    color: #5e5e80;
+  }
+
+  /* ===== PROSE CONTENT ===== */
+  html[data-theme="C"] .pk-prose p {
+    margin: 0 0 10px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  html[data-theme="C"] .pk-prose p:last-child { margin-bottom: 0; }
+
+  html[data-theme="C"] .pk-prose b,
+  html[data-theme="C"] .pk-prose strong { font-weight: 700; }
+
+  html[data-theme="C"] .pk-prose ul {
+    padding-left: 16px;
+    font-size: 0.84rem;
+    line-height: 1.55;
+  }
+
+  html[data-theme="C"] .pk-prose li { margin-bottom: 4px; }
+
+  /* ===== ASK BUBBLES ===== */
+  html[data-theme="C"] .pk-ask-bubbles {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  html[data-theme="C"] .pk-ask-bubbles li {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 14px;
+    padding: 10px 12px 10px 38px;
+    position: relative;
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+
+  html[data-theme="C"] .pk-ask-bubbles li::before {
+    content: "💬";
+    position: absolute;
+    left: 10px;
+    top: 9px;
+    font-size: 1rem;
+  }
+
+  /* ===== VOCAB PILLS ===== */
+  html[data-theme="C"] .pk-vocab-group { margin-bottom: 12px; }
+  html[data-theme="C"] .pk-vocab-group:last-child { margin-bottom: 0; }
+
+  html[data-theme="C"] .pk-vg-label {
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #7c3aed;
+    margin-bottom: 6px;
+  }
+
+  html[data-theme="C"] .pk-vg-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  html[data-theme="C"] .pk-vp {
+    background: #f5f3ff;
+    border: 1.5px solid #ddd6fe;
+    color: #7c3aed;
+    padding: 5px 10px;
+    border-radius: 100px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.18s ease;
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  html[data-theme="C"] .pk-vp.pk-flipped {
+    background: #7c3aed;
+    color: #fff;
+    border-color: #7c3aed;
+  }
+
+  /* ===== BOOKS ===== */
+  html[data-theme="C"] .pk-books-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  html[data-theme="C"] .pk-book-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #e8e5dd;
+  }
+
+  html[data-theme="C"] .pk-book-card:last-child { border-bottom: 0; }
+  html[data-theme="C"] .pk-book-ico { font-size: 1.2rem; flex-shrink: 0; }
+
+  html[data-theme="C"] .pk-book-title {
+    font-weight: 700;
+    font-size: 0.88rem;
+  }
+
+  html[data-theme="C"] .pk-book-author {
+    font-size: 0.78rem;
+    color: #5e5e80;
+    margin-top: 2px;
+  }
+
+  /* ===== ROARS ===== */
+  html[data-theme="C"] .pk-roars-line {
+    text-align: center;
+    font: italic 500 0.84rem/1.45 "Fraunces", Georgia, serif;
+    color: #5e5e80;
+    margin: 0 0 12px;
+  }
+
+  html[data-theme="C"] .pk-roars-pocket {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  html[data-theme="C"] .pk-rp {
+    background: #fff5ed;
+    border: 1px solid #fed7aa;
+    border-radius: 14px;
+    padding: 10px 6px 9px;
+    text-align: center;
+    position: relative;
+  }
+
+  html[data-theme="C"] .pk-rp-ribbon {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1.5px solid #fed7aa;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 5px;
+  }
+
+  html[data-theme="C"] .pk-rp-ribbon img {
+    border-radius: 2px;
+    object-fit: cover;
+  }
+
+  html[data-theme="C"] .pk-rp-nm {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: #1a1a2e;
+  }
+
+  html[data-theme="C"] .pk-rp-rm {
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #c2410c;
+    margin-top: 3px;
+  }
+
+  /* ===== FOOTER ===== */
+  html[data-theme="C"] .pk-foot {
+    margin: 24px 16px 0;
+    padding: 14px 0 0;
+    border-top: 1px dashed #e8e5dd;
+    text-align: center;
+    font-size: 0.7rem;
+    color: #9090ad;
+  }
+
+  html[data-theme="C"] .pk-foot-dots {
+    display: inline-flex;
+    gap: 5px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 200px;
+  }
+
+  html[data-theme="C"] .pk-foot-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #e8e5dd;
+  }
+
+  html[data-theme="C"] .pk-foot-dot-current {
+    background: #6d28d9;
+    width: 16px;
+    border-radius: 100px;
+  }
+
+  html[data-theme="C"] .pk-foot-name {
+    font-weight: 700;
+    color: #1a1a2e;
+    font-size: 0.88rem;
+    margin: 0 0 4px;
+  }
+
+  html[data-theme="C"] .pk-foot-issue { margin: 0; }
+
+  /* ===== SR-ONLY ===== */
+  html[data-theme="C"] .pk-sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+  }
+</style>
+
+<script define:vars={{
+  weekDate: date,
+  calendarData: calendar,
+  configData: config,
+  specialsData: specials,
+  dayShortEnData: dayShortEn,
+  dayShortEsData: dayShortEs,
+  dayAbbrevEnData: dayAbbrevEn,
+  dayAbbrevEsData: dayAbbrevEs,
+  subjectShortEnData: subjectShortEn,
+  subjectShortEsData: subjectShortEs,
+  remindersData: sortedReminders,
+}}>
+(function pkInit() {
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  const parseDate = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const fmtISO = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
+  // ── Live progress bar ──────────────────────────────────────────────────
+  (function updateProgress() {
+    try {
+      const noSchool = new Set();
+      (calendarData.dates || []).forEach(d => noSchool.add(d.date));
+      (calendarData.breaks || []).forEach(br => {
+        const d = parseDate(br.start), end = parseDate(br.end);
+        while (d <= end) { noSchool.add(fmtISO(d)); d.setDate(d.getDate()+1); }
+      });
+      const countWD = (start, end) => {
+        let n = 0, d = new Date(start);
+        while (d <= end) { const dow = d.getDay(); if (dow>=1&&dow<=5&&!noSchool.has(fmtISO(d))) n++; d.setDate(d.getDate()+1); }
+        return n;
+      };
+      const first = parseDate(calendarData.firstDay);
+      const last  = parseDate(calendarData.lastDay);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const eff   = today > last ? last : today < first ? first : today;
+      const total   = countWD(first, last);
+      const elapsed = countWD(first, eff);
+      const remaining = Math.max(0, total - elapsed);
+      const pct = Math.min(100, Math.round(elapsed / total * 100));
+      const elEl = document.getElementById('pk-days-elapsed');
+      const remEl = document.getElementById('pk-days-remaining');
+      const fillEl = document.getElementById('pk-prog-fill');
+      if (elEl)  elEl.textContent = String(elapsed);
+      if (remEl) remEl.textContent = String(remaining);
+      if (fillEl) fillEl.style.width = pct + '%';
+    } catch(e) {}
+  })();
+
+  // ── ATH dismiss ──────────────────────────────────────────────────────
+  (function initATH() {
+    const ath = document.getElementById('pk-ath');
+    if (!ath) return;
+    try {
+      if (localStorage.getItem('nl-ath-dismissed') === '1') { ath.classList.add('pk-hidden'); return; }
+    } catch(e) {}
+    const btn = document.getElementById('pk-ath-dismiss');
+    if (btn) btn.addEventListener('click', () => {
+      ath.classList.add('pk-hidden');
+      try { localStorage.setItem('nl-ath-dismissed', '1'); } catch(e) {}
+    });
+  })();
+
+  // ── Lang pill active state (mirrors setLang from layout) ────────────
+  function updateLangPill() {
+    const lang = document.documentElement.getAttribute('data-lang') || 'en';
+    document.querySelectorAll('.pk-lang-pill .lang-btn').forEach(btn => {
+      btn.classList.toggle('pk-active', btn.dataset.setLang === lang);
+    });
+  }
+  new MutationObserver(updateLangPill).observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
+  updateLangPill();
+
+  // ── Hero Today (live date) ──────────────────────────────────────────
+  (function initHero() {
+    try {
+      const weekStart = parseDate(weekDate); // Monday
+      const weekEnd   = new Date(weekStart); weekEnd.setDate(weekEnd.getDate()+4); // Friday
+      const today     = new Date(); today.setHours(0,0,0,0);
+      if (today < weekStart || today > weekEnd) return; // not this week — keep server SSR
+
+      const dayNames = {
+        en: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+        es: ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+      };
+      const dow = today.getDay();
+      const monthEn = today.toLocaleDateString('en-US', { month: 'short' });
+      const monthEs = today.toLocaleDateString('es-US', { month: 'short' });
+      const dayNum   = today.getDate();
+
+      // Kicker
+      const kickerEl = document.getElementById('pk-hero-kicker-text');
+      if (kickerEl) {
+        kickerEl.setAttribute('data-en', `Today · ${dayNames.en[dow]}`);
+        kickerEl.setAttribute('data-es', `Hoy · ${dayNames.es[dow]}`);
+        kickerEl.textContent = `Today · ${dayNames.en[dow]}`;
+      }
+
+      // Month/Day
+      const monthEl = document.getElementById('pk-hero-month');
+      const dayEl   = document.getElementById('pk-hero-day');
+      if (monthEl) { monthEl.textContent = monthEn; monthEl.dataset.en = monthEn; monthEl.dataset.es = monthEs; }
+      if (dayEl)   { dayEl.textContent = String(dayNum); }
+
+      // Today's special — only show the subject if the family has explicitly
+      // picked their classroom. Otherwise leave the neutral "Day F" SSR fallback
+      // so we don't suggest some other classroom's special is theirs.
+      const dayKeys = ['monday','tuesday','wednesday','thursday','friday'];
+      const dayIdx  = dow >= 1 && dow <= 5 ? dow - 1 : 0;
+      const todayDayKey = dayKeys[dayIdx];
+      const todayLetter = specialsData[todayDayKey] || specialsData['monday'];
+
+      let classroom = null;
+      try { classroom = localStorage.getItem('nl-classroom'); } catch(e) {}
+
+      const specialEl = document.getElementById('pk-today-special');
+      if (specialEl) {
+        if (classroom && configData.rotations[classroom]) {
+          const subject = configData.rotations[classroom][todayLetter] || '';
+          const icon    = (configData.subjectIcons || {})[subject] || '📅';
+          const subEn   = subject;
+          const subEs   = (configData.subjectTranslations || {})[subject] || subject;
+          specialEl.innerHTML = `<span class="pk-chip-e">${icon}</span><span data-en="${subEn} · ${todayLetter}" data-es="${subEs} · ${todayLetter}">${subEn} · ${todayLetter}</span>`;
+        } else {
+          // Refresh the neutral fallback in case the day-letter changed (e.g., week boundary)
+          specialEl.innerHTML = `<span class="pk-chip-e">📅</span><span data-en="Day ${todayLetter}" data-es="Día ${todayLetter}">Day ${todayLetter}</span>`;
+        }
+      }
+
+      // Up Next — recompute live: earliest reminder dated strictly after today.
+      try {
+        const todayISO = today.toISOString().slice(0, 10);
+        const future = (remindersData || []).filter(r => r.date > todayISO);
+        const next = future[0];
+        if (next) {
+          const upNextEl = document.getElementById('pk-up-next');
+          if (upNextEl) {
+            const d = parseDate(next.date);
+            const monNext = d.toLocaleDateString('en-US', { month: 'short' });
+            const monNextEs = d.toLocaleDateString('es-US', { month: 'short' });
+            const dNum = d.getDate();
+            // Extract a short label from <b>...</b> in the reminder body
+            const extractLabel = (html, fallback) => {
+              if (!html) return fallback;
+              const re = new RegExp('<' + 'b>' + '([^<]{1,120})' + '<\\/b>');
+              const m = html.match(re);
+              const raw = m ? m[1] : html.replace(/<[^>]+>/g, '');
+              return raw.split('—')[0].split('·')[0].trim().slice(0, 30);
+            };
+            const labelEn = extractLabel(next.en, next.date);
+            const labelEs = extractLabel(next.es || next.en, labelEn);
+            const valEn = `${labelEn} · ${monNext} ${dNum}`;
+            const valEs = `${labelEs} · ${monNextEs} ${dNum}`;
+            upNextEl.innerHTML = `<span class="pk-chip-e">📌</span><span data-en="${valEn.replace(/"/g, '&quot;')}" data-es="${valEs.replace(/"/g, '&quot;')}">${valEn}</span>`;
+          }
+        }
+      } catch(e) {}
+    } catch(e) {}
+  })();
+
+  // ── Weather ──────────────────────────────────────────────────────────
+  (async function loadWeather() {
+    const weatherEl = document.getElementById('pk-hero-weather');
+    if (!weatherEl) return;
+
+    const weekStart = parseDate(weekDate);
+    const weekEnd   = new Date(weekStart); weekEnd.setDate(weekEnd.getDate()+4);
+    const today     = new Date(); today.setHours(0,0,0,0);
+    if (today < weekStart || today > weekEnd) return;
+
+    const diffDays = Math.abs((today.getTime() - weekStart.getTime()) / 86400000);
+    if (diffDays > 10) return;
+
+    const weatherCodes = {
+      0:'☀️',1:'🌤️',2:'⛅',3:'☁️',
+      45:'🌫️',48:'🌫️',
+      51:'🌦️',53:'🌧️',55:'🌧️',
+      61:'🌧️',63:'🌧️',65:'🌧️',
+      71:'🌨️',73:'🌨️',75:'🌨️',
+      80:'🌦️',81:'🌧️',82:'🌧️',
+      95:'⛈️',96:'⛈️',99:'⛈️',
+    };
+
+    const lat = 38.9283, lon = -77.0365;
+    const todayISO = fmtISO(today);
+    try {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,weathercode&temperature_unit=fahrenheit&timezone=America/New_York&start_date=${todayISO}&end_date=${todayISO}`;
+      const resp = await fetch(url);
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const daily = data.daily;
+      if (!daily?.time?.length) return;
+
+      const high = Math.round(daily.temperature_2m_max[0]);
+      const code = daily.weathercode[0];
+      const wIcon = weatherCodes[code] || '🌡️';
+
+      const lang = document.documentElement.getAttribute('data-lang') || 'en';
+      const dismissalEn = `${wIcon} ${high}°F · Dismissal 3:15 pm`;
+      const dismissalEs = `${wIcon} ${high}°F · Salida 3:15 pm`;
+      weatherEl.setAttribute('data-en', dismissalEn);
+      weatherEl.setAttribute('data-es', dismissalEs);
+      weatherEl.textContent = lang === 'es' ? dismissalEs : dismissalEn;
+    } catch(e) {
+      // fail silently — already shows "Dismissal 3:15 pm" from SSR
+    }
+  })();
+
+  // ── Status bar → scroll to reminders ────────────────────────────────
+  (function initStatusBar() {
+    const bar  = document.getElementById('pk-status-bar');
+    const card = document.getElementById('pk-card-reminders');
+    if (!bar || !card) return;
+    bar.addEventListener('click', () => {
+      card.open = true;
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  })();
+
+  // ── Specials: room tabs + grid update ───────────────────────────────
+  (function initSpecials() {
+    const tabs   = document.querySelectorAll('.pk-room-tab');
+    const grid   = document.getElementById('pk-spec-grid');
+    const badge  = document.getElementById('pk-specials-badge');
+    const peekEl = document.getElementById('pk-specials-peek');
+
+    if (!grid) return;
+
+    const rotations   = configData.rotations;
+    const icons       = configData.subjectIcons;
+    const trans       = configData.subjectTranslations;
+    const lang = () => document.documentElement.getAttribute('data-lang') || 'en';
+
+    function setActiveTab(classroom) {
+      tabs.forEach(t => t.classList.toggle('pk-active', t.dataset.classroom === classroom));
+      if (badge) { badge.textContent = classroom; badge.hidden = false; }
+
+      // Update grid cells
+      const cells = grid.querySelectorAll('.pk-spec-cell');
+      const dayKeys = ['monday','tuesday','wednesday','thursday','friday'];
+      cells.forEach((cell, i) => {
+        const letter  = specialsData[dayKeys[i]];
+        const subject = rotations[classroom]?.[letter] || '';
+        const icon    = icons[subject] || '';
+        const subEn   = subjectShortEnData[subject] || subject;
+        const subEs   = subjectShortEsData[subject] || subject;
+
+        const iconEl  = cell.querySelector('[data-subject-icon]');
+        const lblEl   = cell.querySelector('[data-subject-label]');
+        const letEl   = cell.querySelector('[data-letter-label]');
+        if (iconEl)  iconEl.textContent = icon;
+        if (lblEl)   { lblEl.setAttribute('data-en', subEn); lblEl.setAttribute('data-es', subEs); lblEl.textContent = lang() === 'es' ? subEs : subEn; }
+        if (letEl)   letEl.textContent = letter;
+      });
+
+      // Rebuild peek
+      const peekEn = dayKeys.map((day, i) => {
+        const letter  = specialsData[day];
+        const subject = rotations[classroom]?.[letter] || '';
+        return `${dayAbbrevEnData[i]} ${subjectShortEnData[subject] || subject}`;
+      }).join(' · ');
+      const peekEs = dayKeys.map((day, i) => {
+        const letter  = specialsData[day];
+        const subject = rotations[classroom]?.[letter] || '';
+        return `${dayAbbrevEsData[i]} ${subjectShortEsData[subject] || subject}`;
+      }).join(' · ');
+
+      if (peekEl) {
+        const inner = peekEl.querySelector('[data-en]');
+        if (inner) { inner.setAttribute('data-en', peekEn); inner.setAttribute('data-es', peekEs); inner.textContent = lang() === 'es' ? peekEs : peekEn; }
+      }
+
+      // Highlight today's column
+      const today = new Date();
+      const weekStart = parseDate(weekDate);
+      const weekEnd   = new Date(weekStart); weekEnd.setDate(weekEnd.getDate()+4);
+      today.setHours(0,0,0,0);
+      cells.forEach((cell, i) => {
+        const cellDate = new Date(weekStart); cellDate.setDate(cellDate.getDate()+i);
+        cell.classList.toggle('pk-today', today >= weekStart && today <= weekEnd && cellDate.getTime() === today.getTime());
+      });
+
+      // Pulse grid
+      grid.animate(
+        [{ boxShadow:'0 0 0 0 rgba(109,40,217,0)' },
+         { boxShadow:'0 0 0 6px rgba(109,40,217,0.18)' },
+         { boxShadow:'0 0 0 0 rgba(109,40,217,0)' }],
+        { duration:700, easing:'cubic-bezier(0.16,1,0.3,1)' }
+      );
+
+      try { localStorage.setItem('nl-classroom', classroom); } catch(e) {}
+
+      // Sync hero chip so picking a class anywhere updates the top of the page too.
+      const heroEl = document.getElementById('pk-today-special');
+      if (heroEl) {
+        const today = new Date(); today.setHours(0,0,0,0);
+        const weekStart = parseDate(weekDate);
+        const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate()+4);
+        const dow = today >= weekStart && today <= weekEnd ? today.getDay() : 1; // Mon fallback
+        const dayIdx = dow >= 1 && dow <= 5 ? dow - 1 : 0;
+        const todayLetter = specialsData[dayKeys[dayIdx]] || specialsData['monday'];
+        const subject = (configData.rotations[classroom] || {})[todayLetter] || '';
+        const heroIcon = (configData.subjectIcons || {})[subject] || '📅';
+        const subEn = subject;
+        const subEs = (configData.subjectTranslations || {})[subject] || subject;
+        heroEl.innerHTML = `<span class="pk-chip-e">${heroIcon}</span><span data-en="${subEn} · ${todayLetter}" data-es="${subEs} · ${todayLetter}">${subEn} · ${todayLetter}</span>`;
+      }
+    }
+
+    tabs.forEach(t => {
+      t.addEventListener('click', () => setActiveTab(t.dataset.classroom));
+    });
+
+    // Restore saved classroom — but ONLY if the family has actively picked one
+    // before. Don't pre-select a default (Cartagena isn't necessarily their child's).
+    let saved;
+    try { saved = localStorage.getItem('nl-classroom'); } catch(e) {}
+    if (saved && configData.classrooms.includes(saved)) {
+      setActiveTab(saved);
+    }
+
+    // Full grid toggle
+    const toggleLink = document.getElementById('pk-full-grid-toggle');
+    const fullSection = document.getElementById('pk-full-table-section');
+    if (toggleLink && fullSection) {
+      toggleLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isHidden = fullSection.hasAttribute('hidden');
+        if (isHidden) {
+          fullSection.removeAttribute('hidden');
+          fullSection.removeAttribute('aria-hidden');
+          toggleLink.setAttribute('aria-expanded', 'true');
+          const lEn = document.documentElement.getAttribute('data-lang') === 'es' ? 'Cerrar cuadrícula' : 'Close full grid';
+          toggleLink.querySelector('[data-en]')?.setAttribute('data-en', 'Close full grid');
+          toggleLink.querySelector('[data-en]')?.setAttribute('data-es', 'Cerrar cuadrícula');
+          if (toggleLink.querySelector('[data-en]')) toggleLink.querySelector('[data-en]').textContent = lEn;
+          fullSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          fullSection.setAttribute('hidden', '');
+          fullSection.setAttribute('aria-hidden', 'true');
+          toggleLink.setAttribute('aria-expanded', 'false');
+          const lEn = document.documentElement.getAttribute('data-lang') === 'es' ? 'Abrir cuadrícula' : 'Open full grid';
+          toggleLink.querySelector('[data-en]')?.setAttribute('data-en', 'Open full grid');
+          toggleLink.querySelector('[data-en]')?.setAttribute('data-es', 'Abrir cuadrícula');
+          if (toggleLink.querySelector('[data-en]')) toggleLink.querySelector('[data-en]').textContent = lEn;
+        }
+      });
+    }
+  })();
+
+  // ── Vocabulary flip ──────────────────────────────────────────────────
+  (function initVocab() {
+    const lang = () => document.documentElement.getAttribute('data-lang') || 'en';
+
+    function refreshVocab() {
+      const currentLang = lang();
+      document.querySelectorAll('.pk-vp').forEach(pill => {
+        const frontLang = pill.dataset.frontLang;
+        const enWord    = pill.dataset.enWord;
+        const esWord    = pill.dataset.esWord;
+        if (!pill.classList.contains('pk-flipped')) {
+          // show front: if frontLang = 'es' always show es; otherwise show current lang
+          if (frontLang === 'es') {
+            pill.textContent = esWord;
+          } else {
+            pill.textContent = currentLang === 'es' ? esWord : enWord;
+          }
+        } else {
+          // show back: opposite of front
+          if (frontLang === 'es') {
+            pill.textContent = enWord;
+          } else {
+            pill.textContent = currentLang === 'es' ? enWord : esWord;
+          }
+        }
+        pill.dataset.originalText = pill.textContent;
+      });
+    }
+
+    document.querySelectorAll('.pk-vp').forEach(pill => {
+      // Store originals
+      pill.dataset.originalText = pill.textContent.trim();
+      pill.addEventListener('click', () => {
+        const flipped    = pill.classList.toggle('pk-flipped');
+        const frontLang  = pill.dataset.frontLang;
+        const enWord     = pill.dataset.enWord;
+        const esWord     = pill.dataset.esWord;
+        const currentLang = lang();
+        if (flipped) {
+          // show back
+          if (frontLang === 'es') { pill.textContent = enWord; }
+          else { pill.textContent = currentLang === 'es' ? enWord : esWord; }
+        } else {
+          // show front
+          if (frontLang === 'es') { pill.textContent = esWord; }
+          else { pill.textContent = currentLang === 'es' ? esWord : enWord; }
+        }
+      });
+    });
+
+    // Re-orient when language changes
+    new MutationObserver(() => {
+      document.querySelectorAll('.pk-vp:not(.pk-flipped)').forEach(pill => {
+        const frontLang = pill.dataset.frontLang;
+        const enWord    = pill.dataset.enWord;
+        const esWord    = pill.dataset.esWord;
+        const currentLang = lang();
+        if (frontLang !== 'es') {
+          pill.textContent = currentLang === 'es' ? esWord : enWord;
+        }
+      });
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
+
+    refreshVocab();
+  })();
+
+  // ── Ask bubbles: respond to setLang ─────────────────────────────────
+  // The layout-level setLang uses innerHTML = getAttribute('data-en|es')
+  // which is already handled by the global setLang. No extra work needed.
+
+})();
+</script>

@@ -1,0 +1,1814 @@
+---
+import config from '../../data/config.json';
+import calendar from '../../data/calendar.json';
+import {
+  textToHTML, formatDate, formatDateShort,
+  getSubjectIcon, getSpecialForDay, getSubjectTranslation,
+  getSchoolYearProgress,
+} from '../../lib/utils';
+
+interface Props {
+  weekData: any;
+  currentDate: string;
+  allWeeks: string[];
+  issueNumber: number;
+}
+
+const { weekData } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const date = weekData.date;
+const season = weekData.season || 'spring';
+const logo = config.seasonLogos[season as keyof typeof config.seasonLogos] || config.seasonLogos.default;
+
+const labelsEn = config.labels.en;
+const labelsEs = config.labels.es;
+
+// School year progress (server-side fallback; client JS will recompute with live date)
+const progress = getSchoolYearProgress(date);
+
+// Day keys for specials grid
+const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const;
+const dayAbbrsEn = ['M', 'T', 'W', 'Th', 'F'];
+const dayAbbrsEs = ['L', 'M', 'Mi', 'J', 'V'];
+const specials = weekData.specials as Record<string, string>;
+
+// Reminder date parser
+function parseReminderDate(dateStr: string) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return {
+    month: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+    monthEs: d.toLocaleDateString('es-US', { month: 'short' }).toUpperCase(),
+    day: d.getDate(),
+  };
+}
+
+// Sorted reminders (ascending by date)
+const sortedReminders = weekData.reminders
+  ? [...weekData.reminders].sort((a: any, b: any) => a.date.localeCompare(b.date))
+  : [];
+
+// Vocabulary grouping detection
+const hasVocab = weekData.vocabulary && Array.isArray(weekData.vocabulary.en) && weekData.vocabulary.en.length > 0;
+const vocabIsGrouped = hasVocab && typeof weekData.vocabulary.en[0] === 'object' && weekData.vocabulary.en[0].words;
+
+// Books
+const hasBooks = weekData.books && weekData.books.length > 0;
+
+// Term labels for the trail
+const termLabels = ['T1', 'T2', 'T3', 'T4'];
+const termPercents = [0, 25, 50, 75];
+
+// Formatted week date for server-side render of Today hero
+const weekDateObj = new Date(date + 'T12:00:00');
+const weekDayNameEn = weekDateObj.toLocaleDateString('en-US', { weekday: 'long' });
+const weekDayNameEs = weekDateObj.toLocaleDateString('es-US', { weekday: 'long' });
+const weekMonthDayEn = weekDateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+const weekMonthDayEs = weekDateObj.toLocaleDateString('es-US', { month: 'long', day: 'numeric' });
+
+// Server-side "today" specials (Monday's letter as fallback)
+const mondayLetter = specials['monday'];
+const firstClassroom = config.classrooms[0];
+const mondaySubject = getSpecialForDay(firstClassroom, mondayLetter);
+const mondayIcon = getSubjectIcon(mondaySubject);
+const mondaySubjectEs = getSubjectTranslation(mondaySubject);
+
+// First upcoming reminder for "Next Up" fallback
+const firstReminder = sortedReminders[0];
+let nextUpEnFallback = '';
+let nextUpEsFallback = '';
+if (firstReminder) {
+  // Strip HTML for short display
+  const stripped = firstReminder.en.replace(/<[^>]+>/g, '').slice(0, 50);
+  const strippedEs = firstReminder.es.replace(/<[^>]+>/g, '').slice(0, 50);
+  nextUpEnFallback = stripped;
+  nextUpEsFallback = strippedEs;
+}
+
+// Ask your child items
+const hasAsk = weekData.askYourChild && weekData.askYourChild.length > 0;
+
+// Vocab + ask count for Talk At Home peek
+const askCount = hasAsk ? weekData.askYourChild.length : 0;
+const vocabWordCount = hasVocab
+  ? (vocabIsGrouped
+    ? (weekData.vocabulary.en as any[]).reduce((acc: number, g: any) => acc + g.words.length, 0)
+    : weekData.vocabulary.en.length)
+  : 0;
+
+// Reminder count for badge
+const reminderCount = sortedReminders.length;
+
+// Flag helper
+function getFlagSrc(classroom: string): string {
+  const flag = (config.classroomFlags as Record<string, string>)[classroom];
+  if (flag?.startsWith('img:')) return `${base}/${flag.slice(4)}`;
+  return '';
+}
+---
+
+<!-- ================================================================
+     THEME A — TODAY FIRST
+     Scoped: html[data-theme="A"] — never bleeds into other themes
+     ================================================================ -->
+
+<div class="tf-wrap">
+
+  <!-- TOP BAR -->
+  <div class="tf-top-bar">
+    <div class="tf-lang-toggle" role="tablist" aria-label="Language">
+      <button class="lang-btn active tf-lang-btn" data-set-lang="en">English</button>
+      <button class="lang-btn tf-lang-btn" data-set-lang="es">Español</button>
+    </div>
+    <div class="tf-top-icons">
+      <button aria-label="Print" title="Print" onclick="window.print()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- TITLE BLOCK -->
+  <div class="tf-title-block">
+    {logo && <img src={`${base}/${logo}`} alt="Bancroft ES" />}
+    <h1 class="tf-display">
+      <span data-en={labelsEn.title} data-es={labelsEs.title}>{labelsEn.title}</span>
+    </h1>
+    <p class="tf-subtitle">
+      <span data-en={labelsEn.subtitle} data-es={labelsEs.subtitle}>{labelsEn.subtitle}</span>
+    </p>
+    <p class="tf-week-date">
+      <span data-en={`${labelsEn.weekOf} ${formatDate(date, 'en')}`} data-es={`${labelsEs.weekOf} ${formatDate(date, 'es')}`}>
+        {labelsEn.weekOf} {formatDate(date, 'en')}
+      </span>
+    </p>
+  </div>
+
+  <!-- TODAY CARD (hero) -->
+  <section class="tf-today" aria-label="Today at a glance" id="tf-today-card">
+    <div class="tf-today-head">
+      <div class="tf-today-day" id="tf-today-day-name">
+        <span data-en>{weekDayNameEn} <em>{weekMonthDayEn}</em></span>
+        <span data-es style="display:none">{weekDayNameEs} <em>{weekMonthDayEs}</em></span>
+      </div>
+      <div class="tf-today-weather" id="tf-today-weather">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <span id="tf-weather-text">--</span>
+      </div>
+    </div>
+
+    <div class="tf-today-grid">
+      <div class="tf-today-cell">
+        <div class="tf-today-cell-label">
+          <span data-en>Today's Specials</span>
+          <span data-es style="display:none">Especiales Hoy</span>
+        </div>
+        <div class="tf-today-cell-val" id="tf-today-special">
+          <span data-en id="tf-today-special-en"><span class="tf-emoji">📅</span> Day {mondayLetter} <span class="tf-pick-hint" style="opacity:.65">· pick your class below</span></span>
+          <span data-es style="display:none" id="tf-today-special-es"><span class="tf-emoji">📅</span> Día {mondayLetter} <span class="tf-pick-hint" style="opacity:.65">· elige tu salón abajo</span></span>
+        </div>
+      </div>
+      <div class="tf-today-cell tf-today-cell--next-up">
+        <div class="tf-today-cell-label">
+          <span data-en>Next Up</span>
+          <span data-es style="display:none">Próximo</span>
+        </div>
+        <div class="tf-today-cell-val" id="tf-today-next-up">
+          {firstReminder ? (
+            <>
+              <span data-en id="tf-next-up-en">{nextUpEnFallback}</span>
+              <span data-es style="display:none" id="tf-next-up-es">{nextUpEsFallback}</span>
+            </>
+          ) : (
+            <span style="opacity:.6">—</span>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <div class="tf-today-foot">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      <span data-en>Dismissal 3:15 pm</span>
+      <span data-es style="display:none">Salida 3:15 pm</span>
+    </div>
+  </section>
+
+  <!-- MILESTONE TRAIL -->
+  <div class="tf-trail-card">
+    <div class="tf-trail-head">
+      <h2 class="tf-display">
+        <span data-en>Days of 1st Grade</span>
+        <span data-es style="display:none">Días de Primer Grado</span>
+      </h2>
+      <div class="tf-trail-num">
+        <span id="tf-trail-elapsed">{progress.elapsedSchoolDays}</span><em> / {progress.totalSchoolDays}</em>
+      </div>
+    </div>
+    <div class="tf-trail">
+      <div class="tf-trail-line"></div>
+      <div class="tf-trail-fill" id="tf-trail-fill" style={`width: ${progress.percent}%`}></div>
+      {termLabels.map((lbl, i) => (
+        <div class={`tf-trail-mark tf-trail-mark--done`} style={`left: ${termPercents[i]}%`}>
+          <div class="tf-trail-dot"></div>
+          <div class="tf-trail-lbl">{lbl}</div>
+        </div>
+      ))}
+      <div class="tf-trail-mark tf-trail-mark--now" id="tf-trail-now" style={`left: ${progress.percent}%`}>
+        <div class="tf-trail-dot"></div>
+        <div class="tf-trail-lbl">
+          <span data-en>Now</span>
+          <span data-es style="display:none">Hoy</span>
+        </div>
+      </div>
+    </div>
+    <div class="tf-trail-foot">
+      <span>
+        <span data-en>Week {progress.weekNumber} of {progress.totalWeeks}</span>
+        <span data-es style="display:none">Semana {progress.weekNumber} de {progress.totalWeeks}</span>
+      </span>
+      <span>
+        <strong id="tf-trail-remaining">{progress.remaining}</strong>
+        <span data-en> school days remaining</span>
+        <span data-es style="display:none"> días escolares restantes</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- CLASSROOM SELECTOR -->
+  <div class="tf-room-selector">
+    <div class="tf-room-selector-lbl">
+      <span>
+        <span data-en>Tap your child's classroom</span>
+        <span data-es style="display:none">Toca el salón de tu hijo/a</span>
+      </span>
+      <em id="tf-room-selected-name"></em>
+    </div>
+    <div class="tf-room-grid">
+      {config.classrooms.map((classroom) => {
+        const flagSrc = getFlagSrc(classroom);
+        return (
+          <button class="tf-room-pill" data-tf-classroom={classroom}>
+            {flagSrc && <img src={flagSrc} alt="" />}
+            {classroom}
+          </button>
+        );
+      })}
+    </div>
+  </div>
+
+  <!-- QUICK LINKS -->
+  <nav class="tf-quick-links" aria-label="Quick links">
+    {config.quickLinks.map(link => (
+      <a class="tf-quick-link" href={link.url} target="_blank" rel="noopener">
+        <span class="tf-quick-link-ic">{link.icon}</span>
+        <span data-en={link.en} data-es={link.es}>{link.en}</span>
+      </a>
+    ))}
+  </nav>
+
+  <!-- ============================================================== -->
+  <!-- GROUP 1 — REMINDERS                                             -->
+  <!-- ============================================================== -->
+  {sortedReminders.length > 0 && (
+    <details class="tf-group tf-group--action" open>
+      <summary class="tf-group-head">
+        <div class="tf-group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14l-1.7-3.4A2 2 0 0 1 17 12.6V8a5 5 0 0 0-10 0v4.6c0 .3-.07.6-.21.85L5 17z"></path></svg>
+        </div>
+        <div class="tf-group-meta">
+          <h2 class="tf-display">
+            <span data-en>Reminders</span>
+            <span data-es style="display:none">Recordatorios</span>
+          </h2>
+          <div class="tf-group-peek">
+            <span data-en>{reminderCount} reminder{reminderCount !== 1 ? 's' : ''}</span>
+            <span data-es style="display:none">{reminderCount} recordatorio{reminderCount !== 1 ? 's' : ''}</span>
+          </div>
+        </div>
+        <div class="tf-group-count tf-group-count--action">{reminderCount}</div>
+        <span class="tf-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </summary>
+      <div class="tf-group-body">
+        {sortedReminders.map((reminder: any, i: number) => {
+          const rd = parseReminderDate(reminder.date);
+          const isUrgent = i === 0;
+          return (
+            <div class={`tf-reminder${isUrgent ? ' tf-reminder--urgent' : ''}`}>
+              <div class="tf-reminder-badge">
+                <div class="tf-reminder-mo">
+                  <span data-en={rd.month} data-es={rd.monthEs}>{rd.month}</span>
+                </div>
+                <div class="tf-reminder-day">{rd.day}</div>
+              </div>
+              <div class="tf-reminder-body">
+                {isUrgent && (
+                  <span class="tf-urgent-tag">
+                    <span data-en>This Week</span>
+                    <span data-es style="display:none">Esta Semana</span>
+                  </span>
+                )}
+                <span data-lang-en set:html={reminder.en} />
+                <span data-lang-es style="display:none" set:html={reminder.es} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </details>
+  )}
+
+  <!-- ============================================================== -->
+  <!-- GROUP 2 — SPECIALS SCHEDULE                                     -->
+  <!-- ============================================================== -->
+  <details class="tf-group tf-group--specials" open>
+    <summary class="tf-group-head">
+      <div class="tf-group-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="#6d28d9"/><circle cx="17.5" cy="10.5" r=".5" fill="#6d28d9"/><circle cx="8.5" cy="7.5" r=".5" fill="#6d28d9"/><circle cx="6.5" cy="12.5" r=".5" fill="#6d28d9"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c3.31 0 6-2.69 6-6 0-4.97-4.5-9-10-9z"></path></svg>
+      </div>
+      <div class="tf-group-meta">
+        <h2 class="tf-display">
+          <span data-en>Specials Schedule</span>
+          <span data-es style="display:none">Horario de Especiales</span>
+        </h2>
+        <div class="tf-group-peek" id="tf-specials-peek">
+          <span data-en>Your classroom's week at a glance</span>
+          <span data-es style="display:none">La semana de tu salón de un vistazo</span>
+        </div>
+      </div>
+      <span class="tf-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+    </summary>
+    <div class="tf-group-body">
+
+      <!-- My Specials card (per-classroom, 5-day) -->
+      <div class="tf-my-specials" id="tf-my-specials">
+        {config.classrooms.map((classroom) => {
+          const flagSrc = getFlagSrc(classroom);
+          return (
+            <div class="tf-ms-classroom" data-tf-specials-classroom={classroom} style="display:none">
+              <div class="tf-ms-head">
+                <div class="tf-ms-room-name">
+                  {flagSrc && <img src={flagSrc} alt="" />}
+                  {classroom}
+                </div>
+                <div class="tf-micro" style="color: var(--tf-spec-ac)">
+                  <span data-en>This Week</span>
+                  <span data-es style="display:none">Esta Semana</span>
+                </div>
+              </div>
+              <div class="tf-ms-grid">
+                {dayKeys.map((day, di) => {
+                  const letter = specials[day];
+                  const subject = getSpecialForDay(classroom, letter);
+                  const icon = getSubjectIcon(subject);
+                  const subjectEs = getSubjectTranslation(subject);
+                  const abbrsEn = ['M','T','W','Th','F'];
+                  const abbrsEs = ['L','M','Mi','J','V'];
+                  return (
+                    <div class="tf-ms-day" data-tf-day-index={di} data-weather-day={di}>
+                      <div class="tf-ms-dow">
+                        <span data-en>{abbrsEn[di]}</span>
+                        <span data-es style="display:none">{abbrsEs[di]}</span>
+                      </div>
+                      <div class="tf-weather-slot"></div>
+                      <div class="tf-ms-subj-icon">{icon}</div>
+                      <div class="tf-ms-subj">
+                        <span data-en>{subject}</span>
+                        <span data-es style="display:none">{subjectEs}</span>
+                      </div>
+                      <div class="tf-ms-letter">{letter}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <!-- Full grid (all classrooms) -->
+      <div class="tf-full-grid">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              {dayKeys.map((day, di) => (
+                <th data-weather-day={di}>
+                  <span data-en>{dayAbbrsEn[di]}</span>
+                  <span data-es style="display:none">{dayAbbrsEs[di]}</span>
+                  <span class="tf-full-grid-letter">{specials[day]}</span>
+                  <div class="tf-weather-slot"></div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {config.classrooms.map((classroom) => {
+              const flagSrc = getFlagSrc(classroom);
+              return (
+                <tr data-tf-grid-classroom={classroom}>
+                  <td class="tf-full-grid-room">
+                    {flagSrc && <img src={flagSrc} alt="" />}
+                    {classroom}
+                  </td>
+                  {dayKeys.map((day) => {
+                    const letter = specials[day];
+                    const subject = getSpecialForDay(classroom, letter);
+                    const icon = getSubjectIcon(subject);
+                    const subjectEs = getSubjectTranslation(subject);
+                    return (
+                      <td>
+                        <span class="tf-cell-icon">{icon}</span>
+                        <span class="tf-cell-subj">
+                          <span data-en>{subject}</span>
+                          <span data-es style="display:none">{subjectEs}</span>
+                        </span>
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </details>
+
+  <!-- ============================================================== -->
+  <!-- GROUP 3 — WHAT WE'RE LEARNING (tabbed)                         -->
+  <!-- ============================================================== -->
+  <details class="tf-group tf-group--learning">
+    <summary class="tf-group-head">
+      <div class="tf-group-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2d8a4e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+      </div>
+      <div class="tf-group-meta">
+        <h2 class="tf-display">
+          <span data-en>What We're Learning</span>
+          <span data-es style="display:none">Lo Que Estamos Aprendiendo</span>
+        </h2>
+        <div class="tf-group-peek">
+          <span data-en>
+            Welcome · Math · Literacy{hasBooks ? ' · Books' : ''}
+          </span>
+          <span data-es style="display:none">
+            Bienvenida · Mates · Lectura{hasBooks ? ' · Libros' : ''}
+          </span>
+        </div>
+      </div>
+      <span class="tf-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+    </summary>
+    <div class="tf-group-body">
+
+      <!-- Learning tabs -->
+      <div class="tf-learning-tabs" role="tablist">
+        <button class="tf-learning-tab tf-learning-tab--active" data-tf-panel="welcome">
+          <span class="tf-tab-e">👋</span>
+          <span data-en>Welcome</span>
+          <span data-es style="display:none">Bienvenida</span>
+        </button>
+        <button class="tf-learning-tab" data-tf-panel="math">
+          <span class="tf-tab-e">🔢</span>
+          <span data-en>Math</span>
+          <span data-es style="display:none">Matemáticas</span>
+        </button>
+        <button class="tf-learning-tab" data-tf-panel="literacy">
+          <span class="tf-tab-e">📖</span>
+          <span data-en>Literacy</span>
+          <span data-es style="display:none">Lectura</span>
+        </button>
+        {hasBooks && (
+          <button class="tf-learning-tab" data-tf-panel="books">
+            <span class="tf-tab-e">📚</span>
+            <span data-en>Books</span>
+            <span data-es style="display:none">Libros</span>
+          </button>
+        )}
+      </div>
+
+      <!-- Welcome panel -->
+      <div class="tf-learning-panel tf-learning-panel--welcome tf-learning-panel--active">
+        <div class="tf-panel-card">
+          <h3 class="tf-display tf-welcome-h3">
+            <span data-en>From your teacher</span>
+            <span data-es style="display:none">De tu maestra</span>
+          </h3>
+          <div data-lang-en><p set:html={textToHTML(weekData.welcome.en)} /></div>
+          <div data-lang-es style="display:none"><p set:html={textToHTML(weekData.welcome.es)} /></div>
+        </div>
+      </div>
+
+      <!-- Math panel -->
+      <div class="tf-learning-panel tf-learning-panel--math">
+        <div class="tf-panel-card tf-panel-card--math">
+          <h3 class="tf-display tf-math-h3">
+            <span data-en>{labelsEn.mathHeading}</span>
+            <span data-es style="display:none">{labelsEs.mathHeading}</span>
+          </h3>
+          <div data-lang-en><p set:html={textToHTML(weekData.math.en)} /></div>
+          <div data-lang-es style="display:none"><p set:html={textToHTML(weekData.math.es)} /></div>
+          {weekData.mathDetails && (
+            <div class="tf-math-details">
+              <div class="tf-math-detail-row" data-lang-en>
+                <span class="tf-math-detail-label">{labelsEn.mathDetailsModule}</span>
+                <span class="tf-math-detail-val">{weekData.mathDetails.module.en}</span>
+              </div>
+              <div class="tf-math-detail-row" data-lang-en>
+                <span class="tf-math-detail-label">{labelsEn.mathDetailsTopic}</span>
+                <span class="tf-math-detail-val">{weekData.mathDetails.topic.en}</span>
+              </div>
+              <div class="tf-math-detail-row" data-lang-en>
+                <span class="tf-math-detail-label">{labelsEn.mathDetailsLesson}</span>
+                <span class="tf-math-detail-val">{weekData.mathDetails.lesson.en}</span>
+              </div>
+              <div class="tf-math-detail-row" data-lang-es style="display:none">
+                <span class="tf-math-detail-label">{labelsEs.mathDetailsModule}</span>
+                <span class="tf-math-detail-val">{weekData.mathDetails.module.es}</span>
+              </div>
+              <div class="tf-math-detail-row" data-lang-es style="display:none">
+                <span class="tf-math-detail-label">{labelsEs.mathDetailsTopic}</span>
+                <span class="tf-math-detail-val">{weekData.mathDetails.topic.es}</span>
+              </div>
+              <div class="tf-math-detail-row" data-lang-es style="display:none">
+                <span class="tf-math-detail-label">{labelsEs.mathDetailsLesson}</span>
+                <span class="tf-math-detail-val">{weekData.mathDetails.lesson.es}</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <!-- Literacy panel -->
+      <div class="tf-learning-panel tf-learning-panel--literacy">
+        <div class="tf-panel-card tf-panel-card--literacy">
+          <h3 class="tf-display tf-lit-h3">
+            <span data-en>{labelsEn.literacyHeading}</span>
+            <span data-es style="display:none">{labelsEs.literacyHeading}</span>
+          </h3>
+          <div data-lang-en><p set:html={textToHTML(weekData.literacy.en)} /></div>
+          <div data-lang-es style="display:none"><p set:html={textToHTML(weekData.literacy.es)} /></div>
+        </div>
+      </div>
+
+      <!-- Books panel (only if books exist) -->
+      {hasBooks && (
+        <div class="tf-learning-panel tf-learning-panel--books">
+          <div class="tf-panel-card tf-panel-card--books">
+            <h3 class="tf-display tf-books-h3">
+              <span data-en>{labelsEn.booksHeading}</span>
+              <span data-es style="display:none">{labelsEs.booksHeading}</span>
+            </h3>
+            {weekData.books.map((book: any) => (
+              <div class="tf-book-item">
+                <span class="tf-book-icon">📕</span>
+                <div>
+                  <div class="tf-book-title">
+                    <span data-en={book.title.en} data-es={book.title.es}>{book.title.en}</span>
+                  </div>
+                  <div class="tf-book-author">
+                    <span data-en={`by ${book.author}`} data-es={`por ${book.author}`}>by {book.author}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+    </div>
+  </details>
+
+  <!-- ============================================================== -->
+  <!-- GROUP 4 — TALK AT HOME                                          -->
+  <!-- ============================================================== -->
+  {(hasAsk || hasVocab) && (
+    <details class="tf-group tf-group--talk">
+      <summary class="tf-group-head">
+        <div class="tf-group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </div>
+        <div class="tf-group-meta">
+          <h2 class="tf-display">
+            <span data-en>Talk At Home</span>
+            <span data-es style="display:none">Conversar en Casa</span>
+          </h2>
+          <div class="tf-group-peek">
+            <span data-en>
+              {askCount > 0 && `${askCount} question${askCount !== 1 ? 's' : ''}`}
+              {askCount > 0 && vocabWordCount > 0 && ' · '}
+              {vocabWordCount > 0 && `${vocabWordCount} vocabulary word${vocabWordCount !== 1 ? 's' : ''}`}
+            </span>
+            <span data-es style="display:none">
+              {askCount > 0 && `${askCount} pregunta${askCount !== 1 ? 's' : ''}`}
+              {askCount > 0 && vocabWordCount > 0 && ' · '}
+              {vocabWordCount > 0 && `${vocabWordCount} palabra${vocabWordCount !== 1 ? 's' : ''} de vocabulario`}
+            </span>
+          </div>
+        </div>
+        <span class="tf-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </summary>
+      <div class="tf-group-body">
+
+        {hasAsk && (
+          <ul class="tf-ask-list">
+            {weekData.askYourChild.map((item: any) => (
+              <li>
+                <span data-lang-en>{item.en}</span>
+                <span data-lang-es style="display:none">{item.es}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {hasVocab && (
+          <div class="tf-vocab-section">
+            <h4 class="tf-vocab-head">
+              📝&nbsp;
+              <span data-en>Words of the Week</span>
+              <span data-es style="display:none">Palabras de la Semana</span>
+              <span class="tf-vocab-flip-hint">
+                <span data-en>tap to flip</span>
+                <span data-es style="display:none">toca para girar</span>
+              </span>
+            </h4>
+
+            {vocabIsGrouped ? (
+              (weekData.vocabulary.en as {label:string,words:string[],frontLang?:string}[]).map((enGroup, gi) => {
+                const esGroup = (weekData.vocabulary.es as {label:string,words:string[],frontLang?:string}[])[gi];
+                const frontLang = enGroup.frontLang || esGroup?.frontLang;
+                const fGroup = frontLang === 'es' ? esGroup : enGroup;
+                const bGroup = frontLang === 'es' ? enGroup : esGroup;
+                return (
+                  <div class="tf-vocab-group">
+                    <div class="tf-vocab-group-lbl">
+                      <span data-en={enGroup.label} data-es={esGroup?.label}>{enGroup.label}</span>
+                    </div>
+                    <div class="tf-vocab-pills">
+                      {fGroup.words.map((word: string, wi: number) => (
+                        <span class="tf-vocab-pill"
+                              data-tf-en-word={fGroup.words[wi]}
+                              data-tf-es-word={bGroup?.words[wi] ?? word}
+                              data-tf-front-lang={frontLang || ''}>
+                          {word}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div class="tf-vocab-group">
+                <div class="tf-vocab-pills" data-lang-en>
+                  {(weekData.vocabulary.en as string[]).map((word: string, i: number) => (
+                    <span class="tf-vocab-pill"
+                          data-tf-en-word={word}
+                          data-tf-es-word={(weekData.vocabulary.es as string[])[i]}>
+                      {word}
+                    </span>
+                  ))}
+                </div>
+                <div class="tf-vocab-pills" data-lang-es style="display:none">
+                  {(weekData.vocabulary.es as string[]).map((word: string, i: number) => (
+                    <span class="tf-vocab-pill"
+                          data-tf-en-word={(weekData.vocabulary.en as string[])[i]}
+                          data-tf-es-word={word}>
+                      {word}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+      </div>
+    </details>
+  )}
+
+  <!-- ============================================================== -->
+  <!-- GROUP 5 — ROARS                                                 -->
+  <!-- ============================================================== -->
+  <details class="tf-group tf-group--roars" open>
+    <summary class="tf-group-head">
+      <div class="tf-group-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#c2410c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+      </div>
+      <div class="tf-group-meta">
+        <h2 class="tf-display">ROARS</h2>
+        <div class="tf-group-peek">
+          <span data-en>This week's shout-outs</span>
+          <span data-es style="display:none">Reconocimientos de la semana</span>
+        </div>
+      </div>
+      <span class="tf-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+    </summary>
+    <div class="tf-group-body">
+      <p class="tf-roars-intro">
+        <span data-en>Congratulations to this week's ROARS students for showing outstanding character!</span>
+        <span data-es style="display:none">¡Felicitaciones a los estudiantes ROARS de esta semana por demostrar carácter sobresaliente!</span>
+      </p>
+      <div class="tf-roars-grid">
+        {config.classrooms.map((classroom) => {
+          const student = weekData.roars?.[classroom as keyof typeof weekData.roars];
+          if (!student) return null;
+          const flagSrc = getFlagSrc(classroom);
+          return (
+            <div class="tf-roars-card">
+              <span class="tf-roars-star">★</span>
+              <div class="tf-roars-flag-chip">
+                {flagSrc && <img src={flagSrc} alt="" />}
+                {classroom}
+              </div>
+              <div class="tf-roars-name">{student}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </details>
+
+  <!-- FOOTER -->
+  <footer class="tf-footer">
+    <p>
+      <span data-en>Bancroft Elementary School · First Grade</span>
+      <span data-es style="display:none">Bancroft Elementary School · Primer Grado</span>
+    </p>
+  </footer>
+
+</div><!-- /tf-wrap -->
+
+<!-- ================================================================
+     STYLES — all scoped to html[data-theme="A"]
+     ================================================================ -->
+<style is:global>
+  /* CSS custom props scoped to Theme A */
+  html[data-theme="A"] {
+    --tf-bg: #fefcf8;
+    --tf-bg-card: #ffffff;
+    --tf-border: #e8e5dd;
+    --tf-border-soft: #f0ede6;
+    --tf-text: #1a1a2e;
+    --tf-text-muted: #5e5e80;
+    --tf-text-faint: #9090ad;
+
+    --tf-welcome-bg: #fef9ee; --tf-welcome-bd: #f0d68a; --tf-welcome-ac: #b8860b;
+    --tf-math-bg: #f0faf0;   --tf-math-bd: #a8dbb8;   --tf-math-ac: #2d8a4e;
+    --tf-lit-bg: #eef4fd;    --tf-lit-bd: #93b8e8;    --tf-lit-ac: #2563a8;
+    --tf-spec-bg: #f3f0fa;   --tf-spec-bd: #c4b5fd;   --tf-spec-ac: #6d28d9;
+    --tf-roars-bg: #fff5ed;  --tf-roars-bd: #fed7aa;  --tf-roars-ac: #c2410c;
+    --tf-rem-bg: #fef2f2;    --tf-rem-bd: #fecaca;    --tf-rem-ac: #b91c1c;
+    --tf-ask-bg: #ecfdf5;    --tf-ask-bd: #a7f3d0;    --tf-ask-ac: #047857;
+    --tf-vocab-bg: #f5f3ff;  --tf-vocab-bd: #ddd6fe;  --tf-vocab-ac: #6d28d9;
+    --tf-books-bg: #fdf4ff;  --tf-books-bd: #f0abfc;  --tf-books-ac: #a21caf;
+
+    --tf-r-sm: 8px; --tf-r-md: 14px; --tf-r-lg: 20px; --tf-r-xl: 28px;
+    --tf-sh-sm: 0 1px 3px rgba(20,16,8,.04), 0 1px 2px rgba(20,16,8,.06);
+    --tf-sh-md: 0 4px 16px rgba(20,16,8,.06), 0 2px 4px rgba(20,16,8,.04);
+  }
+
+  /* Base body reset for Theme A */
+  html[data-theme="A"] body {
+    background: var(--tf-bg);
+    color: var(--tf-text);
+    font-family: "DM Sans", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  html[data-theme="A"] * { box-sizing: border-box; }
+
+  /* Suppress sidebar / archive from classic theme in Theme A */
+  html[data-theme="A"] .archive-sidebar,
+  html[data-theme="A"] .archive-mobile { display: none !important; }
+
+  /* ---- DISPLAY FONT HELPER ---- */
+  html[data-theme="A"] .tf-display {
+    font-family: "Fraunces", Georgia, serif;
+    font-optical-sizing: auto;
+    letter-spacing: -0.02em;
+  }
+  html[data-theme="A"] .tf-micro {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--tf-text-muted);
+  }
+
+  /* ---- WRAP ---- */
+  html[data-theme="A"] .tf-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 12px 14px 80px;
+  }
+  @media (min-width: 760px) {
+    html[data-theme="A"] .tf-wrap { padding: 24px 24px 80px; }
+  }
+
+  /* ---- TOP BAR ---- */
+  html[data-theme="A"] .tf-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 4px 14px;
+  }
+  html[data-theme="A"] .tf-lang-toggle {
+    display: inline-flex;
+    background: #fff;
+    border: 1px solid var(--tf-border);
+    border-radius: 100px;
+    padding: 3px;
+    box-shadow: var(--tf-sh-sm);
+  }
+  html[data-theme="A"] .tf-lang-btn {
+    border: 0;
+    background: transparent;
+    padding: 6px 14px;
+    font: 600 0.82rem/1 "DM Sans", sans-serif;
+    border-radius: 100px;
+    color: var(--tf-text-muted);
+    cursor: pointer;
+  }
+  html[data-theme="A"] .tf-lang-btn.active {
+    background: var(--tf-text);
+    color: #fef9ee;
+  }
+  html[data-theme="A"] .tf-top-icons { display: flex; gap: 6px; }
+  html[data-theme="A"] .tf-top-icons button {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #fff; border: 1px solid var(--tf-border);
+    cursor: pointer; display: grid; place-items: center;
+    box-shadow: var(--tf-sh-sm);
+  }
+  html[data-theme="A"] .tf-top-icons button svg { width: 18px; height: 18px; }
+
+  /* ---- TITLE BLOCK ---- */
+  html[data-theme="A"] .tf-title-block {
+    text-align: center;
+    padding: 8px 0 4px;
+  }
+  html[data-theme="A"] .tf-title-block img {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    border: 3px solid var(--tf-bg);
+    box-shadow: var(--tf-sh-sm);
+    margin-bottom: 6px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  html[data-theme="A"] .tf-title-block h1 {
+    font-size: 2.4rem;
+    line-height: 1.05;
+    font-weight: 800;
+    margin: 4px 0 2px;
+  }
+  html[data-theme="A"] .tf-subtitle {
+    font: italic 400 1.05rem/1.4 "Fraunces", serif;
+    color: var(--tf-text-muted);
+    margin: 0 0 6px;
+  }
+  html[data-theme="A"] .tf-week-date {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--tf-text-muted);
+    margin: 0;
+  }
+  @media (min-width: 760px) {
+    html[data-theme="A"] .tf-title-block img { width: 80px; height: 80px; }
+    html[data-theme="A"] .tf-title-block h1 { font-size: 3rem; }
+  }
+
+  /* ---- TODAY CARD ---- */
+  html[data-theme="A"] .tf-today {
+    background: #1a1a2e;
+    color: #fef9ee;
+    border-radius: var(--tf-r-xl);
+    padding: 18px 18px 16px;
+    margin: 18px 0 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  html[data-theme="A"] .tf-today::before {
+    content: "";
+    position: absolute; right: -40px; top: -40px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle at center, rgba(244,196,48,0.18), transparent 60%);
+    pointer-events: none;
+  }
+  html[data-theme="A"] .tf-today-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  html[data-theme="A"] .tf-today-day {
+    font: 800 1.4rem/1 "Fraunces", serif;
+    letter-spacing: -0.02em;
+  }
+  html[data-theme="A"] .tf-today-day em {
+    font-style: italic;
+    color: #f0d68a;
+    font-weight: 600;
+  }
+  html[data-theme="A"] .tf-today-weather {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 0.85rem;
+    color: rgba(254,249,238,0.75);
+  }
+  html[data-theme="A"] .tf-today-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media (min-width: 760px) {
+    html[data-theme="A"] .tf-today-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  html[data-theme="A"] .tf-today-cell {
+    background: rgba(254,249,238,0.07);
+    border: 1px solid rgba(254,249,238,0.12);
+    border-radius: var(--tf-r-md);
+    padding: 10px 12px;
+  }
+  html[data-theme="A"] .tf-today-cell-label {
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(254,249,238,0.55);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  html[data-theme="A"] .tf-today-cell-val {
+    font: 700 0.98rem/1.25 "DM Sans", sans-serif;
+  }
+  html[data-theme="A"] .tf-today-cell--next-up .tf-today-cell-val { color: #fed7aa; }
+  html[data-theme="A"] .tf-emoji { display: inline-block; margin-right: 4px; }
+  html[data-theme="A"] .tf-today-foot {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.82rem;
+    color: rgba(254,249,238,0.7);
+    border-top: 1px dashed rgba(254,249,238,0.15);
+    padding-top: 10px;
+  }
+
+  /* ---- MILESTONE TRAIL ---- */
+  html[data-theme="A"] .tf-trail-card {
+    background: #fff;
+    border: 1px solid var(--tf-border);
+    border-radius: var(--tf-r-lg);
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--tf-sh-sm);
+  }
+  html[data-theme="A"] .tf-trail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  html[data-theme="A"] .tf-trail-head h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  html[data-theme="A"] .tf-trail-num {
+    font: 800 1.5rem/1 "Fraunces", serif;
+    color: var(--tf-text);
+  }
+  html[data-theme="A"] .tf-trail-num em {
+    color: var(--tf-text-muted);
+    font-style: normal;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  html[data-theme="A"] .tf-trail {
+    position: relative;
+    height: 38px;
+    margin: 8px 0 4px;
+  }
+  html[data-theme="A"] .tf-trail-line {
+    position: absolute; left: 0; right: 0; top: 18px; height: 4px;
+    background: var(--tf-border-soft); border-radius: 100px;
+  }
+  html[data-theme="A"] .tf-trail-fill {
+    position: absolute; left: 0; top: 18px; height: 4px;
+    background: linear-gradient(90deg, #2d8a4e 0%, #2563a8 50%, #6d28d9 100%);
+    border-radius: 100px;
+    transition: width 0.4s ease;
+  }
+  html[data-theme="A"] .tf-trail-mark {
+    position: absolute; top: 8px; transform: translateX(-50%);
+    width: 24px; text-align: center;
+  }
+  html[data-theme="A"] .tf-trail-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    margin: 0 auto;
+    background: #fff; border: 3px solid var(--tf-border);
+  }
+  html[data-theme="A"] .tf-trail-mark--done .tf-trail-dot {
+    background: var(--tf-math-ac);
+    border-color: var(--tf-math-ac);
+  }
+  html[data-theme="A"] .tf-trail-mark--now .tf-trail-dot {
+    background: #fff;
+    border: 3px solid var(--tf-text);
+    box-shadow: 0 0 0 4px rgba(26,26,46,0.12);
+    width: 16px; height: 16px; margin-top: -2px;
+  }
+  html[data-theme="A"] .tf-trail-lbl {
+    font-size: 0.62rem; font-weight: 700;
+    color: var(--tf-text-faint);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  html[data-theme="A"] .tf-trail-mark--now .tf-trail-lbl { color: var(--tf-text); }
+  html[data-theme="A"] .tf-trail-foot {
+    display: flex; justify-content: space-between;
+    font-size: 0.75rem; color: var(--tf-text-muted);
+    padding-top: 8px;
+    border-top: 1px solid var(--tf-border-soft);
+    margin-top: 12px;
+  }
+  html[data-theme="A"] .tf-trail-foot strong { color: var(--tf-text); font-weight: 700; }
+
+  /* ---- CLASSROOM SELECTOR ---- */
+  html[data-theme="A"] .tf-room-selector {
+    background: #fff;
+    border: 1px solid var(--tf-border);
+    border-radius: var(--tf-r-lg);
+    padding: 12px;
+    margin-bottom: 16px;
+    box-shadow: var(--tf-sh-sm);
+  }
+  html[data-theme="A"] .tf-room-selector-lbl {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--tf-text-muted);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  html[data-theme="A"] .tf-room-selector-lbl em {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--tf-spec-ac);
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 0.78rem;
+  }
+  html[data-theme="A"] .tf-room-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  @media (min-width: 760px) {
+    html[data-theme="A"] .tf-room-grid { grid-template-columns: repeat(6, 1fr); }
+  }
+  html[data-theme="A"] .tf-room-pill {
+    display: flex; align-items: center; gap: 6px; padding: 8px 10px;
+    background: #faf8f3; border: 1px solid var(--tf-border-soft);
+    border-radius: 100px; font-weight: 600; font-size: 0.82rem;
+    cursor: pointer; transition: all 0.18s ease; font-family: inherit;
+    color: var(--tf-text);
+  }
+  html[data-theme="A"] .tf-room-pill img { width: 18px; height: 14px; border-radius: 2px; object-fit: cover; }
+  html[data-theme="A"] .tf-room-pill--active {
+    background: var(--tf-spec-ac); color: #fff;
+    border-color: var(--tf-spec-ac);
+    box-shadow: 0 4px 12px rgba(109,40,217,0.25);
+  }
+
+  /* ---- QUICK LINKS ---- */
+  html[data-theme="A"] .tf-quick-links {
+    display: flex; gap: 6px; overflow-x: auto;
+    padding: 0 0 4px; margin-bottom: 18px;
+    -webkit-overflow-scrolling: touch;
+  }
+  html[data-theme="A"] .tf-quick-links::-webkit-scrollbar { display: none; }
+  html[data-theme="A"] .tf-quick-link {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 12px; background: #fff;
+    border: 1px solid var(--tf-border); border-radius: 100px;
+    text-decoration: none; color: var(--tf-text);
+    font-size: 0.85rem; font-weight: 600;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  html[data-theme="A"] .tf-quick-link-ic { font-size: 1rem; }
+
+  /* ---- GROUPED ACCORDIONS ---- */
+  html[data-theme="A"] .tf-group {
+    border-radius: var(--tf-r-lg);
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1px solid;
+    background: var(--tf-bg-card);
+  }
+  html[data-theme="A"] .tf-group--action  { background: var(--tf-rem-bg);   border-color: var(--tf-rem-bd); }
+  html[data-theme="A"] .tf-group--specials { background: var(--tf-spec-bg);  border-color: var(--tf-spec-bd); }
+  html[data-theme="A"] .tf-group--learning { background: var(--tf-math-bg);  border-color: var(--tf-math-bd); }
+  html[data-theme="A"] .tf-group--talk    { background: var(--tf-ask-bg);   border-color: var(--tf-ask-bd); }
+  html[data-theme="A"] .tf-group--roars   { background: var(--tf-roars-bg); border-color: var(--tf-roars-bd); }
+
+  /* Summary/details reset */
+  html[data-theme="A"] .tf-group summary { list-style: none; }
+  html[data-theme="A"] .tf-group summary::-webkit-details-marker { display: none; }
+
+  html[data-theme="A"] .tf-group-head {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; padding: 16px 18px;
+    background: transparent; border: 0; cursor: pointer;
+    text-align: left; min-height: 48px;
+    font: inherit; color: inherit;
+  }
+  html[data-theme="A"] .tf-group-icon {
+    width: 36px; height: 36px; border-radius: 12px;
+    display: grid; place-items: center;
+    background: #fff; box-shadow: var(--tf-sh-sm); flex-shrink: 0;
+  }
+  html[data-theme="A"] .tf-group-icon svg { width: 20px; height: 20px; }
+  html[data-theme="A"] .tf-group-meta { flex: 1; min-width: 0; }
+  html[data-theme="A"] .tf-group-meta h2 {
+    margin: 0; font-size: 1.15rem; line-height: 1.1; font-weight: 700;
+  }
+  html[data-theme="A"] .tf-group--action  .tf-group-meta h2 { color: var(--tf-rem-ac); }
+  html[data-theme="A"] .tf-group--specials .tf-group-meta h2 { color: var(--tf-spec-ac); }
+  html[data-theme="A"] .tf-group--learning .tf-group-meta h2 { color: var(--tf-math-ac); }
+  html[data-theme="A"] .tf-group--talk    .tf-group-meta h2 { color: var(--tf-ask-ac); }
+  html[data-theme="A"] .tf-group--roars   .tf-group-meta h2 { color: var(--tf-roars-ac); }
+  html[data-theme="A"] .tf-group-peek {
+    font-size: 0.78rem; color: var(--tf-text-muted); margin-top: 2px;
+  }
+  html[data-theme="A"] .tf-group-count {
+    background: #fff; border-radius: 100px; padding: 3px 10px;
+    font-size: 0.72rem; font-weight: 700; color: var(--tf-text-muted);
+    border: 1px solid var(--tf-border);
+  }
+  html[data-theme="A"] .tf-group-count--action {
+    background: var(--tf-rem-ac); color: #fff; border-color: var(--tf-rem-ac);
+  }
+  html[data-theme="A"] .tf-chev {
+    width: 22px; height: 22px; display: grid; place-items: center;
+    transition: transform 0.25s ease; color: var(--tf-text-muted); flex-shrink: 0;
+  }
+  html[data-theme="A"] .tf-group[open] .tf-chev { transform: rotate(180deg); }
+
+  html[data-theme="A"] .tf-group-body { padding: 0 18px 18px; }
+
+  /* ---- REMINDERS ---- */
+  html[data-theme="A"] .tf-reminder {
+    display: flex; gap: 12px; background: #fff;
+    border: 1px solid var(--tf-rem-bd); border-radius: var(--tf-r-md);
+    padding: 12px; margin-bottom: 10px;
+  }
+  html[data-theme="A"] .tf-reminder:last-child { margin-bottom: 0; }
+  html[data-theme="A"] .tf-reminder-badge {
+    width: 52px; flex-shrink: 0;
+    background: var(--tf-rem-ac); color: #fff;
+    border-radius: var(--tf-r-sm);
+    text-align: center; padding: 6px 4px;
+  }
+  html[data-theme="A"] .tf-reminder-mo {
+    font-size: 0.6rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.85;
+  }
+  html[data-theme="A"] .tf-reminder-day {
+    font: 800 1.5rem/1 "Fraunces", serif;
+  }
+  html[data-theme="A"] .tf-reminder-body { font-size: 0.9rem; line-height: 1.5; }
+  html[data-theme="A"] .tf-reminder--urgent {
+    border-color: var(--tf-rem-ac);
+    box-shadow: 0 0 0 3px rgba(220,38,38,0.08);
+  }
+  html[data-theme="A"] .tf-urgent-tag {
+    display: inline-block; background: var(--tf-rem-ac); color: #fff;
+    font-size: 0.6rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.08em; padding: 2px 8px; border-radius: 100px;
+    margin-right: 6px; vertical-align: 1px;
+  }
+
+  /* ---- SPECIALS GRID ---- */
+  html[data-theme="A"] .tf-my-specials {
+    background: #fff; border: 1px solid var(--tf-spec-bd);
+    border-radius: var(--tf-r-md); padding: 12px; margin-bottom: 12px;
+  }
+  html[data-theme="A"] .tf-ms-head {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  }
+  html[data-theme="A"] .tf-ms-room-name {
+    display: flex; align-items: center; gap: 6px;
+    font: 700 0.95rem "Fraunces", serif; color: var(--tf-spec-ac);
+  }
+  html[data-theme="A"] .tf-ms-room-name img {
+    width: 16px; height: 12px; border-radius: 2px; vertical-align: -1px;
+  }
+  html[data-theme="A"] .tf-ms-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
+  }
+  html[data-theme="A"] .tf-ms-day {
+    background: var(--tf-spec-bg); border: 1px solid var(--tf-spec-bd);
+    border-radius: var(--tf-r-sm); padding: 8px 4px; text-align: center;
+    position: relative;
+  }
+  html[data-theme="A"] .tf-ms-day--today {
+    background: var(--tf-spec-ac); color: #fff; border-color: var(--tf-spec-ac);
+  }
+  html[data-theme="A"] .tf-ms-dow {
+    font-size: 0.62rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.04em; opacity: 0.75;
+  }
+  html[data-theme="A"] .tf-ms-subj-icon { font-size: 1.3rem; margin: 4px 0 2px; }
+  html[data-theme="A"] .tf-ms-subj { font-size: 0.7rem; font-weight: 600; }
+  html[data-theme="A"] .tf-ms-letter {
+    position: absolute; top: 3px; right: 4px;
+    font-size: 0.55rem; font-weight: 800; opacity: 0.45;
+  }
+  html[data-theme="A"] .tf-weather-slot {
+    font-size: 0.65rem; color: rgba(254,249,238,0.7); min-height: 4px;
+  }
+
+  html[data-theme="A"] .tf-full-grid {
+    background: #fff; border: 1px solid var(--tf-spec-bd);
+    border-radius: var(--tf-r-md); padding: 12px; overflow-x: auto;
+  }
+  html[data-theme="A"] .tf-full-grid table {
+    width: 100%; border-collapse: collapse; font-size: 0.78rem;
+  }
+  html[data-theme="A"] .tf-full-grid th,
+  html[data-theme="A"] .tf-full-grid td {
+    padding: 8px 4px; text-align: center;
+    border-bottom: 1px solid var(--tf-border-soft);
+  }
+  html[data-theme="A"] .tf-full-grid th {
+    font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--tf-text-muted);
+  }
+  html[data-theme="A"] .tf-full-grid-letter {
+    font-size: 0.55rem; opacity: 0.6; display: block; font-weight: 600;
+  }
+  html[data-theme="A"] .tf-full-grid-room {
+    text-align: left; font-weight: 700; color: var(--tf-spec-ac); white-space: nowrap;
+  }
+  html[data-theme="A"] .tf-full-grid-room img {
+    width: 14px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px;
+  }
+  html[data-theme="A"] .tf-cell-icon { font-size: 1rem; display: block; }
+  html[data-theme="A"] .tf-cell-subj { font-size: 0.65rem; color: var(--tf-text-muted); display: block; }
+  html[data-theme="A"] tr[data-tf-grid-classroom] { }
+  html[data-theme="A"] .tf-full-grid tr:hover td { background: var(--tf-spec-bg); }
+
+  /* ---- LEARNING TABS ---- */
+  html[data-theme="A"] .tf-learning-tabs {
+    display: flex; gap: 4px; margin-bottom: 14px;
+    background: #fff; border: 1px solid var(--tf-math-bd);
+    border-radius: 100px; padding: 4px;
+  }
+  html[data-theme="A"] .tf-learning-tab {
+    flex: 1; border: 0; background: transparent; padding: 8px 6px;
+    font: 600 0.78rem "DM Sans", sans-serif; border-radius: 100px;
+    color: var(--tf-text-muted); cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  html[data-theme="A"] .tf-learning-tab--active {
+    background: var(--tf-math-ac); color: #fff;
+  }
+  html[data-theme="A"] .tf-tab-e { font-size: 0.9rem; }
+
+  html[data-theme="A"] .tf-learning-panel { display: none; }
+  html[data-theme="A"] .tf-learning-panel--active { display: block; }
+
+  html[data-theme="A"] .tf-panel-card {
+    background: #fff;
+    border: 1px solid var(--tf-math-bd);
+    border-radius: var(--tf-r-md);
+    padding: 14px 16px;
+  }
+  html[data-theme="A"] .tf-panel-card--math { border-color: var(--tf-math-bd); }
+  html[data-theme="A"] .tf-panel-card--literacy { border-color: var(--tf-lit-bd); }
+  html[data-theme="A"] .tf-panel-card--books { border-color: var(--tf-books-bd); }
+
+  html[data-theme="A"] .tf-panel-card h3 {
+    margin: 0 0 8px; font-size: 1.05rem; font-weight: 700;
+  }
+  html[data-theme="A"] .tf-welcome-h3 { color: var(--tf-welcome-ac); }
+  html[data-theme="A"] .tf-math-h3    { color: var(--tf-math-ac); }
+  html[data-theme="A"] .tf-lit-h3     { color: var(--tf-lit-ac); }
+  html[data-theme="A"] .tf-books-h3   { color: var(--tf-books-ac); }
+
+  html[data-theme="A"] .tf-panel-card p {
+    margin: 0 0 10px; font-size: 0.9rem; line-height: 1.65;
+  }
+  html[data-theme="A"] .tf-panel-card p:last-child { margin-bottom: 0; }
+
+  /* Math details */
+  html[data-theme="A"] .tf-math-details {
+    margin-top: 12px;
+    background: var(--tf-math-bg);
+    border-radius: var(--tf-r-sm);
+    padding: 10px 12px;
+  }
+  html[data-theme="A"] .tf-math-detail-row {
+    display: flex; gap: 8px; font-size: 0.85rem; margin-bottom: 4px;
+  }
+  html[data-theme="A"] .tf-math-detail-row:last-child { margin-bottom: 0; }
+  html[data-theme="A"] .tf-math-detail-label { font-weight: 700; color: var(--tf-math-ac); min-width: 60px; }
+  html[data-theme="A"] .tf-math-detail-val { color: var(--tf-text); }
+
+  /* Books */
+  html[data-theme="A"] .tf-book-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 0; border-bottom: 1px solid var(--tf-border-soft);
+  }
+  html[data-theme="A"] .tf-book-item:last-child { border-bottom: none; }
+  html[data-theme="A"] .tf-book-icon { font-size: 1.2rem; }
+  html[data-theme="A"] .tf-book-title { font-weight: 700; font-size: 0.9rem; }
+  html[data-theme="A"] .tf-book-author { font-size: 0.82rem; color: var(--tf-text-muted); }
+
+  /* ---- TALK AT HOME ---- */
+  html[data-theme="A"] .tf-ask-list {
+    margin: 0 0 16px; padding: 0; list-style: none;
+  }
+  html[data-theme="A"] .tf-ask-list li {
+    background: #fff; border: 1px solid var(--tf-ask-bd);
+    border-radius: var(--tf-r-md); padding: 12px 14px 12px 42px;
+    margin-bottom: 8px; position: relative;
+    font-size: 0.92rem; line-height: 1.55;
+  }
+  html[data-theme="A"] .tf-ask-list li:last-child { margin-bottom: 0; }
+  html[data-theme="A"] .tf-ask-list li::before {
+    content: "💬"; position: absolute; left: 12px; top: 12px; font-size: 1.1rem;
+  }
+
+  /* ---- VOCABULARY ---- */
+  html[data-theme="A"] .tf-vocab-section {
+    background: #fff; border: 1px solid var(--tf-vocab-bd);
+    border-radius: var(--tf-r-md); padding: 14px;
+  }
+  html[data-theme="A"] .tf-vocab-head {
+    font: 700 0.95rem "Fraunces", serif; color: var(--tf-vocab-ac);
+    margin: 0 0 10px; display: flex; gap: 6px; align-items: center;
+  }
+  html[data-theme="A"] .tf-vocab-flip-hint {
+    margin-left: auto; font-size: 0.66rem; font-weight: 700;
+    color: var(--tf-text-faint); letter-spacing: 0.06em; text-transform: uppercase;
+    font-family: "DM Sans", sans-serif;
+  }
+  html[data-theme="A"] .tf-vocab-group { margin-bottom: 14px; }
+  html[data-theme="A"] .tf-vocab-group:last-child { margin-bottom: 0; }
+  html[data-theme="A"] .tf-vocab-group-lbl {
+    font-size: 0.66rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--tf-vocab-ac); margin-bottom: 6px;
+  }
+  html[data-theme="A"] .tf-vocab-pills {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  html[data-theme="A"] .tf-vocab-pill {
+    background: var(--tf-vocab-bg); border: 1.5px solid var(--tf-vocab-bd);
+    color: var(--tf-vocab-ac); padding: 6px 12px; border-radius: 100px;
+    font-size: 0.82rem; font-weight: 600; cursor: pointer; user-select: none;
+    transition: all 0.18s ease; min-height: 32px; display: inline-flex; align-items: center;
+  }
+  html[data-theme="A"] .tf-vocab-pill:hover,
+  html[data-theme="A"] .tf-vocab-pill.tf-vocab-pill--flipped {
+    background: var(--tf-vocab-ac); color: #fff;
+  }
+
+  /* ---- ROARS ---- */
+  html[data-theme="A"] .tf-roars-intro {
+    font-size: 0.92rem; color: var(--tf-text-muted);
+    margin: 0 0 14px; text-align: center; font-style: italic;
+  }
+  html[data-theme="A"] .tf-roars-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  }
+  @media (min-width: 760px) {
+    html[data-theme="A"] .tf-roars-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  html[data-theme="A"] .tf-roars-card {
+    background: #fff; border: 1px solid var(--tf-roars-bd);
+    border-radius: var(--tf-r-md); padding: 14px 10px;
+    text-align: center; position: relative;
+  }
+  html[data-theme="A"] .tf-roars-star {
+    position: absolute; top: 8px; right: 8px;
+    font-size: 0.95rem; color: var(--tf-roars-ac);
+  }
+  html[data-theme="A"] .tf-roars-flag-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--tf-roars-bg); border: 1px solid var(--tf-roars-bd);
+    border-radius: 100px; padding: 4px 10px;
+    font-size: 0.72rem; font-weight: 700; color: var(--tf-roars-ac);
+    margin-bottom: 8px;
+  }
+  html[data-theme="A"] .tf-roars-flag-chip img {
+    width: 14px; height: 10px; border-radius: 2px;
+  }
+  html[data-theme="A"] .tf-roars-name {
+    font: 800 1.05rem/1.1 "Fraunces", serif;
+    letter-spacing: -0.01em; text-transform: uppercase; color: var(--tf-text);
+  }
+
+  /* ---- FOOTER ---- */
+  html[data-theme="A"] .tf-footer {
+    text-align: center; padding: 32px 0 16px;
+    font-size: 0.78rem; color: var(--tf-text-faint);
+    border-top: 1px solid var(--tf-border-soft); margin-top: 32px;
+  }
+
+  /* ---- PRINT ---- */
+  @media print {
+    html[data-theme="A"] .tf-top-bar,
+    html[data-theme="A"] .tf-room-selector,
+    html[data-theme="A"] .tf-quick-links { display: none; }
+    html[data-theme="A"] .tf-group { page-break-inside: avoid; }
+    html[data-theme="A"] .tf-group:not([open]) .tf-group-body { display: block; }
+  }
+</style>
+
+<!-- ================================================================
+     CLIENT SCRIPT — all selectors use .tf-* so they find nothing
+     in Classic or other theme DOMs
+     ================================================================ -->
+<script define:vars={{ weekDate: date, weekDataJson: JSON.stringify({ reminders: sortedReminders, specials }), configJson: JSON.stringify({ classrooms: config.classrooms, rotations: config.rotations, subjectIcons: config.subjectIcons, subjectTranslations: config.subjectTranslations }), calendarData: calendar }}>
+
+(function TodayFirstInit() {
+  // ---------------------------------------------------------------
+  // Language button sync (delegates to global setLang if available)
+  // ---------------------------------------------------------------
+  document.querySelectorAll('.tf-lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.setLang;
+      if (typeof window.setLang === 'function') {
+        window.setLang(lang);
+      } else {
+        document.documentElement.dataset.lang = lang;
+        localStorage.setItem('nl-lang', lang);
+        applyLangManual(lang);
+      }
+    });
+  });
+
+  function applyLangManual(lang) {
+    // Minimal fallback if global setLang not yet wired
+    document.querySelectorAll('[data-en]').forEach(el => {
+      if (el.dataset.en !== undefined) el.textContent = lang === 'en' ? (el.dataset.en || el.textContent) : (el.dataset.es || el.textContent);
+    });
+    document.querySelectorAll('[data-lang-en]').forEach(el => {
+      el.style.display = lang === 'en' ? '' : 'none';
+    });
+    document.querySelectorAll('[data-lang-es]').forEach(el => {
+      el.style.display = lang === 'es' ? '' : 'none';
+    });
+    document.querySelectorAll('.tf-lang-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.setLang === lang);
+    });
+  }
+
+  // Sync active state on lang buttons when global lang changes
+  const langObserver = new MutationObserver(() => {
+    const lang = document.documentElement.getAttribute('data-lang') || 'en';
+    document.querySelectorAll('.tf-lang-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.setLang === lang);
+    });
+  });
+  langObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
+
+  // ---------------------------------------------------------------
+  // Learning panel tabs
+  // ---------------------------------------------------------------
+  document.querySelectorAll('.tf-learning-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = btn.dataset.tfPanel;
+      const groupBody = btn.closest('.tf-group-body');
+      if (!groupBody) return;
+      groupBody.querySelectorAll('.tf-learning-tab').forEach(b =>
+        b.classList.toggle('tf-learning-tab--active', b === btn)
+      );
+      groupBody.querySelectorAll('.tf-learning-panel').forEach(p =>
+        p.classList.toggle('tf-learning-panel--active', p.classList.contains('tf-learning-panel--' + panel))
+      );
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // Vocabulary flip
+  // ---------------------------------------------------------------
+  document.querySelectorAll('.tf-vocab-pill').forEach(pill => {
+    const en = pill.dataset.tfEnWord || '';
+    const es = pill.dataset.tfEsWord || '';
+    const frontLang = pill.dataset.tfFrontLang || '';
+
+    function syncFront() {
+      const lang = document.documentElement.getAttribute('data-lang') || 'en';
+      const isFlipped = pill.classList.contains('tf-vocab-pill--flipped');
+      if (frontLang) {
+        // Fixed front lang (e.g. SLA always shows Spanish on front)
+        pill.textContent = isFlipped ? (frontLang === 'es' ? en : es) : (frontLang === 'es' ? es : en);
+      } else {
+        pill.textContent = isFlipped ? (lang === 'en' ? es : en) : (lang === 'en' ? en : es);
+      }
+    }
+
+    pill.addEventListener('click', () => {
+      pill.classList.toggle('tf-vocab-pill--flipped');
+      syncFront();
+    });
+
+    // Re-sync on language change
+    const obs = new MutationObserver(syncFront);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
+
+    // Initial render
+    syncFront();
+  });
+
+  // ---------------------------------------------------------------
+  // Classroom selector
+  // ---------------------------------------------------------------
+  const cfg = JSON.parse(configJson);
+  // Don't auto-pick a default — we don't want to mislead parents into thinking
+  // the first classroom's special is "their" child's. They must tap their class.
+  const savedClassroom = localStorage.getItem('nl-classroom') || null;
+
+  function selectClassroom(name) {
+    // Update pills
+    document.querySelectorAll('.tf-room-pill').forEach(pill => {
+      pill.classList.toggle('tf-room-pill--active', pill.dataset.tfClassroom === name);
+    });
+    // Update selected label
+    const lbl = document.getElementById('tf-room-selected-name');
+    if (lbl) lbl.textContent = name + ' ✓';
+    // Show correct specials card
+    document.querySelectorAll('[data-tf-specials-classroom]').forEach(card => {
+      card.style.display = card.dataset.tfSpecialsClassroom === name ? '' : 'none';
+    });
+    // Highlight row in full grid
+    document.querySelectorAll('[data-tf-grid-classroom]').forEach(row => {
+      const cells = row.querySelectorAll('td');
+      cells.forEach(td => {
+        td.style.background = row.dataset.tfGridClassroom === name ? 'var(--tf-spec-bg)' : '';
+      });
+    });
+    // Update today hero specials
+    updateTodaySpecials(name);
+    // Flash my-specials card
+    const ms = document.getElementById('tf-my-specials');
+    if (ms && typeof ms.animate === 'function') {
+      ms.animate(
+        [
+          { boxShadow: '0 0 0 0 rgba(109,40,217,0.0)' },
+          { boxShadow: '0 0 0 8px rgba(109,40,217,0.18)' },
+          { boxShadow: '0 0 0 0 rgba(109,40,217,0.0)' }
+        ],
+        { duration: 900, easing: 'cubic-bezier(0.16,1,0.3,1)' }
+      );
+    }
+    localStorage.setItem('nl-classroom', name);
+  }
+
+  document.querySelectorAll('.tf-room-pill').forEach(pill => {
+    pill.addEventListener('click', () => selectClassroom(pill.dataset.tfClassroom));
+  });
+
+  // ---------------------------------------------------------------
+  // "Today" hero: recompute for the real calendar day
+  // ---------------------------------------------------------------
+  const weekDataParsed = JSON.parse(weekDataJson);
+  const specials = weekDataParsed.specials;
+
+  const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+  const dayNamesEn = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const dayNamesEs = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+  const monthNamesEn = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const monthNamesEs = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+  function getWeekBounds() {
+    const [y, m, d] = weekDate.split('-').map(Number);
+    const monday = new Date(y, m - 1, d);
+    const friday = new Date(monday);
+    friday.setDate(friday.getDate() + 4);
+    return { monday, friday };
+  }
+
+  function updateTodaySpecials(classroom) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const { monday, friday } = getWeekBounds();
+
+    let dayIndex = 0; // default Monday
+    if (today >= monday && today <= friday) {
+      dayIndex = today.getDay() - 1; // Mon=1 → 0, Fri=5 → 4
+    }
+    const dayKey = dayKeys[dayIndex];
+    const letter = specials[dayKey] || specials['monday'];
+
+    const enEl = document.getElementById('tf-today-special-en');
+    const esEl = document.getElementById('tf-today-special-es');
+
+    // No classroom chosen yet → keep the neutral "Day F · pick your class below" SSR fallback.
+    if (!classroom) {
+      if (enEl) enEl.innerHTML = `<span class="tf-emoji">📅</span> Day ${letter} <span class="tf-pick-hint" style="opacity:.65">· pick your class below</span>`;
+      if (esEl) esEl.innerHTML = `<span class="tf-emoji">📅</span> Día ${letter} <span class="tf-pick-hint" style="opacity:.65">· elige tu salón abajo</span>`;
+      return;
+    }
+
+    const rotation = cfg.rotations[classroom] || {};
+    const subject = rotation[letter] || '';
+    const subjectEs = (cfg.subjectTranslations || {})[subject] || subject;
+    const icon = (cfg.subjectIcons || {})[subject] || '';
+
+    if (enEl) enEl.innerHTML = (icon ? `<span class="tf-emoji">${icon}</span>` : '') + `${subject} <span style="opacity:.65">(Day ${letter})</span>`;
+    if (esEl) esEl.innerHTML = (icon ? `<span class="tf-emoji">${icon}</span>` : '') + `${subjectEs} <span style="opacity:.65">(Día ${letter})</span>`;
+
+    // Also mark today's day in the ms-grid
+    const classroom_specials = document.querySelector(`[data-tf-specials-classroom="${classroom}"]`);
+    if (classroom_specials) {
+      classroom_specials.querySelectorAll('.tf-ms-day').forEach((dayEl, i) => {
+        dayEl.classList.toggle('tf-ms-day--today', i === dayIndex);
+      });
+    }
+  }
+
+  function updateTodayHero() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const { monday, friday } = getWeekBounds();
+
+    // Only update day name if today is within the week
+    if (today >= monday && today <= friday) {
+      const dayIndex = today.getDay() - 1;
+      const nameEn = dayNamesEn[dayIndex];
+      const nameEs = dayNamesEs[dayIndex];
+      const monthEn = monthNamesEn[today.getMonth()];
+      const monthEs = monthNamesEs[today.getMonth()];
+      const dayNum = today.getDate();
+
+      const dayNameEl = document.getElementById('tf-today-day-name');
+      if (dayNameEl) {
+        const enSpan = dayNameEl.querySelector('[data-en]');
+        const esSpan = dayNameEl.querySelector('[data-es]');
+        if (enSpan) enSpan.innerHTML = `${nameEn} <em>${monthEn} ${dayNum}</em>`;
+        if (esSpan) esSpan.innerHTML = `${nameEs} <em>${dayNum} ${monthEs}</em>`;
+      }
+    }
+
+    // Update Next Up: earliest reminder after today
+    const reminders = weekDataParsed.reminders || [];
+    const todayISO = today.toISOString().split('T')[0];
+    const future = reminders.filter(r => r.date >= todayISO);
+    const nextReminder = future[0] || reminders[0];
+    if (nextReminder) {
+      const enEl = document.getElementById('tf-next-up-en');
+      const esEl = document.getElementById('tf-next-up-es');
+      const strippedEn = nextReminder.en.replace(/<[^>]+>/g, '').slice(0, 55);
+      const strippedEs = nextReminder.es.replace(/<[^>]+>/g, '').slice(0, 55);
+      if (enEl) enEl.textContent = strippedEn;
+      if (esEl) esEl.textContent = strippedEs;
+    }
+  }
+
+  updateTodayHero();
+
+  // Init classroom: only apply a saved selection. Don't auto-pick a default
+  // — Cartagena's special is not necessarily this family's child's special.
+  if (savedClassroom) {
+    selectClassroom(savedClassroom);
+  } else {
+    // No saved choice → leave pills inactive, hide per-classroom specials card,
+    // and render neutral "Day F" in the hero.
+    document.querySelectorAll('[data-tf-specials-classroom]').forEach(card => {
+      card.style.display = 'none';
+    });
+    const lbl = document.getElementById('tf-room-selected-name');
+    if (lbl) lbl.textContent = '';
+    updateTodaySpecials(null);
+  }
+
+  // ---------------------------------------------------------------
+  // Milestone trail: live recomputation using calendar data
+  // ---------------------------------------------------------------
+  (function updateTrail() {
+    try {
+      const parseDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+      const fmtISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
+      const firstDay = parseDate(calendarData.firstDay);
+      const lastDay = parseDate(calendarData.lastDay);
+      const noSchool = new Set();
+      (calendarData.dates || []).forEach(d => noSchool.add(d.date));
+      (calendarData.breaks || []).forEach(br => {
+        const d = parseDate(br.start), end = parseDate(br.end);
+        while (d <= end) { noSchool.add(fmtISO(d)); d.setDate(d.getDate()+1); }
+      });
+
+      const countWeekdays = (start, end) => {
+        let count = 0, d = new Date(start);
+        while (d <= end) { const dow = d.getDay(); if (dow >= 1 && dow <= 5 && !noSchool.has(fmtISO(d))) count++; d.setDate(d.getDate()+1); }
+        return count;
+      };
+
+      const today = new Date(); today.setHours(0,0,0,0);
+      const effective = today > lastDay ? lastDay : today < firstDay ? firstDay : today;
+      const total = countWeekdays(firstDay, lastDay);
+      const elapsed = countWeekdays(firstDay, effective);
+      const remaining = Math.max(0, total - elapsed);
+      const pct = Math.min(100, Math.round((elapsed / total) * 100));
+
+      const elapsedEl = document.getElementById('tf-trail-elapsed');
+      if (elapsedEl) elapsedEl.textContent = String(elapsed);
+      const remainEl = document.getElementById('tf-trail-remaining');
+      if (remainEl) remainEl.textContent = String(remaining);
+      const fillEl = document.getElementById('tf-trail-fill');
+      if (fillEl) fillEl.style.width = pct + '%';
+      const nowEl = document.getElementById('tf-trail-now');
+      if (nowEl) nowEl.style.left = pct + '%';
+    } catch (e) { /* non-critical */ }
+  })();
+
+  // ---------------------------------------------------------------
+  // Weather — Open-Meteo
+  // ---------------------------------------------------------------
+  (async function loadWeather() {
+    const weekStart = new Date(weekDate + 'T00:00:00');
+    const now = new Date();
+    const diffDays = Math.abs((now.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays > 10) return;
+
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 4);
+    const endStr = weekEnd.toISOString().split('T')[0];
+
+    const weatherCodes = {
+      0:'☀️',1:'🌤️',2:'⛅',3:'☁️',
+      45:'🌫️',48:'🌫️',
+      51:'🌦️',53:'🌧️',55:'🌧️',
+      61:'🌧️',63:'🌧️',65:'🌧️',
+      71:'🌨️',73:'🌨️',75:'🌨️',
+      80:'🌦️',81:'🌧️',82:'🌧️',
+      95:'⛈️',96:'⛈️',99:'⛈️',
+    };
+
+    try {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=38.9283&longitude=-77.0365&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&timezone=America/New_York&start_date=${weekDate}&end_date=${endStr}`;
+      const resp = await fetch(url);
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const daily = data.daily;
+      if (!daily || !daily.time) return;
+
+      // "Today" card weather
+      const today = new Date(); today.setHours(0,0,0,0);
+      const weekStartD = new Date(weekDate + 'T00:00:00');
+      let todayIdx = 0;
+      if (today >= weekStartD && today <= weekEnd) {
+        todayIdx = today.getDay() - 1;
+      }
+      if (todayIdx >= 0 && todayIdx < daily.time.length) {
+        const high = Math.round(daily.temperature_2m_max[todayIdx]);
+        const low  = Math.round(daily.temperature_2m_min[todayIdx]);
+        const code = daily.weathercode[todayIdx];
+        const icon = weatherCodes[code] || '🌡️';
+        const weatherText = document.getElementById('tf-weather-text');
+        if (weatherText) weatherText.textContent = `${icon} ${high}°/${low}°F`;
+      }
+
+      // Per-day weather slots in specials grid
+      for (let i = 0; i < daily.time.length && i < 5; i++) {
+        const high = Math.round(daily.temperature_2m_max[i]);
+        const low  = Math.round(daily.temperature_2m_min[i]);
+        const precip = daily.precipitation_probability_max[i];
+        const code = daily.weathercode[i];
+        const icon = weatherCodes[code] || '🌡️';
+        const html = `<span>${icon} ${high}°/${low}°${precip > 20 ? ` 💧${precip}%` : ''}</span>`;
+        document.querySelectorAll(`[data-weather-day="${i}"] .tf-weather-slot`).forEach(slot => {
+          slot.innerHTML = html;
+        });
+      }
+    } catch (e) { /* weather non-critical */ }
+  })();
+
+  // Re-trigger today logic when user switches back to this theme
+  window.addEventListener('nl-theme-change', (e) => {
+    if (e && e.detail && e.detail.theme === 'A') {
+      const classroom = localStorage.getItem('nl-classroom') || cfg.classrooms[0];
+      selectClassroom(classroom);
+      updateTodayHero();
+    }
+  });
+
+})();
+</script>

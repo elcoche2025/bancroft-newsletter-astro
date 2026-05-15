@@ -1,0 +1,150 @@
+{
+  "date": "2026-05-18",
+  "season": "spring",
+  "welcome": {
+    "en": "We're heading into the <b>final stretch</b> of the school year ☀️. The most important thing right now is to <b>encourage your child</b> — remind them how hard they've worked all year and how proud you are of them.\n\nA few small supports go a long way: <b>reading together</b>, a <b>good night's sleep</b>, and <b>arriving to school on time</b>.\n\nOne small ask — if you have a few minutes this week, please <b>practice tying shoelaces</b> with your child. It really helps at recess and during transitions!\n\nThank you, dear families, for all your collaboration at home.",
+    "es": "Estamos entrando en el <b>último tramo</b> del año escolar ☀️. Lo más importante en este momento es <b>animar a su hijo/a</b> — recuérdenle cuánto ha trabajado todo el año y lo orgulloso/a que están de él/ella.\n\nAlgunos pequeños apoyos hacen una gran diferencia: <b>leer juntos</b>, <b>dormir bien</b> y <b>llegar a la escuela a tiempo</b>.\n\nUna pequeña petición — si tienen unos minutos esta semana, por favor <b>practiquen a amarrarse los cordones</b> con su hijo/a. ¡Ayuda mucho en el recreo y en las transiciones!\n\nGracias, queridas familias, por toda su colaboración en casa."
+  },
+  "math": {
+    "en": "Over the next few weeks, we're <b>bringing together everything first graders have learned in math</b> — number bonds, counting-on, make-ten, place value (tens and ones), and shapes from our geometry unit. Cycling back through earlier topics is one of the best ways for young learners to <b>lock in what they've learned</b>.\n\n<b>At home, your child would love to:</b>\n\n• <b>Build with blocks or Legos</b> and talk about the shapes — 2D vs. 3D, square faces on a cube, what shape is hiding in a cereal box? Geometry gets the fewest at-home reps, and family block play is one of the best ways to build it.\n\n• <b>Play a turn-taking board or card game</b> — Monopoly Junior, Uno, Trouble, Candy Land, War, Go Fish. Five to fifteen minutes, a few times a week, is plenty.\n\n• <b>Ask your child about a math idea they're proud of this year.</b> Listening matters as much as practicing.",
+    "es": "Durante las próximas semanas, estaremos <b>conectando todo lo que los estudiantes de primer grado han aprendido en matemáticas</b> — vínculos numéricos, conteo hacia adelante, formar diez, valor posicional (decenas y unidades) y figuras de nuestra unidad de geometría. Volver a recorrer los temas anteriores es una de las mejores formas para que los niños <b>consoliden lo aprendido</b>.\n\n<b>En casa, a su hijo/a le encantaría:</b>\n\n• <b>Construir con bloques o Legos</b> y hablar de las figuras — 2D vs. 3D, caras cuadradas en un cubo, ¿qué figura se esconde en una caja de cereal? La geometría es la parte con menos práctica en casa, y jugar con bloques en familia es una de las mejores maneras de fortalecerla.\n\n• <b>Jugar un juego de mesa o de cartas</b> por turnos — Monopoly Junior, Uno, Trouble, Candy Land, War, Go Fish. Cinco a quince minutos, varias veces a la semana, es suficiente.\n\n• <b>Pídanle a su hijo/a que les cuente una idea de matemáticas de la que se sienta orgulloso/a este año.</b> Escuchar importa tanto como practicar."
+  },
+  "literacy": {
+    "en": "In <b>SLA</b>, we'll be reading different <b>informational and narrative texts</b> to identify and learn key ideas about the <b>first inhabitants of Spanish America</b>.\n\n<b>How you can help in Spanish at home:</b>\n\n• <b>Read together</b> — informational books, picture books, or anything your child enjoys reading in Spanish.\n• While you read, talk about it. Try a <b>comprehension, inference, or vocabulary</b> question:\n  — «¿De qué se trata este texto?»\n  — «¿Qué significa la palabra _____ en esta oración?»\n  — «¿Qué crees que va a pasar después?»\n\nIn <b>ELA</b>, we'll continue learning about <b>American Symbols</b>! Talk about these symbols with your child this week: the <b>American flag</b>, the <b>Statue of Liberty</b>, the <b>Liberty Bell</b>, and the <b>bald eagle</b>. Ask what each one stands for.",
+    "es": "En <b>SLA</b>, estaremos leyendo diferentes <b>textos informativos y narrativos</b> para identificar y aprender ideas clave sobre los <b>primeros habitantes de Hispanoamérica</b>.\n\n<b>Cómo pueden ayudar en español en casa:</b>\n\n• <b>Lean juntos</b> — libros informativos, libros con ilustraciones, o cualquier cosa que su hijo/a disfrute leer en español.\n• Mientras leen, conversen. Prueben una pregunta de <b>comprensión, inferencia o vocabulario</b>:\n  — «¿De qué se trata este texto?»\n  — «¿Qué significa la palabra _____ en esta oración?»\n  — «¿Qué crees que va a pasar después?»\n\nEn <b>ELA</b>, ¡seguiremos aprendiendo sobre los <b>Símbolos Estadounidenses (American Symbols)</b>! Conversen con su hijo/a sobre estos símbolos esta semana: la <b>bandera estadounidense</b>, la <b>Estatua de la Libertad</b>, la <b>Campana de la Libertad</b> y el <b>águila calva</b>. Pregúntenle qué representa cada uno."
+  },
+  "specials": {
+    "monday": "A",
+    "tuesday": "B",
+    "wednesday": "C",
+    "thursday": "D",
+    "friday": "E"
+  },
+  "roars": {
+    "Cartagena": "Adriana C.",
+    "Colombia": "June G.",
+    "Managua": "Adi P.",
+    "DR": "Karla T.",
+    "Venezuela": "Iker M.",
+    "España": "Douglas S."
+  },
+  "reminders": [
+    {
+      "date": "2026-05-19",
+      "en": "<b>i-Ready ELA — starts Tuesday, May 19.</b> Encouragement, a good night's sleep, and breakfast go further than anything else!",
+      "es": "<b>i-Ready ELA — comienza el martes 19 de mayo.</b> ¡Las palabras de aliento, dormir bien y un buen desayuno hacen más que cualquier otra cosa!"
+    },
+    {
+      "date": "2026-05-25",
+      "en": "<b>Memorial Day — Monday, May 25</b> — No school.",
+      "es": "<b>Día de los Caídos — lunes 25 de mayo</b> — No hay clases."
+    },
+    {
+      "date": "2026-05-26",
+      "en": "<b>i-Ready Math — starts Tuesday, May 26.</b> Encouragement, sleep, and breakfast are what matter most!",
+      "es": "<b>i-Ready Matemáticas — comienza el martes 26 de mayo.</b> ¡Las palabras de aliento, dormir bien y un buen desayuno son lo que más importa!"
+    },
+    {
+      "date": "2026-06-08",
+      "en": "<b>End-of-Year Picnic — Monday, June 8, 1:00–2:00 pm</b> in the gym. Come join us!",
+      "es": "<b>Picnic de Fin de Año — lunes 8 de junio, de 1:00 a 2:00 pm</b> en el gimnasio. ¡Vengan a acompañarnos!"
+    },
+    {
+      "date": "2026-06-09",
+      "en": "<b>Field Day — Tuesday, June 9.</b> Send your child in comfortable clothes and sneakers, with a water bottle.",
+      "es": "<b>Día de Campo (Field Day) — martes 9 de junio.</b> Envíen a su hijo/a con ropa cómoda, tenis y una botella de agua."
+    },
+    {
+      "date": "2026-06-17",
+      "en": "<b>Last Day of School — Wednesday, June 17.</b>",
+      "es": "<b>Último Día de Clases — miércoles 17 de junio.</b>"
+    }
+  ],
+  "askYourChild": [
+    {
+      "en": "Tell me about a math idea you learned this year that you're proud of.",
+      "es": "Cuéntame una idea de matemáticas que aprendiste este año de la que te sientas orgulloso/a."
+    },
+    {
+      "en": "Can you name an American symbol? What does it stand for?",
+      "es": "¿Puedes nombrar un símbolo estadounidense? ¿Qué representa?"
+    },
+    {
+      "en": "What was the text about today? What's one important idea?",
+      "es": "¿De qué se trata el texto que leímos hoy? ¿Cuál es una idea importante?"
+    }
+  ],
+  "vocabulary": {
+    "en": [
+      {
+        "label": "Math review",
+        "words": [
+          "number bond",
+          "counting on",
+          "make ten",
+          "place value",
+          "tens and ones",
+          "equal shares"
+        ]
+      },
+      {
+        "label": "SLA",
+        "words": [
+          "primeros habitantes",
+          "Hispanoamérica",
+          "texto informativo",
+          "texto narrativo",
+          "idea clave",
+          "fluidez"
+        ],
+        "frontLang": "es"
+      },
+      {
+        "label": "ELA",
+        "words": [
+          "symbol",
+          "American flag",
+          "Statue of Liberty",
+          "Liberty Bell",
+          "bald eagle"
+        ]
+      }
+    ],
+    "es": [
+      {
+        "label": "Repaso de Matemáticas",
+        "words": [
+          "vínculo numérico",
+          "conteo hacia adelante",
+          "formar diez",
+          "valor posicional",
+          "decenas y unidades",
+          "partes iguales"
+        ]
+      },
+      {
+        "label": "SLA",
+        "words": [
+          "primeros habitantes",
+          "Hispanoamérica",
+          "texto informativo",
+          "texto narrativo",
+          "idea clave",
+          "fluidez"
+        ],
+        "frontLang": "es"
+      },
+      {
+        "label": "ELA",
+        "words": [
+          "símbolo",
+          "bandera estadounidense",
+          "Estatua de la Libertad",
+          "Campana de la Libertad",
+          "águila calva"
+        ]
+      }
+    ]
+  },
+  "books": []
+}
