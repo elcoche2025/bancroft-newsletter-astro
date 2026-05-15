@@ -26,3 +26,7 @@ pnpm-debug.log*
 # secrets (service account keys, etc.)
 secrets/
 .vercel
+
+# design-time working files (mockups, screenshots, etc. — not runtime)
+Bancroft 1st Grade Newsletter/
+design-context/
