@@ -111,10 +111,20 @@ for (const grp of vocabGroups) {
 // Has books?
 const hasBooks = weekData.books && weekData.books.length > 0;
 
-// Testing pane: check if first reminder is testing-related
+// Testing pane: scan ALL reminders for the next testing-related one
 const firstReminder = sortedReminders[0];
-const isTestingReminder = firstReminder &&
-  /i-ready|testing|assessment/i.test(firstReminder.en);
+const testingRe = /i-ready|testing|assessment/i;
+const firstTestingReminder = sortedReminders.find(r => testingRe.test(r.en));
+const isTestingReminder = !!firstTestingReminder;
+
+// Extract subject ("ELA", "Math", "SLA", "Matemáticas") from the testing reminder text
+function extractTestSubject(text: string): string {
+  const m = text.match(/i-?ready\s+([A-Za-zÁÉÍÓÚáéíóú]+)/i);
+  if (!m) return '';
+  return m[1].trim();
+}
+const testingSubjectEn = firstTestingReminder ? extractTestSubject(firstTestingReminder.en) : '';
+const testingSubjectEs = firstTestingReminder ? extractTestSubject(firstTestingReminder.es) : '';
 
 // Contents sections — built dynamically
 interface ContentItem {
@@ -270,8 +280,8 @@ const weekDateShortEs = (() => {
           <span data-en="i-Ready" data-es="i-Ready">i-Ready</span>
         </div>
         <div class="ns-glance-meta">
-          <span data-lang-en>This week · SLA</span>
-          <span data-lang-es style="display:none">Esta semana · SLA</span>
+          <span data-lang-en>This week{testingSubjectEn ? ` · ${testingSubjectEn}` : ''}</span>
+          <span data-lang-es style="display:none">Esta semana{testingSubjectEs ? ` · ${testingSubjectEs}` : ''}</span>
         </div>
       </div>
     )}
