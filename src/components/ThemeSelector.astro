@@ -97,24 +97,20 @@
     z-index: 1000;
     font-family: "DM Sans", system-ui, sans-serif;
   }
-  /* On mobile, the per-theme language toggle sits in the top-right (themes B & C)
-     or the top of the page chrome (themes A, Classic). Move our floating selector
-     to the bottom-right corner so it never covers the EN/ES pill. */
+  /* On mobile, keep the floating selector in the top-right (same as desktop)
+     but nudge left on themes whose own language toggle lives at the top-right
+     so we never sit on top of the EN/ES pill. Pocket's sticky header is the
+     binding constraint — its lang pill is permanently top-right. */
   @media (max-width: 700px) {
-    .nl-theme-selector {
-      top: auto;
-      right: 14px;
-      bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-    }
-    /* Popover should open UPWARD on mobile since the button is at the bottom. */
+    html[data-theme="A"]       .nl-theme-selector { right: 56px; } /* clear TodayFirst print icon */
+    html[data-theme="B"]       .nl-theme-selector { right: 84px; } /* clear Newsstand's masthead EN/ES pill */
+    html[data-theme="C"]       .nl-theme-selector { right: 92px; } /* clear Pocket's sticky EN/ES pill */
+    /* Cap the popover height + allow internal scroll so the full theme list
+       always fits on short phones instead of overflowing the viewport. */
     .nlts-popover {
-      top: auto;
-      bottom: 46px;
-      transform-origin: bottom right;
-    }
-    @keyframes nlts-pop-in {
-      from { opacity: 0; transform: scale(0.96) translateY(6px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
+      max-height: calc(100dvh - 80px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
   }
   .nlts-btn {

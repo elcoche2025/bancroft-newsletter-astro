@@ -647,8 +647,8 @@ function getFlagSrc(classroom: string): string {
                     <div class="tf-vocab-pills">
                       {fGroup.words.map((word: string, wi: number) => (
                         <span class="tf-vocab-pill"
-                              data-tf-en-word={fGroup.words[wi]}
-                              data-tf-es-word={bGroup?.words[wi] ?? word}
+                              data-tf-en-word={enGroup.words[wi]}
+                              data-tf-es-word={esGroup?.words[wi] ?? word}
                               data-tf-front-lang={frontLang || ''}>
                           {word}
                         </span>

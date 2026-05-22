@@ -1,13 +1,13 @@
 {
   "schoolYear": "2025-2026",
   "firstDay": "2025-08-25",
-  "lastDay": "2026-06-17",
+  "lastDay": "2026-06-18",
   "calendarPdfUrl": "https://dcps.dc.gov/sites/default/files/dc/sites/dcps/publication/attachments/SY%2025-26%20Calendar%20Final_03202024_English.pdf",
   "terms": [
     { "term": 1, "start": "2025-08-25", "end": "2025-10-31", "days": 46 },
     { "term": 2, "start": "2025-11-04", "end": "2026-01-23", "days": 44 },
     { "term": 3, "start": "2026-01-27", "end": "2026-04-03", "days": 45 },
-    { "term": 4, "start": "2026-04-07", "end": "2026-06-17", "days": 45 }
+    { "term": 4, "start": "2026-04-07", "end": "2026-06-18", "days": 46 }
   ],
   "breaks": [
     { "start": "2025-11-26", "end": "2025-11-28", "en": "Thanksgiving Recess", "es": "Receso de Acción de Gracias" },
@@ -51,8 +51,7 @@
     { "date": "2026-04-16", "type": "HOL", "en": "Spring Recess", "es": "Receso de Primavera" },
     { "date": "2026-04-17", "type": "NS", "en": "Spring Recess", "es": "Receso de Primavera" },
     { "date": "2026-05-25", "type": "HOL", "en": "Memorial Day", "es": "Día de los Caídos" },
-    { "date": "2026-06-17", "type": "END", "en": "Last Day of School", "es": "Último Día de Clases" },
-    { "date": "2026-06-18", "type": "NS", "en": "Records / PD Day", "es": "Día de Registros / Desarrollo Profesional" },
+    { "date": "2026-06-18", "type": "END", "en": "Last Day of School", "es": "Último Día de Clases" },
     { "date": "2026-06-19", "type": "HOL", "en": "Juneteenth", "es": "Juneteenth" }
   ],
   "typeLabels": {
