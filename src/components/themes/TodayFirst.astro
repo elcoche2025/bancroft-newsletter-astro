@@ -392,7 +392,7 @@ function getFlagSrc(classroom: string): string {
             <tr>
               <th></th>
               {dayKeys.map((day, di) => (
-                <th data-weather-day={di}>
+                <th data-weather-day={di} data-day-col={di}>
                   <span data-en>{dayAbbrsEn[di]}</span>
                   <span data-es style="display:none">{dayAbbrsEs[di]}</span>
                   <span class="tf-full-grid-letter">{specials[day]}</span>
@@ -410,13 +410,13 @@ function getFlagSrc(classroom: string): string {
                     {flagSrc && <img src={flagSrc} alt="" />}
                     {classroom}
                   </td>
-                  {dayKeys.map((day) => {
+                  {dayKeys.map((day, di) => {
                     const letter = specials[day];
                     const subject = getSpecialForDay(classroom, letter);
                     const icon = getSubjectIcon(subject);
                     const subjectEs = getSubjectTranslation(subject);
                     return (
-                      <td>
+                      <td data-day-col={di}>
                         <span class="tf-cell-icon">{icon}</span>
                         <span class="tf-cell-subj">
                           <span data-en>{subject}</span>

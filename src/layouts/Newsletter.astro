@@ -120,6 +120,16 @@ const { title, date } = Astro.props;
       localStorage.removeItem('nl-classroom');
     }
 
+    // Highlight the whole specials-board column for the current weekday (Mon–Fri),
+    // across every theme. Cells are tagged data-day-col 0..4 (Mon..Fri). On
+    // weekends nothing matches, so no column is highlighted.
+    function highlightTodayColumn() {
+      const todayIdx = new Date().getDay() - 1; // Sun→-1, Mon→0 … Fri→4, Sat→5
+      document.querySelectorAll('[data-day-col]').forEach(el => {
+        el.classList.toggle('is-today-col', Number(el.dataset.dayCol) === todayIdx);
+      });
+    }
+
     // Init on load
     document.addEventListener('DOMContentLoaded', () => {
       // Restore language
@@ -146,6 +156,9 @@ const { title, date } = Astro.props;
       });
       document.getElementById('show-all-specials')?.addEventListener('click', showAllSpecials);
 
+      // Highlight today's column on the specials boards
+      highlightTodayColumn();
+
       // Animate sections on scroll
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(e => {
@@ -165,6 +178,38 @@ const { title, date } = Astro.props;
   /* ===== THEME GATING — only the active theme's wrapper is visible ===== */
   /* Defaults to A; pre-paint script in <head> overrides from localStorage before first paint. */
   .nl-theme { display: none; }
+
+  /* ===== TODAY-COLUMN HIGHLIGHT on the specials boards (all themes) ===== */
+  /* A soft "highlighter" band down the current weekday's column. Each theme can
+     override --nl-today-col / --nl-today-line; the warm default reads well on
+     every board's light background. */
+  :root {
+    --nl-today-col: rgba(250, 204, 21, 0.30);
+    --nl-today-line: #eab308;
+  }
+  td.is-today-col,
+  th.is-today-col {
+    background-color: var(--nl-today-col) !important;
+  }
+  th.is-today-col {
+    font-weight: 800 !important;
+    box-shadow: inset 0 3px 0 var(--nl-today-line);
+  }
+  /* Keep the header letters readable on the band even on dark headers (Newsstand). */
+  th.is-today-col,
+  th.is-today-col * {
+    color: #1f2937 !important;
+  }
+  /* Card-style boards (classic personal grid uses divs, not table cells) */
+  .is-today-col.specials-day-card {
+    background-color: var(--nl-today-col) !important;
+    box-shadow: inset 0 3px 0 var(--nl-today-line);
+  }
+  /* Pocket (purple) reads better with a violet band */
+  html[data-theme="C"] {
+    --nl-today-col: rgba(124, 58, 237, 0.16);
+    --nl-today-line: #7c3aed;
+  }
   html[data-theme="A"]       .nl-theme[data-variant="A"]       { display: block; }
   html[data-theme="B"]       .nl-theme[data-variant="B"]       { display: block; }
   html[data-theme="C"]       .nl-theme[data-variant="C"]       { display: block; }

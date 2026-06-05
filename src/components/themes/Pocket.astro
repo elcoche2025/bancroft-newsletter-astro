@@ -494,7 +494,7 @@ const weekTotal = progress.totalWeeks;
                 <tr>
                   <th></th>
                   {dayKeys.map((day, i) => (
-                    <th>
+                    <th data-day-col={i}>
                       <span data-en={dayAbbrevEn[i]} data-es={dayAbbrevEs[i]}>{dayAbbrevEn[i]}</span>
                       <br /><small>Day {specials[day]}</small>
                     </th>
@@ -505,13 +505,13 @@ const weekTotal = progress.totalWeeks;
                 {config.classrooms.map(classroom => (
                   <tr>
                     <td class="pk-ft-room">{classroom}</td>
-                    {dayKeys.map(day => {
+                    {dayKeys.map((day, i) => {
                       const letter = specials[day];
                       const subject = getSpecialForDay(classroom, letter);
                       const icon = getSubjectIcon(subject);
                       const trans = getSubjectTranslation(subject);
                       return (
-                        <td class="pk-ft-cell">
+                        <td class="pk-ft-cell" data-day-col={i}>
                           <span style="font-size: 1rem;">{icon}</span>
                           <br />
                           <small data-en={subject} data-es={trans}>{subject}</small>

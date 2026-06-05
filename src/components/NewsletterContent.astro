@@ -228,7 +228,7 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
               <tr>
                 <th style="text-align: left; padding: 10px 12px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid var(--specials-border);"></th>
                 {dayKeys.map((day, i) => (
-                  <th style="text-align: center; padding: 10px 8px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid var(--specials-border);" data-weather-day={i}>
+                  <th style="text-align: center; padding: 10px 8px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid var(--specials-border);" data-weather-day={i} data-day-col={i}>
                     <span data-en={config.labels.en.days[i]} data-es={config.labels.es.days[i]}>{config.labels.en.days[i]}</span>
                     <br /><span style="color: var(--text-light); font-weight: 400;">Day {specials[day]}</span>
                     <div class="weather-slot"></div>
@@ -240,13 +240,13 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
               {config.classrooms.map(classroom => (
                 <tr>
                   <td style="padding: 10px 12px; font-weight: 700; white-space: nowrap; border-bottom: 1px solid var(--border-light); color: var(--text);">{classroom}</td>
-                  {dayKeys.map(day => {
+                  {dayKeys.map((day, i) => {
                     const letter = specials[day];
                     const subject = getSpecialForDay(classroom, letter);
                     const icon = getSubjectIcon(subject);
                     const translation = getSubjectTranslation(subject);
                     return (
-                      <td style="text-align: center; padding: 10px 8px; border-bottom: 1px solid var(--border-light);">
+                      <td style="text-align: center; padding: 10px 8px; border-bottom: 1px solid var(--border-light);" data-day-col={i}>
                         <span style="font-size: 1.1rem;">{icon}</span><br />
                         <span style="font-size: 0.78rem; font-weight: 500;" data-en={subject} data-es={translation}>{subject}</span>
                       </td>
