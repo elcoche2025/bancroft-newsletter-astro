@@ -294,10 +294,20 @@ const weekDateShortEs = (() => {
     </div>
     <h2 data-lang-en>This Week's <em>ROARS</em></h2>
     <h2 data-lang-es style="display:none">Los <em>ROARS</em> de la Semana</h2>
+    {weekData.roarsClass ? (
+      <div class="ns-class-roar">
+        <div class="ns-class-roar-emoji">🐯⭐🐯</div>
+        <p class="ns-lede" data-lang-en set:html={weekData.roarsClass.en} />
+        <p class="ns-lede" data-lang-es style="display:none" set:html={weekData.roarsClass.es} />
+      </div>
+    ) : (
+      <Fragment>
     <p class="ns-lede" data-lang-en>Congratulations to this week's 1st grade ROAR winners!</p>
     <p class="ns-lede" data-lang-es style="display:none">¡Felicitaciones a los ganadores ROAR de primer grado de esta semana!</p>
+      </Fragment>
+    )}
 
-    <div class="ns-honor-roll">
+    <div class="ns-honor-roll" style={weekData.roarsClass ? 'display:none' : undefined}>
       {roarsEntries.map(({ classroom, student }) => {
         const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];
         const isImg = flag?.startsWith('img:');
@@ -1164,6 +1174,21 @@ html[data-theme="B"] .ns-lede {
 
 html[data-theme="B"] .ns-honor-roll {
   border-top: 1px solid #fdba74;
+}
+
+html[data-theme="B"] .ns-class-roar {
+  text-align: center;
+  padding: 18px 16px 6px;
+  border-top: 1px solid #fdba74;
+}
+
+html[data-theme="B"] .ns-class-roar-emoji {
+  font-size: 1.7rem;
+  margin-bottom: 10px;
+}
+
+html[data-theme="B"] .ns-class-roar .ns-lede {
+  max-width: 52ch;
 }
 
 html[data-theme="B"] .ns-honor-row {

@@ -497,12 +497,20 @@ function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
         <span class="accordion-chevron"></span>
       </div>
       <div class="section-content">
+        {weekData.roarsClass ? (
+          <div class="roars-class-banner">
+            <div class="roars-class-emoji">🐯⭐🐯</div>
+            <p class="roars-class-text" data-lang-en set:html={weekData.roarsClass.en} />
+            <p class="roars-class-text" data-lang-es style="display:none" set:html={weekData.roarsClass.es} />
+          </div>
+        ) : (
         <p class="section-body" style="margin-bottom: 12px; font-size: 0.88rem; color: var(--text-muted);"
           data-en="Congratulations to this week's ROARS students for showing outstanding character!"
           data-es="¡Felicitaciones a los estudiantes ROARS de esta semana por demostrar un carácter excepcional!">
           Congratulations to this week's ROARS students for showing outstanding character!
         </p>
-        <div class="roars-grid">
+        )}
+        <div class="roars-grid" style={weekData.roarsClass ? 'display:none' : undefined}>
           {config.classrooms.map(classroom => {
             const student = weekData.roars[classroom as keyof typeof weekData.roars];
             const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];

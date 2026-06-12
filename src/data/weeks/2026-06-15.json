@@ -1,0 +1,152 @@
+{
+  "date": "2026-06-15",
+  "season": "summer",
+  "welcome": {
+    "en": "Happy last week of school! It's hard to believe this is our very last newsletter of the year. It's a short — and sweet — week: there is <b>no school on Tuesday, June 16</b> (Election Day) and <b>no school on Friday, June 19</b> (Juneteenth), which makes <b>Thursday, June 18 our last day of school</b>!\n\nThank you, dear families, for an amazing year. It has been a joy to watch your children grow into confident readers, writers, mathematicians, and friends — and none of it would have been possible without your support at home.\n\nWe hope you have a wonderful summer full of play, rest, books, and adventures. ¡Feliz verano! See you in the fall!",
+    "es": "¡Feliz última semana de clases! Cuesta creer que este es nuestro último boletín del año. Es una semana corta — y dulce: <b>no hay clases el martes 16 de junio</b> (Día de Elecciones) ni <b>el viernes 19 de junio</b> (Juneteenth), ¡así que <b>el jueves 18 de junio es nuestro último día de clases</b>!\n\nGracias, queridas familias, por un año maravilloso. Ha sido una alegría ver a sus hijos/as convertirse en lectores, escritores, matemáticos y amigos seguros de sí mismos — y nada de esto habría sido posible sin su apoyo en casa.\n\nEsperamos que tengan un verano maravilloso lleno de juegos, descanso, libros y aventuras. ¡Feliz verano! ¡Nos vemos en el otoño!"
+  },
+  "math": {
+    "en": "This week, we will finish <b>Module 6</b> by using familiar drawings and strategies to <b>add two-digit numbers</b> — now with totals up to <b>100</b>! Students may draw lines for <b>tens</b> and dots for <b>ones</b>, then choose how to combine the numbers. Practicing several strategies helps your child think flexibly and prepares them for adding larger numbers in later grades. We will also enjoy culminating activities to celebrate everything we learned in math this year!\n\n<b>At home (and all summer long!), your child would love to:</b>\n\n• Gather a collection of small objects — paper clips, crayons, pennies, or socks.\n• Make groups of 10 until fewer than 10 objects remain, then count together by tens (10, 20, 30, 40, 50) and by ones (51, 52, 53, 54) to find the total.\n• Ask: \"Is there another way to count these objects?\" Maybe count the ones first, then the tens!\n\nThank you so much for an amazing year — let's keep practicing everything we learned in math over the summer!",
+    "es": "Esta semana terminaremos el <b>Módulo 6</b> usando dibujos y estrategias conocidas para <b>sumar números de dos dígitos</b> — ¡ahora con totales hasta <b>100</b>! Los estudiantes pueden dibujar líneas para las <b>decenas</b> y puntos para las <b>unidades</b>, y luego elegir cómo combinar los números. Practicar varias estrategias ayuda a su hijo/a a pensar con flexibilidad y lo prepara para sumar números más grandes en los próximos grados. ¡También haremos actividades culminantes para celebrar todo lo que aprendimos en matemáticas este año!\n\n<b>En casa (¡y durante todo el verano!), a su hijo/a le encantaría:</b>\n\n• Reunir una colección de objetos pequeños — clips, crayones, monedas de un centavo o calcetines.\n• Formar grupos de 10 hasta que queden menos de 10 objetos, y luego contar juntos de diez en diez (10, 20, 30, 40, 50) y de uno en uno (51, 52, 53, 54) para encontrar el total.\n• Preguntar: «¿Hay otra manera de contar estos objetos?» ¡Quizás contar primero las unidades y luego las decenas!\n\nMuchísimas gracias por un año increíble — ¡sigamos practicando todo lo que aprendimos en matemáticas durante el verano!"
+  },
+  "literacy": {
+    "en": "In <b>SLA</b>, students will read and write about <b>memories from our first-grade year</b> and their <b>hopes and goals for second grade</b>. It has been a pleasure teaching your children this year and collaborating with our wonderful first-grade families.\n\nIn <b>ELA</b>, during this short last week we will enjoy fun activities to <b>celebrate all of our learning</b>, reflect on our favorite memories from the year, and send our students off to summer vacation — and second grade! — feeling <b>confident and excited</b>.\n\n<b>Over the summer:</b> keep reading together in English and in Spanish — even a few minutes a day keeps those reading muscles strong!",
+    "es": "En <b>SLA</b>, los estudiantes leerán y escribirán sobre los <b>recuerdos de nuestro año de primer grado</b> y sus <b>esperanzas y metas para segundo grado</b>. Ha sido un placer enseñar a sus hijos/as este año y colaborar con nuestras maravillosas familias de primer grado.\n\nEn <b>ELA</b>, durante esta última semana corta disfrutaremos de actividades divertidas para <b>celebrar todo nuestro aprendizaje</b>, reflexionar sobre nuestros recuerdos favoritos del año y despedir a nuestros estudiantes hacia las vacaciones de verano — ¡y hacia segundo grado! — sintiéndose <b>seguros y emocionados</b>.\n\n<b>Durante el verano:</b> sigan leyendo juntos en inglés y en español — ¡incluso unos minutos al día mantienen fuertes esos músculos lectores!"
+  },
+  "specials": {
+    "monday": "B",
+    "tuesday": "No School",
+    "wednesday": "C",
+    "thursday": "D",
+    "friday": "No School"
+  },
+  "roars": {},
+  "roarsClass": {
+    "en": "🎉 This week's ROAR goes to <b>the whole first grade</b>! Every single one of our students showed amazing growth, kindness, and character this year. You worked hard, helped your friends, and never stopped learning — and we could not be prouder of you. One last time, all together: <b>ROAR!</b> 🐯",
+    "es": "🎉 ¡El ROAR de esta semana es para <b>todo el primer grado</b>! Cada uno de nuestros estudiantes demostró un crecimiento, una amabilidad y un carácter increíbles este año. Trabajaron duro, ayudaron a sus amigos y nunca dejaron de aprender — y no podríamos estar más orgullosos de ustedes. Por última vez, todos juntos: <b>¡ROAR!</b> 🐯"
+  },
+  "reminders": [
+    {
+      "date": "2026-06-16",
+      "en": "<b>No School — Tuesday, June 16</b> (Election Day in DC).",
+      "es": "<b>No hay clases — martes 16 de junio</b> (Día de Elecciones en DC)."
+    },
+    {
+      "date": "2026-06-18",
+      "en": "<b>Last Day of School — Thursday, June 18.</b> Have a wonderful summer!",
+      "es": "<b>Último Día de Clases — jueves 18 de junio.</b> ¡Que tengan un verano maravilloso!"
+    },
+    {
+      "date": "2026-06-19",
+      "en": "<b>No School — Friday, June 19</b> (Juneteenth).",
+      "es": "<b>No hay clases — viernes 19 de junio</b> (Juneteenth)."
+    }
+  ],
+  "askYourChild": [
+    {
+      "en": "What is your favorite memory from first grade?",
+      "es": "¿Cuál es tu recuerdo favorito de primer grado?"
+    },
+    {
+      "en": "What are you most proud of learning this year?",
+      "es": "¿De qué aprendizaje te sientes más orgulloso/a este año?"
+    },
+    {
+      "en": "Can you show me how to add 45 + 23 using tens and ones?",
+      "es": "¿Me puedes mostrar cómo sumar 45 + 23 usando decenas y unidades?"
+    },
+    {
+      "en": "What do you hope to learn in second grade?",
+      "es": "¿Qué esperas aprender en segundo grado?"
+    }
+  ],
+  "vocabulary": {
+    "en": [
+      {
+        "label": "Math",
+        "words": [
+          "tens",
+          "ones",
+          "add",
+          "total",
+          "strategy",
+          "count by tens"
+        ]
+      },
+      {
+        "label": "SLA",
+        "words": [
+          "memory",
+          "hope",
+          "goal",
+          "second grade",
+          "write",
+          "share"
+        ],
+        "frontLang": "es"
+      },
+      {
+        "label": "ELA",
+        "words": [
+          "celebrate",
+          "memory",
+          "proud",
+          "confident",
+          "summer vacation",
+          "second grade"
+        ]
+      }
+    ],
+    "es": [
+      {
+        "label": "Matemáticas",
+        "words": [
+          "decenas",
+          "unidades",
+          "sumar",
+          "total",
+          "estrategia",
+          "contar de diez en diez"
+        ]
+      },
+      {
+        "label": "SLA",
+        "words": [
+          "recuerdo",
+          "esperanza",
+          "meta",
+          "segundo grado",
+          "escribir",
+          "compartir"
+        ],
+        "frontLang": "es"
+      },
+      {
+        "label": "ELA",
+        "words": [
+          "celebrar",
+          "recuerdo",
+          "orgulloso/a",
+          "seguro/a",
+          "vacaciones de verano",
+          "segundo grado"
+        ]
+      }
+    ]
+  },
+  "books": [],
+  "mathDetails": {
+    "module": {
+      "en": "Module 6: Place value, comparison, addition and subtraction to 100",
+      "es": "Módulo 6: Valor posicional, comparación, suma y resta hasta 100"
+    },
+    "topic": {
+      "en": "Adding two-digit numbers",
+      "es": "Suma de números de dos dígitos"
+    },
+    "lesson": {
+      "en": "Drawings and strategies to add within 100 — plus end-of-year celebrations!",
+      "es": "Dibujos y estrategias para sumar hasta 100 — ¡y celebraciones de fin de año!"
+    }
+  }
+}

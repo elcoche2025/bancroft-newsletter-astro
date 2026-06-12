@@ -231,7 +231,8 @@ function getFlag(classroom: string): { isImg: boolean; src?: string; emoji?: str
 const hasBooks = weekData.books && weekData.books.length > 0;
 const hasAsk = weekData.askYourChild && weekData.askYourChild.length > 0;
 const hasVocab = weekData.vocabulary && weekData.vocabulary.en && weekData.vocabulary.en.length > 0;
-const hasRoars = roarsCount > 0;
+const hasClassRoar = !!weekData.roarsClass;
+const hasRoars = roarsCount > 0 || hasClassRoar;
 
 // Ask count
 const askCount = weekData.askYourChild?.length || 0;
@@ -772,27 +773,35 @@ const weekTotal = progress.totalWeeks;
             <h3 class="pk-card-title">ROARS</h3>
             <div class="pk-card-peek">
               <span
-                data-en={`${roarsCount} shout-out${roarsCount !== 1 ? 's' : ''} this week`}
-                data-es={`${roarsCount} reconocimiento${roarsCount !== 1 ? 's' : ''}`}
+                data-en={hasClassRoar ? 'A ROAR for the whole class!' : `${roarsCount} shout-out${roarsCount !== 1 ? 's' : ''} this week`}
+                data-es={hasClassRoar ? '¡Un ROAR para toda la clase!' : `${roarsCount} reconocimiento${roarsCount !== 1 ? 's' : ''}`}
               >
-                {roarsCount} shout-out{roarsCount !== 1 ? 's' : ''} this week
+                {hasClassRoar ? 'A ROAR for the whole class!' : `${roarsCount} shout-out${roarsCount !== 1 ? 's' : ''} this week`}
               </span>
             </div>
           </div>
           <div class="pk-card-trail">
-            <span class="pk-card-badge">★ {roarsCount}</span>
+            <span class="pk-card-badge">★ {hasClassRoar ? '🎉' : roarsCount}</span>
             <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
               <polyline points="6 9 12 15 18 9"/>
             </svg>
           </div>
         </summary>
         <div class="pk-card-body">
+          {hasClassRoar ? (
+            <div class="pk-roars-class">
+              <div class="pk-roars-class-emoji">🐯⭐🐯</div>
+              <p data-lang-en set:html={weekData.roarsClass.en} />
+              <p data-lang-es style="display:none" set:html={weekData.roarsClass.es} />
+            </div>
+          ) : (
           <p class="pk-roars-line">
             <span data-en="Congratulations to this week's character stars!" data-es="¡Felicitaciones a las estrellas de la semana!">
               Congratulations to this week's character stars!
             </span>
           </p>
-          <div class="pk-roars-pocket">
+          )}
+          <div class="pk-roars-pocket" style={hasClassRoar ? 'display:none' : undefined}>
             {config.classrooms.map(classroom => {
               const student = weekData.roars?.[classroom as keyof typeof weekData.roars];
               if (!student) return null;
@@ -1662,6 +1671,25 @@ const weekTotal = progress.totalWeeks;
   }
 
   /* ===== ROARS ===== */
+  html[data-theme="C"] .pk-roars-class {
+    text-align: center;
+    padding: 16px 14px;
+    border: 2px dashed #c7c7e8;
+    border-radius: 14px;
+  }
+
+  html[data-theme="C"] .pk-roars-class-emoji {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+
+  html[data-theme="C"] .pk-roars-class p {
+    margin: 0 auto;
+    max-width: 46ch;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
   html[data-theme="C"] .pk-roars-line {
     text-align: center;
     font: italic 500 0.84rem/1.45 "Fraunces", Georgia, serif;
