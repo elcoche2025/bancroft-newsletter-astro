@@ -21,6 +21,7 @@ Production. Tier 1.
 - **Family Math PDFs:** `public/docs/EM2_G1_M{N}_T{X}_FamilyMath_*.pdf`
 - **Site config:** `astro.config.mjs` has `site: 'https://bancroft1.org'` and no `base` (root deploy). Don't reintroduce a base path — that broke older weeks the first time around.
 - **FERPA:** ROARS section contains student first names + last initials. Don't expose anywhere indexable.
+- **Whole-class ROAR:** optional `roarsClass: {en, es}` field (HTML allowed) in a week's JSON renders a celebratory whole-class banner in all four themes instead of per-student cards (first used 2026-06-15, last week of school). Leave `roars: {}` when using it.
 
 ## Rollback
 The legacy SPA snapshot still exists in `sites/bancroft1.org/nl-f2049c43/` and as a Vercel deployment at `bancroft-newsletter-24nrjsxzz-mws-projects-080b130f.vercel.app` (publicly accessible — SSO protection removed 2026-05-09 so you can preview before aliasing). Emergency rollback:
