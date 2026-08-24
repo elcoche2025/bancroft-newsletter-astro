@@ -138,6 +138,10 @@ interface ContentItem {
   labelEn: string;
   labelEs: string;
 }
+// Document order for this issue. Drives both the printed contents list and every
+// section number via nsNo(id) — so a section that renders but is missing here gets
+// a blank number. Its Classic-theme counterpart is `sectionPresent` in
+// components/NewsletterContent.astro; add a new section to both.
 const contentItems: ContentItem[] = [];
 if (showRoars) {
   contentItems.push({ id: 'cover', labelEn: 'ROARS · Cover Story', labelEs: 'ROARS · Portada' });

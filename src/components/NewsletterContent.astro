@@ -48,6 +48,11 @@ function parseReminderDate(dateStr: string) {
 
 // Which sections this issue actually renders. Welcome + Specials are the only
 // guaranteed ones — an early-in-the-year issue can be just those two.
+//
+// ADDING A SECTION? Register it here or its jump-to link points at nothing, and
+// register it in `contentItems` in themes/Newsstand.astro or that theme's printed
+// section numbers skip a beat. These two lists are the source of truth; nothing
+// else derives section order or presence.
 const showMath = hasBilingualText(weekData.math);
 const showLiteracy = hasBilingualText(weekData.literacy);
 const showRoars = weekHasRoars(weekData);
