@@ -2,8 +2,8 @@
   "date": "2026-08-24",
   "season": "default",
   "welcome": {
-    "en": "Welcome to first grade! We are so happy to have your child with us, and we cannot wait to get started.<br><br>This first week is all about getting to know one another. We will learn each other's names, begin building our classroom community, and practice the routines that will carry us through the whole year — how we line up, how we take care of our materials, and how we take care of each other.<br><br>We have school every day this week, Monday through Friday. <b>Specials start right away</b>, every day from <b>1:30 to 2:15</b>. Take a look at the board below to see which special your child has each day. Comfortable shoes on PE days and a labeled water bottle every day both go a long way.<br><br>Our regular sections — math, literacy, ROARS, and reminders — will begin next week, once we have settled into our routines. Here is to a wonderful year together!",
-    "es": "¡Bienvenidos a primer grado! Estamos muy contentos de tener a su hijo/a con nosotros y tenemos muchas ganas de comenzar.<br><br>Esta primera semana se trata de conocernos. Aprenderemos los nombres de todos, comenzaremos a formar nuestra comunidad de clase y practicaremos las rutinas que nos acompañarán durante todo el año — cómo hacemos la fila, cómo cuidamos nuestros materiales y cómo nos cuidamos entre nosotros.<br><br>Tenemos clases todos los días esta semana, de lunes a viernes. <b>Los especiales comienzan de inmediato</b>, todos los días de <b>1:30 a 2:15</b>. Consulten el cuadro de abajo para ver qué especial le toca a su hijo/a cada día. Unos zapatos cómodos los días de Educación Física y una botella de agua con su nombre ayudan mucho.<br><br>Nuestras secciones habituales — matemáticas, lectura, ROARS y recordatorios — comenzarán la próxima semana, una vez que nos hayamos acostumbrado a nuestras rutinas. ¡Que sea un año maravilloso!"
+    "en": "Welcome to first grade! We are so happy to have your child with us, and we cannot wait to get started.<br><br>This first week is all about getting to know one another. We will learn each other's names, begin building our classroom community, and practice the routines that will carry us through the whole year — how we line up, how we take care of our materials, and how we take care of each other.<br><br>We have school every day this week, Monday through Friday. <b>Specials start right away</b>, every day from <b>1:30 to 2:15</b>. Take a look at the board below to see which special your child has each day. Comfortable shoes on PE days and a labeled water bottle every day both go a long way.<br><br>This <b>Friday, August 28</b>, is the <b>Family Fiesta</b> from <b>6:00 to 7:30 pm</b>. All Bancroft families are welcome — enter through the soccer field.<br><br>Our regular sections — math, literacy, and ROARS — will begin next week, once we have settled into our routines. Here is to a wonderful year together!",
+    "es": "¡Bienvenidos a primer grado! Estamos muy contentos de tener a su hijo/a con nosotros y tenemos muchas ganas de comenzar.<br><br>Esta primera semana se trata de conocernos. Aprenderemos los nombres de todos, comenzaremos a formar nuestra comunidad de clase y practicaremos las rutinas que nos acompañarán durante todo el año — cómo hacemos la fila, cómo cuidamos nuestros materiales y cómo nos cuidamos entre nosotros.<br><br>Tenemos clases todos los días esta semana, de lunes a viernes. <b>Los especiales comienzan de inmediato</b>, todos los días de <b>1:30 a 2:15</b>. Consulten el cuadro de abajo para ver qué especial le toca a su hijo/a cada día. Unos zapatos cómodos los días de Educación Física y una botella de agua con su nombre ayudan mucho.<br><br>Este <b>viernes 28 de agosto</b> es la <b>Family Fiesta</b> de <b>6:00 a 7:30 pm</b>. Todas las familias de Bancroft están invitadas — la entrada es por la cancha de fútbol.<br><br>Nuestras secciones habituales — matemáticas, lectura y ROARS — comenzarán la próxima semana, una vez que nos hayamos acostumbrado a nuestras rutinas. ¡Que sea un año maravilloso!"
   },
   "specials": {
     "monday": "A",
@@ -12,5 +12,22 @@
     "thursday": "D",
     "friday": "E"
   },
+  "reminders": [
+    {
+      "date": "2026-08-28",
+      "en": "<b>Family Fiesta — Friday, August 28, 6:00-7:30 pm.</b> Open to all Bancroft families. Enter through the soccer field.",
+      "es": "<b>Family Fiesta — viernes 28 de agosto, de 6:00 a 7:30 pm.</b> Abierto a todas las familias de Bancroft. La entrada es por la cancha de fútbol."
+    },
+    {
+      "date": "2026-09-10",
+      "en": "<b>Back to School Night — Thursday, September 10, 6:00-8:00 pm</b> in the school gym at Newton, for Kindergarten through 5th grade. Enter through the soccer field.",
+      "es": "<b>Noche de Regreso a Clases — jueves 10 de septiembre, de 6:00 a 8:00 pm</b> en el gimnasio de Newton, para Kínder a 5º grado. La entrada es por la cancha de fútbol."
+    },
+    {
+      "date": "2026-09-17",
+      "en": "<b>Back to School Night at Sharpe — Thursday, September 17, 6:00-7:00 pm.</b> For PK3 and PK4 families; room to be announced.",
+      "es": "<b>Noche de Regreso a Clases en Sharpe — jueves 17 de septiembre, de 6:00 a 7:00 pm.</b> Para las familias de PK3 y PK4; el aula está por determinar."
+    }
+  ],
   "roars": {}
 }

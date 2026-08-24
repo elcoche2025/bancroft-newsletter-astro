@@ -5,6 +5,15 @@ All notable changes to the Bancroft Newsletter Astro build. Newest first.
 ## 2026-08-24
 
 ### Added
+- **August/September reminders on the 2026-08-24 issue**, from the school's bilingual
+  August/September Reminders flyer: **Family Fiesta** (Fri Aug 28, 6:00–7:30 pm, enter through
+  the soccer field), **Back to School Night at Newton** (Thu Sep 10, 6:00–8:00 pm, school gym,
+  Kindergarten–5th grade) and **Back to School Night at Sharpe** (Thu Sep 17, 6:00–7:00 pm,
+  room TBD). The Family Fiesta also gets a line in the welcome, since it falls inside the week
+  this issue covers. The flyer's PK3/PK4 first day (Aug 27) is deliberately omitted; the Sharpe
+  evening is kept but labelled PK3/PK4, which only the Spanish side of the flyer states, for
+  first-grade families with younger siblings. Labor Day is already a calendar date and shows in
+  "Coming Up", so it is not duplicated as a reminder.
 - **SEL / Strong Start monthly themes** (`config.selThemes`), bilingual EN/ES, transcribed from
   the school's "SEL / Strong Start Monthly Themes" poster. Keyed by calendar month — August and
   September share "Everyone Has a Place at Bancroft"; July has no theme. `selThemeFor(date, lang)`
