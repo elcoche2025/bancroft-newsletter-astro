@@ -4,6 +4,7 @@ import {
   textToHTML, formatDate, formatDateShort,
   getSubjectIcon, getSpecialForDay, getSubjectTranslation,
   getSchoolYearProgress, calendarFor,
+  hasBilingualText, stripTags,
 } from '../../lib/utils';
 
 interface Props {
@@ -231,6 +232,9 @@ const hasBooks = weekData.books && weekData.books.length > 0;
 const hasAsk = weekData.askYourChild && weekData.askYourChild.length > 0;
 const hasVocab = weekData.vocabulary && weekData.vocabulary.en && weekData.vocabulary.en.length > 0;
 const hasClassRoar = !!weekData.roarsClass;
+// Welcome + Specials are the only guaranteed cards; the rest may be absent early in the year.
+const showMath = hasBilingualText(weekData.math);
+const showLiteracy = hasBilingualText(weekData.literacy);
 const hasRoars = roarsCount > 0 || hasClassRoar;
 
 // Ask count
@@ -538,10 +542,10 @@ const weekTotal = progress.totalWeeks;
           </h3>
           <div class="pk-card-peek">
             <span
-              data-en={weekData.welcome.en.replace(/<[^>]+>/g, '').slice(0, 80)}
-              data-es={weekData.welcome.es.replace(/<[^>]+>/g, '').slice(0, 80)}
+              data-en={stripTags(weekData.welcome.en).slice(0, 80)}
+              data-es={stripTags(weekData.welcome.es).slice(0, 80)}
             >
-              {weekData.welcome.en.replace(/<[^>]+>/g, '').slice(0, 80)}
+              {stripTags(weekData.welcome.en).slice(0, 80)}
             </span>
           </div>
         </div>
@@ -558,62 +562,66 @@ const weekTotal = progress.totalWeeks;
     </details>
 
     <!-- MATH -->
-    <details class="pk-card pk-math">
-      <summary class="pk-card-head">
-        <div class="pk-card-icon">🔢</div>
-        <div class="pk-card-meta">
-          <h3 class="pk-card-title">
-            <span data-en="Math" data-es="Matemáticas">Math</span>
-          </h3>
-          <div class="pk-card-peek">
-            <span
-              data-en={weekData.math.en.replace(/<[^>]+>/g, '').slice(0, 80)}
-              data-es={weekData.math.es.replace(/<[^>]+>/g, '').slice(0, 80)}
-            >
-              {weekData.math.en.replace(/<[^>]+>/g, '').slice(0, 80)}
-            </span>
+    {showMath && (
+      <details class="pk-card pk-math">
+        <summary class="pk-card-head">
+          <div class="pk-card-icon">🔢</div>
+          <div class="pk-card-meta">
+            <h3 class="pk-card-title">
+              <span data-en="Math" data-es="Matemáticas">Math</span>
+            </h3>
+            <div class="pk-card-peek">
+              <span
+                data-en={weekData.math.en.replace(/<[^>]+>/g, '').slice(0, 80)}
+                data-es={weekData.math.es.replace(/<[^>]+>/g, '').slice(0, 80)}
+              >
+                {weekData.math.en.replace(/<[^>]+>/g, '').slice(0, 80)}
+              </span>
+            </div>
           </div>
+          <div class="pk-card-trail">
+            <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </summary>
+        <div class="pk-card-body pk-prose">
+          <div data-lang-en set:html={`<p>${textToHTML(weekData.math.en)}</p>`} />
+          <div data-lang-es style="display:none" set:html={`<p>${textToHTML(weekData.math.es)}</p>`} />
         </div>
-        <div class="pk-card-trail">
-          <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-        </div>
-      </summary>
-      <div class="pk-card-body pk-prose">
-        <div data-lang-en set:html={`<p>${textToHTML(weekData.math.en)}</p>`} />
-        <div data-lang-es style="display:none" set:html={`<p>${textToHTML(weekData.math.es)}</p>`} />
-      </div>
-    </details>
+      </details>
+    )}
 
     <!-- LITERACY -->
-    <details class="pk-card pk-lit">
-      <summary class="pk-card-head">
-        <div class="pk-card-icon">📖</div>
-        <div class="pk-card-meta">
-          <h3 class="pk-card-title">
-            <span data-en="Literacy" data-es="Lectura">Literacy</span>
-          </h3>
-          <div class="pk-card-peek">
-            <span
-              data-en={weekData.literacy.en.replace(/<[^>]+>/g, '').slice(0, 80)}
-              data-es={weekData.literacy.es.replace(/<[^>]+>/g, '').slice(0, 80)}
-            >
-              {weekData.literacy.en.replace(/<[^>]+>/g, '').slice(0, 80)}
-            </span>
+    {showLiteracy && (
+      <details class="pk-card pk-lit">
+        <summary class="pk-card-head">
+          <div class="pk-card-icon">📖</div>
+          <div class="pk-card-meta">
+            <h3 class="pk-card-title">
+              <span data-en="Literacy" data-es="Lectura">Literacy</span>
+            </h3>
+            <div class="pk-card-peek">
+              <span
+                data-en={weekData.literacy.en.replace(/<[^>]+>/g, '').slice(0, 80)}
+                data-es={weekData.literacy.es.replace(/<[^>]+>/g, '').slice(0, 80)}
+              >
+                {weekData.literacy.en.replace(/<[^>]+>/g, '').slice(0, 80)}
+              </span>
+            </div>
           </div>
+          <div class="pk-card-trail">
+            <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </summary>
+        <div class="pk-card-body pk-prose">
+          <div data-lang-en set:html={`<p>${textToHTML(weekData.literacy.en)}</p>`} />
+          <div data-lang-es style="display:none" set:html={`<p>${textToHTML(weekData.literacy.es)}</p>`} />
         </div>
-        <div class="pk-card-trail">
-          <svg class="pk-card-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-        </div>
-      </summary>
-      <div class="pk-card-body pk-prose">
-        <div data-lang-en set:html={`<p>${textToHTML(weekData.literacy.en)}</p>`} />
-        <div data-lang-es style="display:none" set:html={`<p>${textToHTML(weekData.literacy.es)}</p>`} />
-      </div>
-    </details>
+      </details>
+    )}
 
     <!-- ASK YOUR CHILD -->
     {hasAsk && (

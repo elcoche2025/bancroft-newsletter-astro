@@ -4,6 +4,7 @@ import {
   textToHTML, formatDate, formatDateShort,
   getSubjectIcon, getSpecialForDay, getSubjectTranslation,
   getSchoolYearProgress, calendarFor,
+  hasBilingualText, weekHasRoars,
 } from '../../lib/utils';
 
 interface Props {
@@ -54,6 +55,12 @@ const vocabIsGrouped = hasVocab && typeof weekData.vocabulary.en[0] === 'object'
 
 // Books
 const hasBooks = weekData.books && weekData.books.length > 0;
+// Welcome + Specials are the only guaranteed sections; the rest may be absent early in the year.
+const showMath = hasBilingualText(weekData.math);
+const showLiteracy = hasBilingualText(weekData.literacy);
+const showRoars = weekHasRoars(weekData);
+const learningPeekEn = ['Welcome', showMath && 'Math', showLiteracy && 'Literacy', hasBooks && 'Books'].filter(Boolean).join(' \u00b7 ');
+const learningPeekEs = ['Bienvenida', showMath && 'Mates', showLiteracy && 'Lectura', hasBooks && 'Libros'].filter(Boolean).join(' \u00b7 ');
 
 // Term labels for the trail
 const termLabels = ['T1', 'T2', 'T3', 'T4'];
@@ -448,12 +455,8 @@ function getFlagSrc(classroom: string): string {
           <span data-es style="display:none">Lo Que Estamos Aprendiendo</span>
         </h2>
         <div class="tf-group-peek">
-          <span data-en>
-            Welcome · Math · Literacy{hasBooks ? ' · Books' : ''}
-          </span>
-          <span data-es style="display:none">
-            Bienvenida · Mates · Lectura{hasBooks ? ' · Libros' : ''}
-          </span>
+          <span data-en>{learningPeekEn}</span>
+          <span data-es style="display:none">{learningPeekEs}</span>
         </div>
       </div>
       <span class="tf-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
@@ -467,16 +470,20 @@ function getFlagSrc(classroom: string): string {
           <span data-en>Welcome</span>
           <span data-es style="display:none">Bienvenida</span>
         </button>
-        <button class="tf-learning-tab" data-tf-panel="math">
-          <span class="tf-tab-e">🔢</span>
-          <span data-en>Math</span>
-          <span data-es style="display:none">Matemáticas</span>
-        </button>
-        <button class="tf-learning-tab" data-tf-panel="literacy">
-          <span class="tf-tab-e">📖</span>
-          <span data-en>Literacy</span>
-          <span data-es style="display:none">Lectura</span>
-        </button>
+        {showMath && (
+          <button class="tf-learning-tab" data-tf-panel="math">
+            <span class="tf-tab-e">🔢</span>
+            <span data-en>Math</span>
+            <span data-es style="display:none">Matemáticas</span>
+          </button>
+        )}
+        {showLiteracy && (
+          <button class="tf-learning-tab" data-tf-panel="literacy">
+            <span class="tf-tab-e">📖</span>
+            <span data-en>Literacy</span>
+            <span data-es style="display:none">Lectura</span>
+          </button>
+        )}
         {hasBooks && (
           <button class="tf-learning-tab" data-tf-panel="books">
             <span class="tf-tab-e">📚</span>
@@ -499,56 +506,60 @@ function getFlagSrc(classroom: string): string {
       </div>
 
       <!-- Math panel -->
-      <div class="tf-learning-panel tf-learning-panel--math">
-        <div class="tf-panel-card tf-panel-card--math">
-          <h3 class="tf-display tf-math-h3">
-            <span data-en>{labelsEn.mathHeading}</span>
-            <span data-es style="display:none">{labelsEs.mathHeading}</span>
-          </h3>
-          <div data-lang-en><p set:html={textToHTML(weekData.math.en)} /></div>
-          <div data-lang-es style="display:none"><p set:html={textToHTML(weekData.math.es)} /></div>
-          {weekData.mathDetails && (
-            <div class="tf-math-details">
-              <div class="tf-math-detail-row" data-lang-en>
-                <span class="tf-math-detail-label">{labelsEn.mathDetailsModule}</span>
-                <span class="tf-math-detail-val">{weekData.mathDetails.module.en}</span>
+      {showMath && (
+        <div class="tf-learning-panel tf-learning-panel--math">
+          <div class="tf-panel-card tf-panel-card--math">
+            <h3 class="tf-display tf-math-h3">
+              <span data-en>{labelsEn.mathHeading}</span>
+              <span data-es style="display:none">{labelsEs.mathHeading}</span>
+            </h3>
+            <div data-lang-en><p set:html={textToHTML(weekData.math.en)} /></div>
+            <div data-lang-es style="display:none"><p set:html={textToHTML(weekData.math.es)} /></div>
+            {weekData.mathDetails && (
+              <div class="tf-math-details">
+                <div class="tf-math-detail-row" data-lang-en>
+                  <span class="tf-math-detail-label">{labelsEn.mathDetailsModule}</span>
+                  <span class="tf-math-detail-val">{weekData.mathDetails.module.en}</span>
+                </div>
+                <div class="tf-math-detail-row" data-lang-en>
+                  <span class="tf-math-detail-label">{labelsEn.mathDetailsTopic}</span>
+                  <span class="tf-math-detail-val">{weekData.mathDetails.topic.en}</span>
+                </div>
+                <div class="tf-math-detail-row" data-lang-en>
+                  <span class="tf-math-detail-label">{labelsEn.mathDetailsLesson}</span>
+                  <span class="tf-math-detail-val">{weekData.mathDetails.lesson.en}</span>
+                </div>
+                <div class="tf-math-detail-row" data-lang-es style="display:none">
+                  <span class="tf-math-detail-label">{labelsEs.mathDetailsModule}</span>
+                  <span class="tf-math-detail-val">{weekData.mathDetails.module.es}</span>
+                </div>
+                <div class="tf-math-detail-row" data-lang-es style="display:none">
+                  <span class="tf-math-detail-label">{labelsEs.mathDetailsTopic}</span>
+                  <span class="tf-math-detail-val">{weekData.mathDetails.topic.es}</span>
+                </div>
+                <div class="tf-math-detail-row" data-lang-es style="display:none">
+                  <span class="tf-math-detail-label">{labelsEs.mathDetailsLesson}</span>
+                  <span class="tf-math-detail-val">{weekData.mathDetails.lesson.es}</span>
+                </div>
               </div>
-              <div class="tf-math-detail-row" data-lang-en>
-                <span class="tf-math-detail-label">{labelsEn.mathDetailsTopic}</span>
-                <span class="tf-math-detail-val">{weekData.mathDetails.topic.en}</span>
-              </div>
-              <div class="tf-math-detail-row" data-lang-en>
-                <span class="tf-math-detail-label">{labelsEn.mathDetailsLesson}</span>
-                <span class="tf-math-detail-val">{weekData.mathDetails.lesson.en}</span>
-              </div>
-              <div class="tf-math-detail-row" data-lang-es style="display:none">
-                <span class="tf-math-detail-label">{labelsEs.mathDetailsModule}</span>
-                <span class="tf-math-detail-val">{weekData.mathDetails.module.es}</span>
-              </div>
-              <div class="tf-math-detail-row" data-lang-es style="display:none">
-                <span class="tf-math-detail-label">{labelsEs.mathDetailsTopic}</span>
-                <span class="tf-math-detail-val">{weekData.mathDetails.topic.es}</span>
-              </div>
-              <div class="tf-math-detail-row" data-lang-es style="display:none">
-                <span class="tf-math-detail-label">{labelsEs.mathDetailsLesson}</span>
-                <span class="tf-math-detail-val">{weekData.mathDetails.lesson.es}</span>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <!-- Literacy panel -->
-      <div class="tf-learning-panel tf-learning-panel--literacy">
-        <div class="tf-panel-card tf-panel-card--literacy">
-          <h3 class="tf-display tf-lit-h3">
-            <span data-en>{labelsEn.literacyHeading}</span>
-            <span data-es style="display:none">{labelsEs.literacyHeading}</span>
-          </h3>
-          <div data-lang-en><p set:html={textToHTML(weekData.literacy.en)} /></div>
-          <div data-lang-es style="display:none"><p set:html={textToHTML(weekData.literacy.es)} /></div>
+      {showLiteracy && (
+        <div class="tf-learning-panel tf-learning-panel--literacy">
+          <div class="tf-panel-card tf-panel-card--literacy">
+            <h3 class="tf-display tf-lit-h3">
+              <span data-en>{labelsEn.literacyHeading}</span>
+              <span data-es style="display:none">{labelsEs.literacyHeading}</span>
+            </h3>
+            <div data-lang-en><p set:html={textToHTML(weekData.literacy.en)} /></div>
+            <div data-lang-es style="display:none"><p set:html={textToHTML(weekData.literacy.es)} /></div>
+          </div>
         </div>
-      </div>
+      )}
 
       <!-- Books panel (only if books exist) -->
       {hasBooks && (
@@ -688,52 +699,54 @@ function getFlagSrc(classroom: string): string {
   <!-- ============================================================== -->
   <!-- GROUP 5 — ROARS                                                 -->
   <!-- ============================================================== -->
-  <details class="tf-group tf-group--roars" open>
-    <summary class="tf-group-head">
-      <div class="tf-group-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#c2410c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-      </div>
-      <div class="tf-group-meta">
-        <h2 class="tf-display">ROARS</h2>
-        <div class="tf-group-peek">
-          <span data-en>This week's shout-outs</span>
-          <span data-es style="display:none">Reconocimientos de la semana</span>
+  {showRoars && (
+    <details class="tf-group tf-group--roars" open>
+      <summary class="tf-group-head">
+        <div class="tf-group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#c2410c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
         </div>
-      </div>
-      <span class="tf-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
-    </summary>
-    <div class="tf-group-body">
-      {weekData.roarsClass ? (
-        <div class="tf-roars-class">
-          <div class="tf-roars-class-emoji">🐯⭐🐯</div>
-          <p data-lang-en set:html={weekData.roarsClass.en} />
-          <p data-lang-es style="display:none" set:html={weekData.roarsClass.es} />
+        <div class="tf-group-meta">
+          <h2 class="tf-display">ROARS</h2>
+          <div class="tf-group-peek">
+            <span data-en>This week's shout-outs</span>
+            <span data-es style="display:none">Reconocimientos de la semana</span>
+          </div>
         </div>
-      ) : (
-      <p class="tf-roars-intro">
-        <span data-en>Congratulations to this week's ROARS students for showing outstanding character!</span>
-        <span data-es style="display:none">¡Felicitaciones a los estudiantes ROARS de esta semana por demostrar carácter sobresaliente!</span>
-      </p>
-      )}
-      <div class="tf-roars-grid" style={weekData.roarsClass ? 'display:none' : undefined}>
-        {config.classrooms.map((classroom) => {
-          const student = weekData.roars?.[classroom as keyof typeof weekData.roars];
-          if (!student) return null;
-          const flagSrc = getFlagSrc(classroom);
-          return (
-            <div class="tf-roars-card">
-              <span class="tf-roars-star">★</span>
-              <div class="tf-roars-flag-chip">
-                {flagSrc && <img src={flagSrc} alt="" />}
-                {classroom}
+        <span class="tf-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </summary>
+      <div class="tf-group-body">
+        {weekData.roarsClass ? (
+          <div class="tf-roars-class">
+            <div class="tf-roars-class-emoji">🐯⭐🐯</div>
+            <p data-lang-en set:html={weekData.roarsClass.en} />
+            <p data-lang-es style="display:none" set:html={weekData.roarsClass.es} />
+          </div>
+        ) : (
+        <p class="tf-roars-intro">
+          <span data-en>Congratulations to this week's ROARS students for showing outstanding character!</span>
+          <span data-es style="display:none">¡Felicitaciones a los estudiantes ROARS de esta semana por demostrar carácter sobresaliente!</span>
+        </p>
+        )}
+        <div class="tf-roars-grid" style={weekData.roarsClass ? 'display:none' : undefined}>
+          {config.classrooms.map((classroom) => {
+            const student = weekData.roars?.[classroom as keyof typeof weekData.roars];
+            if (!student) return null;
+            const flagSrc = getFlagSrc(classroom);
+            return (
+              <div class="tf-roars-card">
+                <span class="tf-roars-star">★</span>
+                <div class="tf-roars-flag-chip">
+                  {flagSrc && <img src={flagSrc} alt="" />}
+                  {classroom}
+                </div>
+                <div class="tf-roars-name">{student}</div>
               </div>
-              <div class="tf-roars-name">{student}</div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
-  </details>
+    </details>
+  )}
 
   <!-- FOOTER -->
   <footer class="tf-footer">

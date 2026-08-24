@@ -5,6 +5,7 @@ import {
   getDayName, getSubjectIcon, getSpecialForDay, getSubjectTranslation,
   getSchoolYearProgress, getUpcomingDates,
   schoolYearOf, formatSchoolYear, calendarFor,
+  hasBilingualText, weekHasRoars,
   type Lang
 } from '../lib/utils';
 
@@ -45,7 +46,24 @@ function parseReminderDate(dateStr: string) {
   };
 }
 
-// Jump-to sections config
+// Which sections this issue actually renders. Welcome + Specials are the only
+// guaranteed ones — an early-in-the-year issue can be just those two.
+const showMath = hasBilingualText(weekData.math);
+const showLiteracy = hasBilingualText(weekData.literacy);
+const showRoars = weekHasRoars(weekData);
+const sectionPresent: Record<string, boolean> = {
+  specials: true,
+  welcome: true,
+  math: showMath,
+  literacy: showLiteracy,
+  roars: showRoars,
+  reminders: !!(weekData.reminders && weekData.reminders.length > 0),
+  ask: !!(weekData.askYourChild && weekData.askYourChild.length > 0),
+  vocab: !!(weekData.vocabulary && weekData.vocabulary.en && weekData.vocabulary.en.length > 0),
+  books: !!(weekData.books && weekData.books.length > 0),
+};
+
+// Jump-to sections config — only ever links to sections that rendered.
 const jumpSections = [
   { id: 'specials', icon: '🎨', en: 'Specials', es: 'Especiales' },
   { id: 'welcome', icon: '👋', en: 'Welcome', es: 'Bienvenida' },
@@ -56,7 +74,7 @@ const jumpSections = [
   { id: 'ask', icon: '💬', en: 'Ask', es: 'Pregunta' },
   { id: 'vocab', icon: '📝', en: 'Vocab', es: 'Vocab' },
   { id: 'books', icon: '📚', en: 'Books', es: 'Libros' },
-];
+].filter(sec => sectionPresent[sec.id]);
 
 // Archive: format dates for display
 function formatArchiveDate(dateStr: string, lang: 'en' | 'es'): string {
@@ -288,70 +306,74 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
     </section>
 
     <!-- MATH -->
-    <section class="section section--math" id="math" data-section="math">
-      <div class="section-header" data-accordion>
-        <span class="section-icon">🔢</span>
-        <h2 class="section-heading" data-en={labelsEn.mathHeading} data-es={labelsEs.mathHeading}>
-          {labelsEn.mathHeading}
-        </h2>
-        <span class="accordion-chevron"></span>
-      </div>
-      <div class="section-content">
-        <div class="section-body" data-lang-en>
-          <p set:html={textToHTML(weekData.math.en)} />
+    {showMath && (
+      <section class="section section--math" id="math" data-section="math">
+        <div class="section-header" data-accordion>
+          <span class="section-icon">🔢</span>
+          <h2 class="section-heading" data-en={labelsEn.mathHeading} data-es={labelsEs.mathHeading}>
+            {labelsEn.mathHeading}
+          </h2>
+          <span class="accordion-chevron"></span>
         </div>
-        <div class="section-body" data-lang-es style="display:none">
-          <p set:html={textToHTML(weekData.math.es)} />
-        </div>
-        {weekData.mathDetails && (
-          <div class="math-details">
-            <div class="math-detail-row" data-lang-en>
-              <span class="math-detail-label">{labelsEn.mathDetailsModule}</span>
-              <span class="math-detail-value">{weekData.mathDetails.module.en}</span>
-            </div>
-            <div class="math-detail-row" data-lang-en>
-              <span class="math-detail-label">{labelsEn.mathDetailsTopic}</span>
-              <span class="math-detail-value">{weekData.mathDetails.topic.en}</span>
-            </div>
-            <div class="math-detail-row" data-lang-en>
-              <span class="math-detail-label">{labelsEn.mathDetailsLesson}</span>
-              <span class="math-detail-value">{weekData.mathDetails.lesson.en}</span>
-            </div>
-            <div class="math-detail-row" data-lang-es style="display:none">
-              <span class="math-detail-label">{labelsEs.mathDetailsModule}</span>
-              <span class="math-detail-value">{weekData.mathDetails.module.es}</span>
-            </div>
-            <div class="math-detail-row" data-lang-es style="display:none">
-              <span class="math-detail-label">{labelsEs.mathDetailsTopic}</span>
-              <span class="math-detail-value">{weekData.mathDetails.topic.es}</span>
-            </div>
-            <div class="math-detail-row" data-lang-es style="display:none">
-              <span class="math-detail-label">{labelsEs.mathDetailsLesson}</span>
-              <span class="math-detail-value">{weekData.mathDetails.lesson.es}</span>
-            </div>
+        <div class="section-content">
+          <div class="section-body" data-lang-en>
+            <p set:html={textToHTML(weekData.math.en)} />
           </div>
-        )}
-      </div>
-    </section>
+          <div class="section-body" data-lang-es style="display:none">
+            <p set:html={textToHTML(weekData.math.es)} />
+          </div>
+          {weekData.mathDetails && (
+            <div class="math-details">
+              <div class="math-detail-row" data-lang-en>
+                <span class="math-detail-label">{labelsEn.mathDetailsModule}</span>
+                <span class="math-detail-value">{weekData.mathDetails.module.en}</span>
+              </div>
+              <div class="math-detail-row" data-lang-en>
+                <span class="math-detail-label">{labelsEn.mathDetailsTopic}</span>
+                <span class="math-detail-value">{weekData.mathDetails.topic.en}</span>
+              </div>
+              <div class="math-detail-row" data-lang-en>
+                <span class="math-detail-label">{labelsEn.mathDetailsLesson}</span>
+                <span class="math-detail-value">{weekData.mathDetails.lesson.en}</span>
+              </div>
+              <div class="math-detail-row" data-lang-es style="display:none">
+                <span class="math-detail-label">{labelsEs.mathDetailsModule}</span>
+                <span class="math-detail-value">{weekData.mathDetails.module.es}</span>
+              </div>
+              <div class="math-detail-row" data-lang-es style="display:none">
+                <span class="math-detail-label">{labelsEs.mathDetailsTopic}</span>
+                <span class="math-detail-value">{weekData.mathDetails.topic.es}</span>
+              </div>
+              <div class="math-detail-row" data-lang-es style="display:none">
+                <span class="math-detail-label">{labelsEs.mathDetailsLesson}</span>
+                <span class="math-detail-value">{weekData.mathDetails.lesson.es}</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    )}
 
     <!-- LITERACY -->
-    <section class="section section--literacy" id="literacy" data-section="literacy">
-      <div class="section-header" data-accordion>
-        <span class="section-icon">📖</span>
-        <h2 class="section-heading" data-en={labelsEn.literacyHeading} data-es={labelsEs.literacyHeading}>
-          {labelsEn.literacyHeading}
-        </h2>
-        <span class="accordion-chevron"></span>
-      </div>
-      <div class="section-content">
-        <div class="section-body" data-lang-en>
-          <p set:html={textToHTML(weekData.literacy.en)} />
+    {showLiteracy && (
+      <section class="section section--literacy" id="literacy" data-section="literacy">
+        <div class="section-header" data-accordion>
+          <span class="section-icon">📖</span>
+          <h2 class="section-heading" data-en={labelsEn.literacyHeading} data-es={labelsEs.literacyHeading}>
+            {labelsEn.literacyHeading}
+          </h2>
+          <span class="accordion-chevron"></span>
         </div>
-        <div class="section-body" data-lang-es style="display:none">
-          <p set:html={textToHTML(weekData.literacy.es)} />
+        <div class="section-content">
+          <div class="section-body" data-lang-en>
+            <p set:html={textToHTML(weekData.literacy.en)} />
+          </div>
+          <div class="section-body" data-lang-es style="display:none">
+            <p set:html={textToHTML(weekData.literacy.es)} />
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    )}
 
     <!-- REMINDERS -->
     {weekData.reminders && weekData.reminders.length > 0 && (
@@ -499,46 +521,48 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
     )}
 
     <!-- ROARS -->
-    <section class="section section--roars" id="roars" data-section="roars">
-      <div class="section-header" data-accordion>
-        <span class="section-icon">🐯</span>
-        <h2 class="section-heading" data-en={labelsEn.roarsHeading} data-es={labelsEs.roarsHeading}>
-          {labelsEn.roarsHeading}
-        </h2>
-        <span class="accordion-chevron"></span>
-      </div>
-      <div class="section-content">
-        {weekData.roarsClass ? (
-          <div class="roars-class-banner">
-            <div class="roars-class-emoji">🐯⭐🐯</div>
-            <p class="roars-class-text" data-lang-en set:html={weekData.roarsClass.en} />
-            <p class="roars-class-text" data-lang-es style="display:none" set:html={weekData.roarsClass.es} />
-          </div>
-        ) : (
-        <p class="section-body" style="margin-bottom: 12px; font-size: 0.88rem; color: var(--text-muted);"
-          data-en="Congratulations to this week's ROARS students for showing outstanding character!"
-          data-es="¡Felicitaciones a los estudiantes ROARS de esta semana por demostrar un carácter excepcional!">
-          Congratulations to this week's ROARS students for showing outstanding character!
-        </p>
-        )}
-        <div class="roars-grid" style={weekData.roarsClass ? 'display:none' : undefined}>
-          {config.classrooms.map(classroom => {
-            const student = weekData.roars[classroom as keyof typeof weekData.roars];
-            const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];
-            const isImg = flag?.startsWith('img:');
-            return student ? (
-              <div class="roars-card">
-                <div class="roars-classroom">
-                  {isImg ? <img src={`${base}/${flag.slice(4)}`} alt={classroom} class="roars-flag" /> : <span>{flag}</span>}
-                  {classroom}
-                </div>
-                <div class="roars-student">{student}</div>
-              </div>
-            ) : null;
-          })}
+    {showRoars && (
+      <section class="section section--roars" id="roars" data-section="roars">
+        <div class="section-header" data-accordion>
+          <span class="section-icon">🐯</span>
+          <h2 class="section-heading" data-en={labelsEn.roarsHeading} data-es={labelsEs.roarsHeading}>
+            {labelsEn.roarsHeading}
+          </h2>
+          <span class="accordion-chevron"></span>
         </div>
-      </div>
-    </section>
+        <div class="section-content">
+          {weekData.roarsClass ? (
+            <div class="roars-class-banner">
+              <div class="roars-class-emoji">🐯⭐🐯</div>
+              <p class="roars-class-text" data-lang-en set:html={weekData.roarsClass.en} />
+              <p class="roars-class-text" data-lang-es style="display:none" set:html={weekData.roarsClass.es} />
+            </div>
+          ) : (
+          <p class="section-body" style="margin-bottom: 12px; font-size: 0.88rem; color: var(--text-muted);"
+            data-en="Congratulations to this week's ROARS students for showing outstanding character!"
+            data-es="¡Felicitaciones a los estudiantes ROARS de esta semana por demostrar un carácter excepcional!">
+            Congratulations to this week's ROARS students for showing outstanding character!
+          </p>
+          )}
+          <div class="roars-grid" style={weekData.roarsClass ? 'display:none' : undefined}>
+            {config.classrooms.map(classroom => {
+              const student = weekData.roars[classroom as keyof typeof weekData.roars];
+              const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];
+              const isImg = flag?.startsWith('img:');
+              return student ? (
+                <div class="roars-card">
+                  <div class="roars-classroom">
+                    {isImg ? <img src={`${base}/${flag.slice(4)}`} alt={classroom} class="roars-flag" /> : <span>{flag}</span>}
+                    {classroom}
+                  </div>
+                  <div class="roars-student">{student}</div>
+                </div>
+              ) : null;
+            })}
+          </div>
+        </div>
+      </section>
+    )}
 
   </div><!-- /sections-container -->
 

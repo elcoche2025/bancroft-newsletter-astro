@@ -4,6 +4,7 @@ import {
   textToHTML, formatDate,
   getSubjectIcon, getSpecialForDay, getSubjectTranslation,
   getSchoolYearProgress,
+  hasBilingualText, weekHasRoars, stripTags,
 } from '../../lib/utils';
 
 interface Props {
@@ -55,7 +56,7 @@ const roarsCount = roarsEntries.length;
 // Pull quote: second sentence of welcome.en, fallback first
 function pullQuote(text: string): string {
   // Strip HTML tags
-  const plain = text.replace(/<[^>]+>/g, '');
+  const plain = stripTags(text);
   const sentences = plain.split(/\.\s+/);
   const raw = sentences.length > 1 ? sentences[1] : sentences[0];
   return raw.replace(/["""]/g, '').trim();
@@ -111,6 +112,11 @@ for (const grp of vocabGroups) {
 // Has books?
 const hasBooks = weekData.books && weekData.books.length > 0;
 
+// Welcome + Specials are the only guaranteed sections; the rest may be absent early in the year.
+const showMath = hasBilingualText(weekData.math);
+const showLiteracy = hasBilingualText(weekData.literacy);
+const showRoars = weekHasRoars(weekData);
+
 // Testing pane: scan ALL reminders for the next testing-related one
 const firstReminder = sortedReminders[0];
 const testingRe = /i-ready|testing|assessment/i;
@@ -132,18 +138,23 @@ interface ContentItem {
   labelEn: string;
   labelEs: string;
 }
-const contentItems: ContentItem[] = [
-  { id: 'cover', labelEn: 'ROARS · Cover Story', labelEs: 'ROARS · Portada' },
-];
+const contentItems: ContentItem[] = [];
+if (showRoars) {
+  contentItems.push({ id: 'cover', labelEn: 'ROARS · Cover Story', labelEs: 'ROARS · Portada' });
+}
 if (sortedReminders.length > 0) {
   contentItems.push({ id: 'action', labelEn: 'Datelines', labelEs: 'Fechas Importantes' });
 }
 contentItems.push(
   { id: 'welcome', labelEn: 'From the Teacher', labelEs: 'De la Maestra' },
   { id: 'specials', labelEn: 'Specials Board', labelEs: 'Especiales' },
-  { id: 'math', labelEn: 'Mathematics', labelEs: 'Matemáticas' },
-  { id: 'lit', labelEn: 'Literacy', labelEs: 'Lectura y Escritura' },
 );
+if (showMath) {
+  contentItems.push({ id: 'math', labelEn: 'Mathematics', labelEs: 'Matemáticas' });
+}
+if (showLiteracy) {
+  contentItems.push({ id: 'lit', labelEn: 'Literacy', labelEs: 'Lectura y Escritura' });
+}
 if (weekData.askYourChild && weekData.askYourChild.length > 0) {
   contentItems.push({ id: 'ask', labelEn: 'Ask Your Child', labelEs: 'Pregúntale' });
 }
@@ -153,6 +164,13 @@ if (vocabEn.length > 0) {
 if (hasBooks) {
   contentItems.push({ id: 'books', labelEn: 'Books & Read-Alouds', labelEs: 'Libros' });
 }
+
+// Printed section numbers come straight off the contents list, so they stay
+// consecutive no matter which sections this issue omits.
+const nsNo = (id: string) => {
+  const i = contentItems.findIndex(c => c.id === id);
+  return i < 0 ? '' : String(i + 1).padStart(2, '0');
+};
 
 // Specials week header: letter days for Mon-Fri
 const dayLetters = dayKeys.map(d => specials[d] || '?');
@@ -288,53 +306,55 @@ const weekDateShortEs = (() => {
   </div>
 
   <!-- ========== COVER STORY — ROARS ========== -->
-  <section id="ns-cover" class="ns-cover-story">
-    <div class="ns-kicker">
-      <span data-en="This Week's Roars" data-es="Reconocimientos de la Semana">This Week's Roars</span>
-    </div>
-    <h2 data-lang-en>This Week's <em>ROARS</em></h2>
-    <h2 data-lang-es style="display:none">Los <em>ROARS</em> de la Semana</h2>
-    {weekData.roarsClass ? (
-      <div class="ns-class-roar">
-        <div class="ns-class-roar-emoji">🐯⭐🐯</div>
-        <p class="ns-lede" data-lang-en set:html={weekData.roarsClass.en} />
-        <p class="ns-lede" data-lang-es style="display:none" set:html={weekData.roarsClass.es} />
+  {showRoars && (
+    <section id="ns-cover" class="ns-cover-story">
+      <div class="ns-kicker">
+        <span data-en="This Week's Roars" data-es="Reconocimientos de la Semana">This Week's Roars</span>
       </div>
-    ) : (
-      <Fragment>
-    <p class="ns-lede" data-lang-en>Congratulations to this week's 1st grade ROAR winners!</p>
-    <p class="ns-lede" data-lang-es style="display:none">¡Felicitaciones a los ganadores ROAR de primer grado de esta semana!</p>
-      </Fragment>
-    )}
+      <h2 data-lang-en>This Week's <em>ROARS</em></h2>
+      <h2 data-lang-es style="display:none">Los <em>ROARS</em> de la Semana</h2>
+      {weekData.roarsClass ? (
+        <div class="ns-class-roar">
+          <div class="ns-class-roar-emoji">🐯⭐🐯</div>
+          <p class="ns-lede" data-lang-en set:html={weekData.roarsClass.en} />
+          <p class="ns-lede" data-lang-es style="display:none" set:html={weekData.roarsClass.es} />
+        </div>
+      ) : (
+        <Fragment>
+      <p class="ns-lede" data-lang-en>Congratulations to this week's 1st grade ROAR winners!</p>
+      <p class="ns-lede" data-lang-es style="display:none">¡Felicitaciones a los ganadores ROAR de primer grado de esta semana!</p>
+        </Fragment>
+      )}
 
-    <div class="ns-honor-roll" style={weekData.roarsClass ? 'display:none' : undefined}>
-      {roarsEntries.map(({ classroom, student }) => {
-        const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];
-        const isImg = flag?.startsWith('img:');
-        return (
-          <div class="ns-honor-row">
-            <div class="ns-flag">
-              {isImg
-                ? <img src={`${base}/${flag.slice(4)}`} alt={classroom} />
-                : <span>{flag}</span>
-              }
+      <div class="ns-honor-roll" style={weekData.roarsClass ? 'display:none' : undefined}>
+        {roarsEntries.map(({ classroom, student }) => {
+          const flag = config.classroomFlags[classroom as keyof typeof config.classroomFlags];
+          const isImg = flag?.startsWith('img:');
+          return (
+            <div class="ns-honor-row">
+              <div class="ns-flag">
+                {isImg
+                  ? <img src={`${base}/${flag.slice(4)}`} alt={classroom} />
+                  : <span>{flag}</span>
+                }
+              </div>
+              <div>
+                <div class="ns-room">{classroom}</div>
+                <div class="ns-honor-name">{student}</div>
+              </div>
+              <div class="ns-micro">&#9733;</div>
             </div>
-            <div>
-              <div class="ns-room">{classroom}</div>
-              <div class="ns-honor-name">{student}</div>
-            </div>
-            <div class="ns-micro">&#9733;</div>
-          </div>
-        );
-      })}
-    </div>
-  </section>
+          );
+        })}
+      </div>
+    </section>
+  )}
 
   <!-- ========== No. 02 — ACTION / DATELINES ========== -->
   {sortedReminders.length > 0 && (
     <section id="ns-action" class="ns-s-action">
       <header class="ns-section-head">
-        <div class="ns-section-no">02</div>
+        <div class="ns-section-no">{nsNo('action')}</div>
         <div style="flex:1">
           <h2 class="ns-section-title">
             <span data-en="Datelines" data-es="Fechas Importantes">Datelines</span>
@@ -372,7 +392,7 @@ const weekDateShortEs = (() => {
   <!-- ========== No. 03 — WELCOME ========== -->
   <section id="ns-welcome" class="ns-s-welcome">
     <header class="ns-section-head">
-      <div class="ns-section-no">{sortedReminders.length > 0 ? '03' : '02'}</div>
+      <div class="ns-section-no">{nsNo('welcome')}</div>
       <div style="flex:1">
         <h2 class="ns-section-title">
           <span data-en="From the Teacher" data-es="De la Maestra">From the Teacher</span>
@@ -403,7 +423,7 @@ const weekDateShortEs = (() => {
   <!-- ========== No. 04 — SPECIALS BOARD ========== -->
   <section id="ns-specials" class="ns-s-spec">
     <header class="ns-section-head">
-      <div class="ns-section-no">{sortedReminders.length > 0 ? '04' : '03'}</div>
+      <div class="ns-section-no">{nsNo('specials')}</div>
       <div style="flex:1">
         <h2 class="ns-section-title">
           <span data-en="The Specials Board" data-es="Tablero de Especiales">The Specials Board</span>
@@ -467,56 +487,60 @@ const weekDateShortEs = (() => {
   </section>
 
   <!-- ========== No. 05 — MATH ========== -->
-  <section id="ns-math" class="ns-s-math">
-    <header class="ns-section-head">
-      <div class="ns-section-no">{sortedReminders.length > 0 ? '05' : '04'}</div>
-      <div style="flex:1">
-        <h2 class="ns-section-title">
-          <span data-en="Mathematics" data-es="Matemáticas">Mathematics</span>
-        </h2>
-        <div class="ns-section-kicker">
-          <span data-en="What we're learning this week." data-es="Lo que aprendemos esta semana.">What we're learning this week.</span>
+  {showMath && (
+    <section id="ns-math" class="ns-s-math">
+      <header class="ns-section-head">
+        <div class="ns-section-no">{nsNo('math')}</div>
+        <div style="flex:1">
+          <h2 class="ns-section-title">
+            <span data-en="Mathematics" data-es="Matemáticas">Mathematics</span>
+          </h2>
+          <div class="ns-section-kicker">
+            <span data-en="What we're learning this week." data-es="Lo que aprendemos esta semana.">What we're learning this week.</span>
+          </div>
         </div>
-      </div>
-    </header>
-    <article>
-      <div data-lang-en>
-        <p set:html={textToHTML(weekData.math.en)} />
-      </div>
-      <div data-lang-es style="display:none">
-        <p set:html={textToHTML(weekData.math.es)} />
-      </div>
-    </article>
-  </section>
+      </header>
+      <article>
+        <div data-lang-en>
+          <p set:html={textToHTML(weekData.math.en)} />
+        </div>
+        <div data-lang-es style="display:none">
+          <p set:html={textToHTML(weekData.math.es)} />
+        </div>
+      </article>
+    </section>
+  )}
 
   <!-- ========== No. 06 — LITERACY ========== -->
-  <section id="ns-lit" class="ns-s-lit">
-    <header class="ns-section-head">
-      <div class="ns-section-no">{sortedReminders.length > 0 ? '06' : '05'}</div>
-      <div style="flex:1">
-        <h2 class="ns-section-title">
-          <span data-en="Literacy" data-es="Lectura y Escritura">Literacy</span>
-        </h2>
-        <div class="ns-section-kicker">
-          <span data-en="Reading & writing news." data-es="Noticias de lectura y escritura.">Reading &amp; writing news.</span>
+  {showLiteracy && (
+    <section id="ns-lit" class="ns-s-lit">
+      <header class="ns-section-head">
+        <div class="ns-section-no">{nsNo('lit')}</div>
+        <div style="flex:1">
+          <h2 class="ns-section-title">
+            <span data-en="Literacy" data-es="Lectura y Escritura">Literacy</span>
+          </h2>
+          <div class="ns-section-kicker">
+            <span data-en="Reading & writing news." data-es="Noticias de lectura y escritura.">Reading &amp; writing news.</span>
+          </div>
         </div>
-      </div>
-    </header>
-    <article>
-      <div data-lang-en>
-        <p set:html={textToHTML(weekData.literacy.en)} />
-      </div>
-      <div data-lang-es style="display:none">
-        <p set:html={textToHTML(weekData.literacy.es)} />
-      </div>
-    </article>
-  </section>
+      </header>
+      <article>
+        <div data-lang-en>
+          <p set:html={textToHTML(weekData.literacy.en)} />
+        </div>
+        <div data-lang-es style="display:none">
+          <p set:html={textToHTML(weekData.literacy.es)} />
+        </div>
+      </article>
+    </section>
+  )}
 
   <!-- ========== No. 07 — ASK YOUR CHILD ========== -->
   {weekData.askYourChild && weekData.askYourChild.length > 0 && (
     <section id="ns-ask" class="ns-s-ask">
       <header class="ns-section-head">
-        <div class="ns-section-no">{sortedReminders.length > 0 ? '07' : '06'}</div>
+        <div class="ns-section-no">{nsNo('ask')}</div>
         <div style="flex:1">
           <h2 class="ns-section-title">
             <span data-en="Ask Your Child" data-es="Pregúntale">Ask Your Child</span>
@@ -543,13 +567,7 @@ const weekDateShortEs = (() => {
   {vocabEn.length > 0 && (
     <section id="ns-vocab" class="ns-s-vocab">
       <header class="ns-section-head">
-        <div class="ns-section-no">
-          {(() => {
-            let n = sortedReminders.length > 0 ? 7 : 6;
-            if (!(weekData.askYourChild && weekData.askYourChild.length > 0)) n--;
-            return String(n + (weekData.askYourChild && weekData.askYourChild.length > 0 ? 1 : 0)).padStart(2,'0');
-          })()}
-        </div>
+        <div class="ns-section-no">{nsNo('vocab')}</div>
         <div style="flex:1">
           <h2 class="ns-section-title">
             <span data-en="Words of the Week" data-es="Palabras de la Semana">Words of the Week</span>
@@ -586,9 +604,7 @@ const weekDateShortEs = (() => {
   {hasBooks && (
     <section id="ns-books" class="ns-s-books">
       <header class="ns-section-head">
-        <div class="ns-section-no">
-          {String(contentItems.findIndex(c => c.id === 'books') + 1).padStart(2,'0')}
-        </div>
+        <div class="ns-section-no">{nsNo('books')}</div>
         <div style="flex:1">
           <h2 class="ns-section-title">
             <span data-en="Books &amp; Read-Alouds" data-es="Libros y Lectura">Books &amp; Read-Alouds</span>

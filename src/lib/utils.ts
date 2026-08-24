@@ -213,3 +213,31 @@ export function issueNumberInSchoolYear(date: string, allWeeks: string[]): numbe
   const yearWeeks = allWeeks.filter(w => schoolYearOf(w) === sy).sort();
   return yearWeeks.indexOf(date) + 1;
 }
+
+/**
+ * True when a bilingual block has real content in either language.
+ * Early-in-the-year issues legitimately ship without Math/Literacy write-ups;
+ * every theme uses this to drop the section rather than render an empty card.
+ */
+export function hasBilingualText(field?: { en?: string; es?: string } | null): boolean {
+  return !!(field && ((field.en && field.en.trim()) || (field.es && field.es.trim())));
+}
+
+/** True when a week has anything to show in ROARS — named students or a whole-class banner. */
+export function weekHasRoars(weekData: any): boolean {
+  return !!weekData?.roarsClass || Object.values(weekData?.roars || {}).some(Boolean);
+}
+
+/**
+ * Plain text for peeks and pull quotes. Tags become a space rather than nothing,
+ * so a paragraph break written as `<br><br>` doesn't glue two sentences together.
+ */
+export function stripTags(html: string): string {
+  return (html || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    // A tag that sat right before punctuation ("<b>May</b>,") must not leave a gap.
+    .replace(/\s+([,.;:!?%)\]])/g, '$1')
+    .replace(/([(\[])\s+/g, '$1')
+    .trim();
+}

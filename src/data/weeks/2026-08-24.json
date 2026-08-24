@@ -1,0 +1,16 @@
+{
+  "date": "2026-08-24",
+  "season": "default",
+  "welcome": {
+    "en": "Welcome to first grade! We are so happy to have your child with us, and we cannot wait to get started.<br><br>This first week is all about getting to know one another. We will learn each other's names, begin building our classroom community, and practice the routines that will carry us through the whole year — how we line up, how we take care of our materials, and how we take care of each other.<br><br>We have school every day this week, Monday through Friday. <b>Specials start right away</b>, every day from <b>1:30 to 2:15</b>. Take a look at the board below to see which special your child has each day. Comfortable shoes on PE days and a labeled water bottle every day both go a long way.<br><br>Our regular sections — math, literacy, ROARS, and reminders — will begin next week, once we have settled into our routines. Here is to a wonderful year together!",
+    "es": "¡Bienvenidos a primer grado! Estamos muy contentos de tener a su hijo/a con nosotros y tenemos muchas ganas de comenzar.<br><br>Esta primera semana se trata de conocernos. Aprenderemos los nombres de todos, comenzaremos a formar nuestra comunidad de clase y practicaremos las rutinas que nos acompañarán durante todo el año — cómo hacemos la fila, cómo cuidamos nuestros materiales y cómo nos cuidamos entre nosotros.<br><br>Tenemos clases todos los días esta semana, de lunes a viernes. <b>Los especiales comienzan de inmediato</b>, todos los días de <b>1:30 a 2:15</b>. Consulten el cuadro de abajo para ver qué especial le toca a su hijo/a cada día. Unos zapatos cómodos los días de Educación Física y una botella de agua con su nombre ayudan mucho.<br><br>Nuestras secciones habituales — matemáticas, lectura, ROARS y recordatorios — comenzarán la próxima semana, una vez que nos hayamos acostumbrado a nuestras rutinas. ¡Que sea un año maravilloso!"
+  },
+  "specials": {
+    "monday": "A",
+    "tuesday": "B",
+    "wednesday": "C",
+    "thursday": "D",
+    "friday": "E"
+  },
+  "roars": {}
+}
