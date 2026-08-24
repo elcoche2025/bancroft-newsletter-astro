@@ -5,6 +5,18 @@ All notable changes to the Bancroft Newsletter Astro build. Newest first.
 ## 2026-08-24
 
 ### Added
+- **Phone layout for `/schedule`.** At ≤720px the three-column grid is replaced by a tabbed
+  single-column view — one tab per section (1st Math / 1st SLA / 1st ELA) — so the schedule
+  needs **no horizontal scrolling at all**, verified down to a 320px viewport. Each row shows
+  start time, block name, full time range, duration and the category description, colour-coded
+  with the same tokens as the grid. Includes a sticky tab bar, a live "Right now" card with a
+  *Jump to now* button, academic-block separators, and a per-section instructional-minutes card.
+  Transitions are kept for accuracy but rendered as quiet dashed dividers.
+  The phone view is **built at runtime from the grid markup**, so the two layouts cannot drift
+  apart — editing the grid updates both. Without JS the original grid is left in place, so the
+  page degrades gracefully rather than going blank.
+  Also fixes a pre-existing overflow: the masthead clock had `white-space:nowrap` and was itself
+  forcing ~554px of sideways scroll on phones.
 - **`/schedule`** — the SY 2026-27 First Grade Master Schedule, served at `bancroft1.org/schedule`.
   A standalone self-contained HTML file dropped into `public/schedule/index.html`; Astro copies
   `public/` verbatim, so it is not a component and the build does not touch it. **Deliberately

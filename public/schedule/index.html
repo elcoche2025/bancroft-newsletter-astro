@@ -433,6 +433,346 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,4.6vw,42px);
   </div>
   </div>
 
+<!-- ══ phone view ═══════════════════════════════════════════════
+     A single-column, tabbed rendering of the same schedule, built at
+     runtime from the grid markup above so the two views can never
+     disagree. Swapped in at <=720px only when JS has run — without JS
+     the original horizontally-scrolling grid is left in place. -->
+<style>
+.phone{display:none}
+.phone *{box-sizing:border-box}
+
+/* tabs */
+.ptabs{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:repeat(3,1fr);
+  gap:3px;padding:7px;margin:0 -12px;background:var(--paper);
+  box-shadow:0 1px 0 var(--rule),0 8px 14px -10px rgba(22,32,43,.28)}
+.ptab{appearance:none;-webkit-appearance:none;border:1px solid var(--rule);background:var(--card);
+  color:var(--mute);font-family:var(--display);font-weight:600;font-size:13.5px;letter-spacing:-.01em;
+  min-height:44px;padding:5px 4px;border-radius:3px;cursor:pointer;line-height:1.15;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  transition:background .14s ease,color .14s ease,border-color .14s ease}
+.ptab .psub{font-family:var(--mono);font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;
+  font-weight:500;opacity:.8}
+.ptab[aria-selected="true"]{background:var(--nav);border-color:var(--nav);color:#fff}
+.ptab:focus-visible{outline:2px solid var(--nav);outline-offset:2px}
+
+/* team + now */
+.pteam{font-family:var(--mono);font-size:10px;letter-spacing:.03em;color:var(--mute);
+  text-align:center;padding:9px 2px 0;line-height:1.5}
+.pnow{display:flex;align-items:center;gap:9px;margin:10px 0 4px;padding:9px 11px;
+  background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--rule);border-radius:3px}
+.pnow.live{border-left-color:#2E7D51;background:#F4FAF6}
+.pnow-l{flex:1;min-width:0}
+.pnow-k{font-family:var(--mono);font-size:9px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--mute);display:block;margin-bottom:2px}
+.pnow-v{font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:-.012em;
+  line-height:1.2;overflow-wrap:anywhere}
+.pnow-t{font-size:11.5px;color:var(--mute);margin-top:2px}
+.pjump{flex:0 0 auto;appearance:none;-webkit-appearance:none;border:1px solid var(--rule);
+  background:var(--paper);color:var(--ink);font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.09em;text-transform:uppercase;padding:8px 10px;min-height:38px;
+  border-radius:2px;cursor:pointer}
+.pjump:active{background:var(--hair)}
+
+/* list */
+.plist{margin-top:6px}
+.pband{display:flex;align-items:baseline;gap:8px;margin:16px 0 7px;padding-bottom:5px;
+  border-bottom:1px solid var(--rule)}
+.pband:first-child{margin-top:8px}
+.pband i{font-style:normal;font-family:var(--display);font-weight:700;font-size:12px;
+  letter-spacing:-.01em;color:var(--bt,var(--ink))}
+.pband em{font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;
+  color:var(--mute);margin-left:auto;text-align:right}
+.pband.b1{--bt:#1E3350} .pband.b2{--bt:#2A5A4A} .pband.b3{--bt:#5B3A63}
+
+.prow{display:grid;grid-template-columns:46px 1fr;gap:9px;align-items:stretch;margin-bottom:4px}
+.ptime{font-family:var(--mono);font-size:10.5px;color:var(--mute);text-align:right;
+  padding-top:9px;line-height:1.25;white-space:nowrap}
+.ptime b{display:block;font-weight:600;color:#43505E}
+.ptime .ap{font-size:8px;letter-spacing:.06em;margin-left:1px}
+.pcard{min-width:0;background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--rule);
+  border-radius:3px;padding:8px 10px}
+.pname{font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:-.012em;
+  line-height:1.25;overflow-wrap:anywhere}
+.pmeta{font-family:var(--mono);font-size:10px;letter-spacing:.02em;margin-top:3px;opacity:.75}
+.pnote{font-size:11px;margin-top:3px;opacity:.72;font-style:italic;overflow-wrap:anywhere}
+
+.pcard.collab{background:var(--collab-bg);color:var(--collab-tx);border-color:transparent;border-left-color:var(--collab-bar)}
+.pcard.routine{background:var(--routine-bg);color:var(--routine-tx);border-color:transparent;border-left-color:var(--routine-bar)}
+.pcard.fluidez{background:var(--fluidez-bg);color:var(--fluidez-tx);border-color:transparent;border-left-color:var(--fluidez-bar)}
+.pcard.launch{background:var(--launch-bg);color:var(--launch-tx);border-color:transparent;border-left-color:var(--launch-bar)}
+.pcard.learn{background:var(--learn-bg);color:var(--learn-tx);border-color:transparent;border-left-color:var(--learn-bar)}
+.pcard.land{background:var(--land-bg);color:var(--land-tx);border-color:transparent;border-left-color:var(--land-bar)}
+.pcard.estudio{background:var(--estudio-bg);color:var(--estudio-tx);border-color:transparent;border-left-color:var(--estudio-bar)}
+.pcard.heggerty{background:var(--heggerty-bg);color:var(--heggerty-tx);border-color:transparent;border-left-color:var(--heggerty-bar)}
+.pcard.ufli{background:var(--ufli-bg);color:var(--ufli-tx);border-color:transparent;border-left-color:var(--ufli-bar)}
+.pcard.nbsg{background:var(--nbsg-bg);color:var(--nbsg-tx);border-color:transparent;border-left-color:var(--nbsg-bar)}
+.pcard.arc{background:var(--arc-bg);color:var(--arc-tx);border-color:transparent;border-left-color:var(--arc-bar)}
+
+/* transitions — present, but quiet */
+.prow.trans{margin:1px 0}
+.prow.trans .ptime{padding-top:1px;font-size:9px;opacity:.6}
+.ptrans{display:flex;align-items:center;gap:7px;padding:1px 0 1px 3px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;
+  color:#9AA6B4}
+.ptrans::after{content:"";flex:1;height:0;border-top:1px dashed #D6DCE3}
+
+/* now marker */
+.prow.is-now .pcard{box-shadow:0 0 0 2px #2E7D51, 0 4px 12px -4px rgba(46,125,81,.5)}
+.prow.is-now .ptime b{color:#2E7D51}
+.prow.is-now .ptime::after{content:"NOW";display:block;font-size:7.5px;letter-spacing:.1em;
+  color:#2E7D51;font-weight:600;margin-top:2px}
+
+/* chip filtering, mirrored from the grid */
+.plist.filtering .prow:not(.match){opacity:.26}
+.plist.filtering .prow.match .pcard{box-shadow:0 0 0 2px var(--ink)}
+
+/* per-tab stat card */
+.pstat{margin-top:20px;background:var(--card);border:1px solid var(--rule);border-radius:3px;
+  padding:12px 13px 10px}
+.pstat-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  padding-bottom:8px;border-bottom:1px solid var(--hair);margin-bottom:7px}
+.pstat-h .pstat-n{font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:-.01em}
+.pstat-h .pstat-t{font-family:var(--mono);text-align:right;font-size:9px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mute);line-height:1.3}
+.pstat-h .pstat-t b{display:block;font-family:var(--display);font-size:21px;color:var(--ink);
+  letter-spacing:-.02em;text-transform:none}
+.pstat ul{list-style:none;margin:0;padding:0}
+.pstat li{display:flex;align-items:center;gap:7px;font-size:12.5px;padding:3px 0}
+.pstat li .pip{width:7px;height:7px;border-radius:1px;flex:0 0 auto}
+.pstat li .pm{margin-left:auto;font-family:var(--mono);font-size:11.5px;font-weight:600}
+
+@media (max-width:720px){
+  html.has-phone .phone{display:block}
+  html.has-phone .scroller,
+  html.has-phone .swipe,
+  html.has-phone .stats,
+  html.has-phone .bandstrip{display:none}
+  html.has-phone .filters{margin-bottom:2px}
+  /* the masthead clock lists all three sections on one line; it is the last
+     thing on the page that forces sideways scroll, so let it wrap on phones */
+  html.has-phone .clock,
+  html.has-phone #clock-what{white-space:normal;overflow-wrap:anywhere}
+  html.has-phone .clock{line-height:1.5}
+  html.has-phone #clock-what{flex:1 0 100%;order:3;margin-top:1px}
+}
+@media (min-width:721px){ html.has-phone .phone{display:none} }
+@media print{ .phone{display:none!important} }
+</style>
+
+<section class="phone" id="phone" aria-label="Schedule by section"></section>
+
+<script>
+(function(){
+  var grid = document.getElementById('sheet');
+  var host = document.getElementById('phone');
+  if(!grid || !host) return;
+
+  var TRACKS = [
+    {id:'math', short:'1st Math', sub:'Math'},
+    {id:'sla',  short:'1st SLA',  sub:'Spanish'},
+    {id:'ela',  short:'1st ELA',  sub:'English'}
+  ];
+
+  // Academic blocks, in minutes-since-midnight. Mirrors the rail bands.
+  var BANDS = [
+    {cls:'b1', start:515, label:'Block 1',   note:'8:35–10:20 · 75 min'},
+    {cls:'b2', start:625, label:'Block 2',   note:'10:25–11:25 · 80 min total'},
+    {cls:'b2', start:725, label:'Block 2 · cont.', note:'small group'},
+    {cls:'b3', start:750, label:'Block 3',   note:'small group'},
+    {cls:'b3', start:860, label:'Block 3 · cont.', note:'2:20–3:10 · 75 min total'}
+  ];
+
+  function fmt(m, withAp){
+    var h = Math.floor(m/60), mm = m%60, ap = h < 12 ? 'AM' : 'PM';
+    var hh = h % 12; if(hh === 0) hh = 12;
+    return hh + ':' + (mm < 10 ? '0' : '') + mm + (withAp ? '<span class="ap">' + ap + '</span>' : '');
+  }
+  function esc(s){ var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+  // ── read the grid: one pass, the grid stays the single source of truth ──
+  var data = {};
+  TRACKS.forEach(function(t){
+    var col = grid.querySelector('.col[data-track="' + t.id + '"]');
+    var head = grid.querySelector('.head .hcell[data-track="' + t.id + '"]');
+    data[t.id] = {
+      team: head ? (head.querySelector('.hteam') || {}).textContent || '' : '',
+      long: head ? (head.querySelector('.hlong') || {}).textContent || '' : '',
+      rows: Array.prototype.map.call(col ? col.querySelectorAll('.b') : [], function(b){
+        var nm = b.querySelector('.t-name') || b.querySelector('.t-tiny');
+        // the grid's title carries "Name · times · duration · description"
+        var bits = (b.getAttribute('title') || '').split(' · ');
+        return {
+          cat: b.getAttribute('data-cat'),
+          start: +b.getAttribute('data-start'),
+          end: +b.getAttribute('data-end'),
+          name: nm ? nm.textContent : '',
+          meta: (b.querySelector('.t-meta') || {}).textContent || '',
+          desc: bits.length > 3 ? bits.slice(3).join(' · ') : ''
+        };
+      })
+    };
+  });
+
+  // per-track totals, lifted from the stat cards so the numbers stay in one place
+  var stats = {};
+  Array.prototype.forEach.call(document.querySelectorAll('.stats .stat'), function(card, i){
+    var t = TRACKS[i]; if(!t) return;
+    stats[t.id] = {
+      total: (card.querySelector('.stat-total b') || {}).textContent || '',
+      items: Array.prototype.map.call(card.querySelectorAll('.stat-list li'), function(li){
+        return {
+          cls: li.className,
+          name: (li.querySelector('.pn') || {}).textContent || '',
+          min: (li.querySelector('.pm') || {}).textContent || ''
+        };
+      })
+    };
+  });
+
+  // ── build ────────────────────────────────────────────────────
+  var html = '<div class="ptabs" role="tablist">';
+  TRACKS.forEach(function(t, i){
+    html += '<button class="ptab" type="button" role="tab" id="ptab-' + t.id + '"'
+         +  ' aria-controls="ppanel" aria-selected="' + (i === 0) + '" data-track="' + t.id + '">'
+         +  esc(t.short) + '<span class="psub">' + esc(t.sub) + '</span></button>';
+  });
+  html += '</div><div class="pteam" id="pteam"></div>'
+       +  '<div class="pnow" id="pnow"><div class="pnow-l">'
+       +  '<span class="pnow-k">Right now</span>'
+       +  '<div class="pnow-v" id="pnow-v"></div><div class="pnow-t" id="pnow-t"></div></div>'
+       +  '<button class="pjump" id="pjump" type="button" hidden>Jump<br>to now</button></div>'
+       +  '<div class="plist" id="plist" role="tabpanel" tabindex="0"></div>'
+       +  '<div class="pstat" id="pstat"></div>';
+  host.innerHTML = html;
+
+  var elTeam  = document.getElementById('pteam');
+  var elList  = document.getElementById('plist');
+  var elStat  = document.getElementById('pstat');
+  var elNow   = document.getElementById('pnow');
+  var elNowV  = document.getElementById('pnow-v');
+  var elNowT  = document.getElementById('pnow-t');
+  var elJump  = document.getElementById('pjump');
+  var tabs    = Array.prototype.slice.call(host.querySelectorAll('.ptab'));
+  var current = TRACKS[0].id;
+  var filter  = null;
+
+  function renderList(id){
+    var d = data[id], out = '', used = {};
+    d.rows.forEach(function(r){
+      BANDS.forEach(function(bd, bi){
+        if(!used[bi] && r.start === bd.start){
+          used[bi] = 1;
+          out += '<div class="pband ' + bd.cls + '"><i>' + esc(bd.label) + '</i>'
+              +  '<em>' + esc(bd.note) + '</em></div>';
+        }
+      });
+      var mins = r.end - r.start;
+      if(r.cat === 'transition'){
+        out += '<div class="prow trans" data-cat="transition" data-start="' + r.start + '">'
+            +  '<div class="ptime">' + fmt(r.start, false) + '</div>'
+            +  '<div class="ptrans">' + esc(r.name || 'Transition') + ' · ' + mins + 'm</div></div>';
+        return;
+      }
+      out += '<div class="prow" data-cat="' + r.cat + '" data-start="' + r.start + '" data-end="' + r.end + '">'
+          +  '<div class="ptime"><b>' + fmt(r.start, true) + '</b></div>'
+          +  '<div class="pcard ' + r.cat + '"><div class="pname">' + esc(r.name) + '</div>'
+          +  '<div class="pmeta">' + fmt(r.start, false) + '–' + fmt(r.end, false)
+          +  ' · ' + mins + ' min</div>'
+          +  (r.desc ? '<div class="pnote">' + esc(r.desc) + '</div>' : '')
+          +  '</div></div>';
+    });
+    elList.innerHTML = out;
+    elList.setAttribute('aria-labelledby', 'ptab-' + id);
+    elTeam.textContent = d.team.replace(/\s{2,}/g, ' ');
+  }
+
+  function renderStat(id){
+    var s = stats[id], t = null;
+    TRACKS.forEach(function(x){ if(x.id === id) t = x; });
+    if(!s){ elStat.innerHTML = ''; return; }
+    var li = s.items.map(function(it){
+      return '<li class="' + it.cls + '"><span class="pip"></span>' + esc(it.name)
+           + '<span class="pm">' + esc(it.min) + '</span></li>';
+    }).join('');
+    elStat.innerHTML = '<div class="pstat-h"><div class="pstat-n">' + esc(t ? t.short : '')
+      + '</div><div class="pstat-t"><b>' + esc(s.total) + '</b>min core instruction</div></div>'
+      + '<ul>' + li + '</ul>';
+  }
+
+  function select(id){
+    current = id;
+    tabs.forEach(function(b){ b.setAttribute('aria-selected', String(b.getAttribute('data-track') === id)); });
+    renderList(id); renderStat(id); applyFilter(); tick();
+  }
+
+  tabs.forEach(function(b){
+    b.addEventListener('click', function(){ select(b.getAttribute('data-track')); });
+    b.addEventListener('keydown', function(e){
+      var i = tabs.indexOf(b), n = null;
+      if(e.key === 'ArrowRight') n = tabs[(i + 1) % tabs.length];
+      if(e.key === 'ArrowLeft')  n = tabs[(i - 1 + tabs.length) % tabs.length];
+      if(n){ e.preventDefault(); n.focus(); select(n.getAttribute('data-track')); }
+    });
+  });
+
+  // ── mirror the highlight chips onto the phone rows ───────────
+  function applyFilter(){
+    var rows = elList.querySelectorAll('.prow');
+    elList.classList.toggle('filtering', !!filter);
+    Array.prototype.forEach.call(rows, function(r){
+      r.classList.toggle('match', !!filter && r.getAttribute('data-cat') === filter);
+    });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(c){
+    c.addEventListener('click', function(){
+      var cat = c.getAttribute('data-cat');
+      filter = (filter === cat) ? null : cat;
+      applyFilter();
+    });
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && filter){ filter = null; applyFilter(); }
+  });
+
+  // ── live "right now" ─────────────────────────────────────────
+  function tick(){
+    var d = new Date();
+    var mins = d.getHours()*60 + d.getMinutes();
+    var weekday = d.getDay() >= 1 && d.getDay() <= 5;
+    var rows = elList.querySelectorAll('.prow');
+    var hit = null;
+
+    Array.prototype.forEach.call(rows, function(r){
+      var s = +r.getAttribute('data-start'), e = +r.getAttribute('data-end');
+      var on = weekday && !r.classList.contains('trans') && mins >= s && mins < e;
+      r.classList.toggle('is-now', on);
+      if(on) hit = r;
+    });
+
+    if(hit){
+      elNow.classList.add('live');
+      elNowV.textContent = (hit.querySelector('.pname') || {}).textContent || '';
+      elNowT.textContent = (hit.querySelector('.pmeta') || {}).textContent || '';
+      elJump.hidden = false;
+    } else {
+      elNow.classList.remove('live');
+      elNowV.textContent = weekday ? 'Not in session' : 'Weekend';
+      elNowT.textContent = 'School day runs 8:00 AM – 3:15 PM';
+      elJump.hidden = true;
+    }
+  }
+  elJump.addEventListener('click', function(){
+    var n = elList.querySelector('.prow.is-now');
+    if(n) n.scrollIntoView({block:'center', behavior:'smooth'});
+  });
+
+  document.documentElement.classList.add('has-phone');
+  select(TRACKS[0].id);
+  setInterval(tick, 20000);
+})();
+</script>
+
   <section class="notes">
     <h2>Notes on the source schedule</h2>
 <div class="note"><dt>Academic blocks</dt><dd>Three blocks per section, each holding exactly one small-group (NBSG) session. Block 1 runs 8:35–10:20 with its small group inside it. Blocks 2 and 3 are non-contiguous — their small groups sit in the midday window, so Block 2 is 10:25–11:25 plus 12:05–12:25, and Block 3 is 12:30–12:55 plus 2:20–3:10.</dd></div>
