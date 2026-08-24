@@ -4,7 +4,30 @@ All notable changes to the Bancroft Newsletter Astro build. Newest first.
 
 ## 2026-08-24
 
+### Changed
+- **Classic is now the only theme for SY 2026-27 and later.** The other three still render
+  on archived issues, so nothing is lost and the picker still works there — but a current
+  issue ships Classic alone. Real payload cut, not a hidden picker: **70 KB vs 309 KB**,
+  because Today First / Newsstand / Pocket are no longer in the DOM. Guarded against the
+  obvious failure — a visitor with `nl-theme: "C"` stored would otherwise land on a page
+  whose variant C markup doesn't exist and see nothing; the bootstrap forces `classic` when
+  `<html data-multi-theme="0">` and leaves the stored value alone for the archive.
+- **"Coming Up" and "Important Reminders" are one list.** They were two blocks saying the
+  same kind of thing in two places, and the numbers bear it out: **15 of the 60 reminders
+  ever written restated a date the calendar already knew** — Memorial Day was hand-typed
+  into six consecutive issues. `getComingUp()` merges them chronologically; when a reminder
+  lands on a covered date the reminder wins and the calendar row drops, because the teacher's
+  wording is richer and can carry a link. Suppression runs after range collapsing, so a
+  reminder on the Monday of Spring Recess removes the whole Apr 13–17 row instead of leaving
+  a "Tue–Fri" remnant. Past-dated reminders no longer show at all. **The three archive-only
+  themes never displayed calendar dates in the first place** — hand-typing them was the only
+  way they ever appeared there, which is the clearest evidence the split was wrong.
+
 ### Added
+- **The monthly SEL / Strong Start theme now renders**, as a row in the "School Year at a
+  Glance" dashboard between the progress bar and Coming Up. It is a per-month constant, so it
+  belongs with the other at-a-glance facts rather than as its own section; a month with no
+  theme (July) renders nothing. The archive-only themes each carry a variant of the row.
 - **August/September reminders on the 2026-08-24 issue**, from the school's bilingual
   August/September Reminders flyer: **Family Fiesta** (Fri Aug 28, 6:00–7:30 pm, enter through
   the soccer field), **Back to School Night at Newton** (Thu Sep 10, 6:00–8:00 pm, school gym,

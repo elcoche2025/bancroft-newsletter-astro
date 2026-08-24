@@ -4,7 +4,7 @@ import {
   textToHTML, formatDate, formatDateShort,
   getSubjectIcon, getSpecialForDay, getSubjectTranslation,
   getSchoolYearProgress, calendarFor,
-  hasBilingualText, stripTags,
+  hasBilingualText, stripTags, selThemeFor,
 } from '../../lib/utils';
 
 interface Props {
@@ -232,6 +232,8 @@ const hasBooks = weekData.books && weekData.books.length > 0;
 const hasAsk = weekData.askYourChild && weekData.askYourChild.length > 0;
 const hasVocab = weekData.vocabulary && weekData.vocabulary.en && weekData.vocabulary.en.length > 0;
 const hasClassRoar = !!weekData.roarsClass;
+const selThemeEn = selThemeFor(weekData.date, 'en');
+const selThemeEs = selThemeFor(weekData.date, 'es');
 // Welcome + Specials are the only guaranteed cards; the rest may be absent early in the year.
 const showMath = hasBilingualText(weekData.math);
 const showLiteracy = hasBilingualText(weekData.literacy);
@@ -282,6 +284,12 @@ const weekTotal = progress.totalWeeks;
         <span data-en=" left" data-es=" restan"> left</span>
       </div>
     </div>
+    {selThemeEn && (
+      <div class="pk-seltheme">
+        <span class="pk-seltheme-star" aria-hidden="true">★</span>
+        <span data-en={selThemeEn} data-es={selThemeEs}>{selThemeEn}</span>
+      </div>
+    )}
   </header>
 
   <!-- ===== ADD TO HOME SCREEN PROMPT ===== -->
@@ -1014,6 +1022,15 @@ const weekTotal = progress.totalWeeks;
     font-weight: 600;
     color: #5e5e80;
   }
+
+  html[data-theme="C"] .pk-seltheme {
+    margin-top: 10px;
+    display: flex; align-items: baseline; gap: 6px;
+    font-size: 0.72rem; font-weight: 700;
+    line-height: 1.3;
+    color: #4c1d95;
+  }
+  html[data-theme="C"] .pk-seltheme-star { color: #f59e0b; flex: none; }
 
   html[data-theme="C"] .pk-prog-label strong {
     color: #1a1a2e;

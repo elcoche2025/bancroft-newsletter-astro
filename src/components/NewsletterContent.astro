@@ -3,9 +3,9 @@ import config from '../data/config.json';
 import {
   textToHTML, formatDate, formatDateShort, formatDateRange,
   getDayName, getSubjectIcon, getSpecialForDay, getSubjectTranslation,
-  getSchoolYearProgress, getUpcomingDates,
+  getSchoolYearProgress, getComingUp,
   schoolYearOf, formatSchoolYear, calendarFor,
-  hasBilingualText, weekHasRoars,
+  hasBilingualText, weekHasRoars, selThemeFor,
   type Lang
 } from '../lib/utils';
 
@@ -29,8 +29,10 @@ const labelsEs = config.labels.es;
 
 // School year progress
 const progress = getSchoolYearProgress(date);
-const upcomingEn = getUpcomingDates(date, 'en');
-const upcomingEs = getUpcomingDates(date, 'es');
+const selThemeEn = selThemeFor(date, 'en');
+const selThemeEs = selThemeFor(date, 'es');
+const upcomingEn = getComingUp(date, 'en', weekData);
+const upcomingEs = getComingUp(date, 'es', weekData);
 
 // Specials data for each classroom
 const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const;
@@ -62,7 +64,6 @@ const sectionPresent: Record<string, boolean> = {
   math: showMath,
   literacy: showLiteracy,
   roars: showRoars,
-  reminders: !!(weekData.reminders && weekData.reminders.length > 0),
   ask: !!(weekData.askYourChild && weekData.askYourChild.length > 0),
   vocab: !!(weekData.vocabulary && weekData.vocabulary.en && weekData.vocabulary.en.length > 0),
   books: !!(weekData.books && weekData.books.length > 0),
@@ -75,7 +76,6 @@ const jumpSections = [
   { id: 'math', icon: '🔢', en: 'Math', es: 'Mates' },
   { id: 'literacy', icon: '📖', en: 'Literacy', es: 'Lectura' },
   { id: 'roars', icon: '🐯', en: 'ROARS', es: 'ROARS' },
-  { id: 'reminders', icon: '📌', en: 'Reminders', es: 'Recordatorios' },
   { id: 'ask', icon: '💬', en: 'Ask', es: 'Pregunta' },
   { id: 'vocab', icon: '📝', en: 'Vocab', es: 'Vocab' },
   { id: 'books', icon: '📚', en: 'Books', es: 'Libros' },
@@ -149,24 +149,37 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
       <div class="progress-bar-fill" id="dashboard-progress-fill" style={`width: ${progress.percent}%`}></div>
     </div>
 
+    {selThemeEn && (
+      <div class="dashboard-seltheme">
+        <div class="dashboard-seltheme-label" data-en={labelsEn.selThemeHeading} data-es={labelsEs.selThemeHeading}>
+          {labelsEn.selThemeHeading}
+        </div>
+        <div class="dashboard-seltheme-value" data-en={selThemeEn} data-es={selThemeEs}>{selThemeEn}</div>
+      </div>
+    )}
+
     <div class="dashboard-upcoming-title" data-en={labelsEn.upcomingDates} data-es={labelsEs.upcomingDates}>
       {labelsEn.upcomingDates}
     </div>
     <ul class="upcoming-list" data-lang-en>
       {upcomingEn.map(item => (
-        <li class="upcoming-item">
+        <li class={`upcoming-item${item.isEvent ? ' upcoming-item--event' : ''}`}>
           <span class="upcoming-date">{formatDateRange(item.startDate, item.endDate, 'en')}</span>
-          <span class="upcoming-label">{item.label}</span>
-          <span class="upcoming-badge">{calendar.typeLabels.en[item.type as keyof typeof calendar.typeLabels.en] || item.type}</span>
+          <span class="upcoming-label" set:html={item.html} />
+          {!item.isEvent && (
+            <span class="upcoming-badge">{calendar.typeLabels.en[item.type as keyof typeof calendar.typeLabels.en] || item.type}</span>
+          )}
         </li>
       ))}
     </ul>
     <ul class="upcoming-list" data-lang-es style="display:none">
       {upcomingEs.map(item => (
-        <li class="upcoming-item">
+        <li class={`upcoming-item${item.isEvent ? ' upcoming-item--event' : ''}`}>
           <span class="upcoming-date">{formatDateRange(item.startDate, item.endDate, 'es')}</span>
-          <span class="upcoming-label">{item.label}</span>
-          <span class="upcoming-badge">{calendar.typeLabels.es[item.type as keyof typeof calendar.typeLabels.es] || item.type}</span>
+          <span class="upcoming-label" set:html={item.html} />
+          {!item.isEvent && (
+            <span class="upcoming-badge">{calendar.typeLabels.es[item.type as keyof typeof calendar.typeLabels.es] || item.type}</span>
+          )}
         </li>
       ))}
     </ul>
@@ -380,35 +393,6 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
       </section>
     )}
 
-    <!-- REMINDERS -->
-    {weekData.reminders && weekData.reminders.length > 0 && (
-      <section class="section section--reminders" id="reminders" data-section="reminders">
-        <div class="section-header" data-accordion>
-          <span class="section-icon">📌</span>
-          <h2 class="section-heading" data-en={labelsEn.remindersHeading} data-es={labelsEs.remindersHeading}>
-            {labelsEn.remindersHeading}
-          </h2>
-          <span class="accordion-chevron"></span>
-        </div>
-        <div class="section-content">
-          <div class="reminder-list">
-            {[...weekData.reminders].sort((a, b) => a.date.localeCompare(b.date)).map(reminder => {
-              const rd = parseReminderDate(reminder.date);
-              return (
-                <div class="reminder-card">
-                  <div class="reminder-date-badge">
-                    <span class="reminder-date-month" data-en={rd.month} data-es={rd.monthEs}>{rd.month}</span>
-                    <span class="reminder-date-day">{rd.day}</span>
-                  </div>
-                  <div class="reminder-content" data-lang-en set:html={reminder.en} />
-                  <div class="reminder-content" data-lang-es style="display:none" set:html={reminder.es} />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-    )}
 
     <!-- ASK YOUR CHILD -->
     {weekData.askYourChild && weekData.askYourChild.length > 0 && (

@@ -4,7 +4,7 @@ import {
   textToHTML, formatDate, formatDateShort,
   getSubjectIcon, getSpecialForDay, getSubjectTranslation,
   getSchoolYearProgress, calendarFor,
-  hasBilingualText, weekHasRoars,
+  hasBilingualText, weekHasRoars, selThemeFor,
 } from '../../lib/utils';
 
 interface Props {
@@ -55,6 +55,8 @@ const vocabIsGrouped = hasVocab && typeof weekData.vocabulary.en[0] === 'object'
 
 // Books
 const hasBooks = weekData.books && weekData.books.length > 0;
+const selThemeEn = selThemeFor(weekData.date, 'en');
+const selThemeEs = selThemeFor(weekData.date, 'es');
 // Welcome + Specials are the only guaranteed sections; the rest may be absent early in the year.
 const showMath = hasBilingualText(weekData.math);
 const showLiteracy = hasBilingualText(weekData.literacy);
@@ -238,6 +240,12 @@ function getFlagSrc(classroom: string): string {
         <span data-es style="display:none"> días escolares restantes</span>
       </span>
     </div>
+    {selThemeEn && (
+      <div class="tf-seltheme">
+        <span class="tf-seltheme-star" aria-hidden="true">★</span>
+        <span class="tf-seltheme-txt" data-en={selThemeEn} data-es={selThemeEs}>{selThemeEn}</span>
+      </div>
+    )}
   </div>
 
   <!-- CLASSROOM SELECTOR -->
@@ -1062,6 +1070,16 @@ function getFlagSrc(classroom: string): string {
     margin-top: 12px;
   }
   html[data-theme="A"] .tf-trail-foot strong { color: var(--tf-text); font-weight: 700; }
+
+  html[data-theme="A"] .tf-seltheme {
+    display: flex; align-items: baseline; gap: 6px;
+    margin-top: 10px; padding-top: 8px;
+    border-top: 1px solid var(--tf-border-soft);
+    font-size: 0.78rem; font-weight: 700;
+    color: var(--tf-text);
+  }
+  html[data-theme="A"] .tf-seltheme-star { color: #d97706; flex: none; }
+  html[data-theme="A"] .tf-seltheme-txt  { line-height: 1.3; }
 
   /* ---- CLASSROOM SELECTOR ---- */
   html[data-theme="A"] .tf-room-selector {

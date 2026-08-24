@@ -4,7 +4,7 @@ import {
   textToHTML, formatDate,
   getSubjectIcon, getSpecialForDay, getSubjectTranslation,
   getSchoolYearProgress,
-  hasBilingualText, weekHasRoars, stripTags,
+  hasBilingualText, weekHasRoars, stripTags, selThemeFor,
 } from '../../lib/utils';
 
 interface Props {
@@ -111,6 +111,8 @@ for (const grp of vocabGroups) {
 
 // Has books?
 const hasBooks = weekData.books && weekData.books.length > 0;
+const selThemeEn = selThemeFor(date, 'en');
+const selThemeEs = selThemeFor(date, 'es');
 
 // Welcome + Specials are the only guaranteed sections; the rest may be absent early in the year.
 const showMath = hasBilingualText(weekData.math);
@@ -308,6 +310,13 @@ const weekDateShortEs = (() => {
       </div>
     )}
   </div>
+
+  {selThemeEn && (
+    <div class="ns-seltheme">
+      <span class="ns-seltheme-lbl" data-en={config.labels.en.selThemeHeading} data-es={config.labels.es.selThemeHeading}>{config.labels.en.selThemeHeading}</span>
+      <span class="ns-seltheme-val" data-en={selThemeEn} data-es={selThemeEs}>{selThemeEn}</span>
+    </div>
+  )}
 
   <!-- ========== COVER STORY — ROARS ========== -->
   {showRoars && (
@@ -1061,6 +1070,25 @@ html[data-theme="B"] .ns-pane {
 
 html[data-theme="B"] .ns-pane + .ns-pane {
   border-left: 1px solid var(--ns-rule);
+}
+
+html[data-theme="B"] .ns-seltheme {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px;
+  margin: 0 0 18px;
+  padding: 10px 14px;
+  border-top: 2px solid var(--ns-rule, currentColor);
+  border-bottom: 2px solid var(--ns-rule, currentColor);
+}
+
+html[data-theme="B"] .ns-seltheme-lbl {
+  font-size: 0.6rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--ns-ink-faint);
+}
+
+html[data-theme="B"] .ns-seltheme-val {
+  font: 700 1rem/1.25 "Fraunces", Georgia, serif;
+  color: var(--ns-ink);
 }
 
 html[data-theme="B"] .ns-glance-lbl {

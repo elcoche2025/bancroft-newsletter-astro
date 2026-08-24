@@ -6,26 +6,36 @@ import Newsstand from '../components/themes/Newsstand.astro';
 import Pocket from '../components/themes/Pocket.astro';
 import config from '../data/config.json';
 import weeksIndex from '../data/weeks/weeks-index.json';
-import { issueNumberInSchoolYear } from '../lib/utils';
+import { issueNumberInSchoolYear, schoolYearOf } from '../lib/utils';
+
+const LAST_MULTI_THEME_YEAR = '2025-2026';
 
 const latestDate = weeksIndex[0];
 const weekData = (await import(`../data/weeks/${latestDate}.json`)).default;
 // 1-based within its own school year, so numbering restarts each August.
 const issueNumber = issueNumberInSchoolYear(latestDate, weeksIndex);
 
+// Classic is the only theme from SY 2026-27 on; archived issues keep all four
+// so the alternatives stay reachable in the archive.
+const multiTheme = schoolYearOf(latestDate) <= LAST_MULTI_THEME_YEAR;
+
 const labelsEn = config.labels.en;
 ---
 
-<Newsletter title={`${labelsEn.title} — ${labelsEn.subtitle}`} date={weekData.date}>
-  <div class="nl-theme" data-variant="A">
-    <TodayFirst weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} issueNumber={issueNumber} />
-  </div>
-  <div class="nl-theme" data-variant="B">
-    <Newsstand weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} issueNumber={issueNumber} />
-  </div>
-  <div class="nl-theme" data-variant="C">
-    <Pocket weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} issueNumber={issueNumber} />
-  </div>
+<Newsletter title={`${labelsEn.title} — ${labelsEn.subtitle}`} date={weekData.date} multiTheme={multiTheme}>
+  {multiTheme && (
+    <>
+      <div class="nl-theme" data-variant="A">
+        <TodayFirst weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} issueNumber={issueNumber} />
+      </div>
+      <div class="nl-theme" data-variant="B">
+        <Newsstand weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} issueNumber={issueNumber} />
+      </div>
+      <div class="nl-theme" data-variant="C">
+        <Pocket weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} issueNumber={issueNumber} />
+      </div>
+    </>
+  )}
   <div class="nl-theme" data-variant="classic">
     <NewsletterContent weekData={weekData} currentDate={latestDate} allWeeks={weeksIndex} />
   </div>

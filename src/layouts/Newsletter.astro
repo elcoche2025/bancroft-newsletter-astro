@@ -6,12 +6,17 @@ interface Props {
   date?: string;
   /** Standalone pages (e.g. /archive) hide the theme picker — there's nothing to theme. */
   showThemeSelector?: boolean;
+  /**
+   * Issues from SY 2026-27 on render Classic only. Archived issues still ship all
+   * four themes, so the picker (and the stored preference) must stay live there.
+   */
+  multiTheme?: boolean;
 }
 
-const { title, showThemeSelector = true } = Astro.props;
+const { title, showThemeSelector = true, multiTheme = true } = Astro.props;
 ---
 <!DOCTYPE html>
-<html lang="en" data-lang="en" data-theme="classic">
+<html lang="en" data-lang="en" data-theme="classic" data-multi-theme={multiTheme ? "1" : "0"}>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +30,8 @@ const { title, showThemeSelector = true } = Astro.props;
     // Pre-paint theme + language hydration — runs before body to avoid flash.
     (function () {
       try {
-        var t = localStorage.getItem('nl-theme');
+        var multi = document.documentElement.getAttribute('data-multi-theme') === '1';
+        var t = multi ? localStorage.getItem('nl-theme') : 'classic';
         if (t !== 'A' && t !== 'B' && t !== 'C' && t !== 'classic') t = 'classic';
         document.documentElement.setAttribute('data-theme', t);
         var l = localStorage.getItem('nl-lang');
@@ -38,7 +44,7 @@ const { title, showThemeSelector = true } = Astro.props;
   </script>
 </head>
 <body>
-  {showThemeSelector && <ThemeSelector />}
+  {showThemeSelector && multiTheme && <ThemeSelector />}
   <slot />
 
   <script>
@@ -757,6 +763,36 @@ const { title, showThemeSelector = true } = Astro.props;
     transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  /* Monthly SEL / Strong Start theme — a per-month constant, so it sits with the
+     other at-a-glance facts rather than competing as its own section. */
+  .dashboard-seltheme {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    padding: 10px 12px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background: var(--specials-bg, var(--border));
+    border: 1px solid var(--specials-border, var(--border));
+  }
+
+  .dashboard-seltheme-label {
+    font-weight: 700;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  .dashboard-seltheme-label::before { content: "\2605"; margin-right: 6px; }
+
+  .dashboard-seltheme-value {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--specials-accent, var(--text));
+  }
+
   .dashboard-upcoming-title {
     font-weight: 600;
     font-size: 0.85rem;
@@ -790,6 +826,15 @@ const { title, showThemeSelector = true } = Astro.props;
     white-space: nowrap;
     min-width: 70px;
   }
+
+  /* Teacher-written events sit in the same list as the calendar's no-school dates.
+     They carry no badge, run long, and may contain a link — so the row aligns to the
+     top and the text reads at full strength rather than muted. */
+  .upcoming-item--event { align-items: flex-start; }
+  .upcoming-item--event .upcoming-date { padding-top: 1px; }
+  .upcoming-item--event .upcoming-label { color: var(--text); }
+  .upcoming-label a { color: var(--specials-accent); text-decoration: underline; }
+  .upcoming-label b, .upcoming-label strong { color: var(--text); font-weight: 700; }
 
   .upcoming-label {
     color: var(--text-muted);

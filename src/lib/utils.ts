@@ -149,6 +149,60 @@ export function getSchoolYearProgress(currentDate: string) {
   return { totalSchoolDays, elapsedSchoolDays, remaining, weekNumber, totalWeeks, percent };
 }
 
+export interface ComingUpItem {
+  startDate: string;
+  endDate: string;
+  /** Language-resolved body. Calendar labels are plain text; reminders may carry <b>/<a>. */
+  html: string;
+  /** Calendar type (HOL/PD/PTC/NS/END) or 'EVENT' for a teacher-written reminder. */
+  type: string;
+  isEvent: boolean;
+}
+
+/**
+ * One chronological list of what's coming: the calendar's no-school dates plus the
+ * week's own reminders, merged.
+ *
+ * They used to be two separate blocks, and a quarter of all reminders ever written
+ * restated a date the calendar already knew — Memorial Day was hand-typed into six
+ * consecutive issues. So when a reminder falls on a date the calendar also covers,
+ * the reminder wins and the calendar row is dropped: the teacher's wording is the
+ * richer of the two, and it can carry a link.
+ */
+export function getComingUp(
+  currentDate: string,
+  lang: Lang,
+  weekData: any,
+  calendarCount = 5
+): ComingUpItem[] {
+  const reminders = ((weekData?.reminders || []) as any[])
+    .filter(r => r.date >= currentDate)
+    .map(r => ({
+      startDate: r.date,
+      endDate: r.date,
+      html: (lang === 'es' ? r.es : r.en) || r.en,
+      type: 'EVENT',
+      isEvent: true,
+    }));
+
+  // Collapse first, then suppress — a range must be dropped whole, not have its
+  // first day removed (a reminder on the Monday of Spring Recess would otherwise
+  // leave a stray "Tue-Fri" row behind it).
+  const reminderDates = new Set(reminders.map(r => r.startDate));
+  const calendarItems = getUpcomingDates(currentDate, lang, Infinity)
+    .filter(item => !reminderDates.has(item.startDate))
+    .slice(0, calendarCount)
+    .map(item => ({
+      startDate: item.startDate,
+      endDate: item.endDate,
+      html: item.label,
+      type: item.type,
+      isEvent: false,
+    }));
+
+  return [...reminders, ...calendarItems].sort((a, b) => a.startDate.localeCompare(b.startDate));
+}
+
 export function getUpcomingDates(currentDate: string, lang: Lang, count = 5) {
   const calendar = calendarFor(currentDate);
   const allDates = (calendar.dates as any[])
