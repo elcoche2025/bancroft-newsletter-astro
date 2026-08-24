@@ -1,0 +1,217 @@
+---
+import Newsletter from '../layouts/Newsletter.astro';
+import config from '../data/config.json';
+import weeksIndex from '../data/weeks/weeks-index.json';
+import { groupWeeksBySchoolYear, formatSchoolYear, issueNumberInSchoolYear } from '../lib/utils';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const groups = groupWeeksBySchoolYear(weeksIndex);
+
+function archiveDate(dateStr: string, lang: 'en' | 'es'): string {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString(lang === 'es' ? 'es-US' : 'en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+const labelsEn = config.labels.en;
+---
+
+<Newsletter title={`${labelsEn.title} — Newsletter Archive`} showThemeSelector={false}>
+  <div class="ar-page">
+
+    <header class="ar-head">
+      <a class="ar-back" href={`${base}/`}>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <span data-en="Back to this week" data-es="Volver a esta semana">Back to this week</span>
+      </a>
+      <div class="ar-lang">
+        <button class="lang-btn" type="button" data-set-lang="en">EN</button>
+        <button class="lang-btn" type="button" data-set-lang="es">ES</button>
+      </div>
+    </header>
+
+    <h1 class="ar-title" data-en="Newsletter Archive" data-es="Archivo de Boletines">Newsletter Archive</h1>
+    <p class="ar-lede"
+       data-en="Every 1st-grade weekly newsletter, filed by school year."
+       data-es="Todos los boletines semanales de primer grado, ordenados por año escolar.">
+      Every 1st-grade weekly newsletter, filed by school year.
+    </p>
+
+    {groups.map(group => (
+      <section class="ar-year">
+        <h2 class="ar-year-head">
+          <span class="ar-year-label">{formatSchoolYear(group.schoolYear)}</span>
+          <span class="ar-year-count"
+                data-en={`${group.weeks.length} ${group.weeks.length === 1 ? 'issue' : 'issues'}`}
+                data-es={`${group.weeks.length} ${group.weeks.length === 1 ? 'edición' : 'ediciones'}`}>
+            {group.weeks.length} {group.weeks.length === 1 ? 'issue' : 'issues'}
+          </span>
+        </h2>
+        <ul class="ar-list">
+          {group.weeks.map(weekDate => (
+            <li>
+              <a href={`${base}/${weekDate}/`}>
+                <span class="ar-issue">#{issueNumberInSchoolYear(weekDate, weeksIndex)}</span>
+                <span class="ar-week"
+                      data-en={`Week of ${archiveDate(weekDate, 'en')}`}
+                      data-es={`Semana del ${archiveDate(weekDate, 'es')}`}>
+                  Week of {archiveDate(weekDate, 'en')}
+                </span>
+                <span class="ar-chev" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <footer class="ar-foot">
+      <p data-en="Bancroft Elementary School — First Grade" data-es="Escuela Primaria Bancroft — Primer Grado">
+        Bancroft Elementary School — First Grade
+      </p>
+    </footer>
+
+  </div>
+</Newsletter>
+
+<style>
+  .ar-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 20px 64px;
+    font-family: var(--font-body);
+    color: var(--text);
+  }
+
+  .ar-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .ar-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 7px 12px 7px 9px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-card);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .ar-back:hover { color: var(--specials-accent); border-color: var(--specials-border); }
+
+  .ar-lang { display: flex; gap: 4px; }
+  .ar-lang .lang-btn {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 11px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .ar-lang .lang-btn:hover { color: var(--specials-accent); border-color: var(--specials-border); }
+
+  .ar-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 6vw, 2.6rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+
+  .ar-lede {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 40px;
+  }
+
+  .ar-year { margin-bottom: 40px; }
+
+  .ar-year-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--specials-border);
+  }
+
+  .ar-year-label {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--specials-accent);
+  }
+
+  .ar-year-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-light);
+  }
+
+  .ar-list { list-style: none; }
+
+  .ar-list a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.95rem;
+    transition: background 0.15s, color 0.15s;
+  }
+  .ar-list a:hover { background: var(--specials-bg); color: var(--specials-accent); }
+
+  .ar-issue {
+    flex: none;
+    min-width: 2.6em;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-light);
+    font-variant-numeric: tabular-nums;
+  }
+  .ar-list a:hover .ar-issue { color: var(--specials-accent); }
+
+  .ar-week { flex: 1; }
+
+  .ar-chev { flex: none; color: var(--text-light); opacity: 0; transition: opacity 0.15s; }
+  .ar-list a:hover .ar-chev { opacity: 1; }
+
+  .ar-foot {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+
+  @media (max-width: 480px) {
+    .ar-page { padding: 18px 14px 48px; }
+    .ar-list a { padding: 10px 8px; }
+  }
+</style>

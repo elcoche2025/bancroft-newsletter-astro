@@ -3,10 +3,12 @@ import ThemeSelector from '../components/ThemeSelector.astro';
 
 interface Props {
   title: string;
-  date: string;
+  date?: string;
+  /** Standalone pages (e.g. /archive) hide the theme picker — there's nothing to theme. */
+  showThemeSelector?: boolean;
 }
 
-const { title, date } = Astro.props;
+const { title, showThemeSelector = true } = Astro.props;
 ---
 <!DOCTYPE html>
 <html lang="en" data-lang="en" data-theme="classic">
@@ -36,7 +38,7 @@ const { title, date } = Astro.props;
   </script>
 </head>
 <body>
-  <ThemeSelector />
+  {showThemeSelector && <ThemeSelector />}
   <slot />
 
   <script>

@@ -1,10 +1,9 @@
 ---
 import config from '../../data/config.json';
-import calendar from '../../data/calendar.json';
 import {
   textToHTML, formatDate, formatDateShort,
   getSubjectIcon, getSpecialForDay, getSubjectTranslation,
-  getSchoolYearProgress,
+  getSchoolYearProgress, calendarFor,
 } from '../../lib/utils';
 
 interface Props {
@@ -428,6 +427,7 @@ const weekTotal = progress.totalWeeks;
         <div class="pk-card-meta">
           <h3 class="pk-card-title">
             <span data-en="Specials" data-es="Especiales">Specials</span>
+            <span class="pk-card-time">1:30&ndash;2:15</span>
           </h3>
           <div class="pk-card-peek" id="pk-specials-peek">
             <span data-en="Tap your child's class" data-es="Toca el salón de tu hijo/a">Tap your child's class</span>
@@ -847,6 +847,23 @@ const weekTotal = progress.totalWeeks;
 </div><!-- /pk-app -->
 
 <style is:global>
+  /* Specials block time — static, sits beside the card title (the peek line
+     below it is rewritten by initSpecials(), so it can't live there). */
+  html[data-theme="C"] .pk-card-time {
+    margin-left: 8px;
+    font-family: "DM Sans", system-ui, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.10);
+    border-radius: 999px;
+    padding: 2px 7px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    vertical-align: middle;
+  }
+
   /* ========================================================
      POCKET THEME (Theme C) — all rules scoped to html[data-theme="C"]
      Class prefix: .pk-
@@ -1802,7 +1819,7 @@ const weekTotal = progress.totalWeeks;
 
 <script define:vars={{
   weekDate: date,
-  calendarData: calendar,
+  calendarData: calendarFor(date),
   configData: config,
   specialsData: specials,
   dayShortEnData: dayShortEn,
@@ -1822,7 +1839,8 @@ const weekTotal = progress.totalWeeks;
   (function updateProgress() {
     try {
       const noSchool = new Set();
-      (calendarData.dates || []).forEach(d => noSchool.add(d.date));
+      // `END` marks the last day of school, which is itself a school day.
+      (calendarData.dates || []).forEach(d => { if (d.type !== 'END') noSchool.add(d.date); });
       (calendarData.breaks || []).forEach(br => {
         const d = parseDate(br.start), end = parseDate(br.end);
         while (d <= end) { noSchool.add(fmtISO(d)); d.setDate(d.getDate()+1); }

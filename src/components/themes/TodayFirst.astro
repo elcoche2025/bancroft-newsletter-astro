@@ -1,10 +1,9 @@
 ---
 import config from '../../data/config.json';
-import calendar from '../../data/calendar.json';
 import {
   textToHTML, formatDate, formatDateShort,
   getSubjectIcon, getSpecialForDay, getSubjectTranslation,
-  getSchoolYearProgress,
+  getSchoolYearProgress, calendarFor,
 } from '../../lib/utils';
 
 interface Props {
@@ -331,8 +330,8 @@ function getFlagSrc(classroom: string): string {
           <span data-es style="display:none">Horario de Especiales</span>
         </h2>
         <div class="tf-group-peek" id="tf-specials-peek">
-          <span data-en>Your classroom's week at a glance</span>
-          <span data-es style="display:none">La semana de tu salón de un vistazo</span>
+          <span data-en>Your classroom's week at a glance &middot; 1:30&ndash;2:15</span>
+          <span data-es style="display:none">La semana de tu salón de un vistazo &middot; 1:30&ndash;2:15</span>
         </div>
       </div>
       <span class="tf-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
@@ -1463,7 +1462,7 @@ function getFlagSrc(classroom: string): string {
      CLIENT SCRIPT — all selectors use .tf-* so they find nothing
      in Classic or other theme DOMs
      ================================================================ -->
-<script define:vars={{ weekDate: date, weekDataJson: JSON.stringify({ reminders: sortedReminders, specials }), configJson: JSON.stringify({ classrooms: config.classrooms, rotations: config.rotations, subjectIcons: config.subjectIcons, subjectTranslations: config.subjectTranslations }), calendarData: calendar }}>
+<script define:vars={{ weekDate: date, weekDataJson: JSON.stringify({ reminders: sortedReminders, specials }), configJson: JSON.stringify({ classrooms: config.classrooms, rotations: config.rotations, subjectIcons: config.subjectIcons, subjectTranslations: config.subjectTranslations }), calendarData: calendarFor(date) }}>
 
 (function TodayFirstInit() {
   // ---------------------------------------------------------------
@@ -1729,7 +1728,8 @@ function getFlagSrc(classroom: string): string {
       const firstDay = parseDate(calendarData.firstDay);
       const lastDay = parseDate(calendarData.lastDay);
       const noSchool = new Set();
-      (calendarData.dates || []).forEach(d => noSchool.add(d.date));
+      // `END` marks the last day of school, which is itself a school day.
+      (calendarData.dates || []).forEach(d => { if (d.type !== 'END') noSchool.add(d.date); });
       (calendarData.breaks || []).forEach(br => {
         const d = parseDate(br.start), end = parseDate(br.end);
         while (d <= end) { noSchool.add(fmtISO(d)); d.setDate(d.getDate()+1); }

@@ -6,6 +6,7 @@ import Newsstand from '../components/themes/Newsstand.astro';
 import Pocket from '../components/themes/Pocket.astro';
 import config from '../data/config.json';
 import weeksIndex from '../data/weeks/weeks-index.json';
+import { issueNumberInSchoolYear } from '../lib/utils';
 
 export async function getStaticPaths() {
   const weeksIndex = (await import('../data/weeks/weeks-index.json')).default;
@@ -16,7 +17,8 @@ export async function getStaticPaths() {
 
 const { week } = Astro.params;
 const weekData = (await import(`../data/weeks/${week}.json`)).default;
-const issueNumber = weeksIndex.length - weeksIndex.indexOf(week!); // 1-based, oldest = 1
+// 1-based within its own school year, so numbering restarts each August.
+const issueNumber = issueNumberInSchoolYear(week!, weeksIndex);
 
 const labelsEn = config.labels.en;
 ---

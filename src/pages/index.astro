@@ -6,10 +6,12 @@ import Newsstand from '../components/themes/Newsstand.astro';
 import Pocket from '../components/themes/Pocket.astro';
 import config from '../data/config.json';
 import weeksIndex from '../data/weeks/weeks-index.json';
+import { issueNumberInSchoolYear } from '../lib/utils';
 
 const latestDate = weeksIndex[0];
 const weekData = (await import(`../data/weeks/${latestDate}.json`)).default;
-const issueNumber = weeksIndex.length - weeksIndex.indexOf(latestDate); // 1-based, oldest = 1
+// 1-based within its own school year, so numbering restarts each August.
+const issueNumber = issueNumberInSchoolYear(latestDate, weeksIndex);
 
 const labelsEn = config.labels.en;
 ---

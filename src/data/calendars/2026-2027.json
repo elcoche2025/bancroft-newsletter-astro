@@ -1,0 +1,286 @@
+{
+  "schoolYear": "2026-2027",
+  "firstDay": "2026-08-24",
+  "lastDay": "2027-06-17",
+  "calendarPdfUrl": "https://dcps.dc.gov/sites/default/files/dc/sites/dcps/page_content/attachments/SY%2026-29%20Calendars_FINAL_English_042825.pdf",
+  "terms": [
+    {
+      "term": 1,
+      "start": "2026-08-24",
+      "end": "2026-10-29",
+      "days": 46
+    },
+    {
+      "term": 2,
+      "start": "2026-11-04",
+      "end": "2027-01-25",
+      "days": 44
+    },
+    {
+      "term": 3,
+      "start": "2027-01-27",
+      "end": "2027-04-08",
+      "days": 44
+    },
+    {
+      "term": 4,
+      "start": "2027-04-12",
+      "end": "2027-06-17",
+      "days": 46
+    }
+  ],
+  "breaks": [
+    {
+      "start": "2026-11-25",
+      "end": "2026-11-27",
+      "en": "Thanksgiving Recess",
+      "es": "Receso de Acción de Gracias"
+    },
+    {
+      "start": "2026-12-22",
+      "end": "2027-01-01",
+      "en": "Winter Recess",
+      "es": "Receso de Invierno"
+    },
+    {
+      "start": "2027-03-22",
+      "end": "2027-03-26",
+      "en": "Spring Recess",
+      "es": "Receso de Primavera"
+    }
+  ],
+  "dates": [
+    {
+      "date": "2026-09-07",
+      "type": "HOL",
+      "en": "Labor Day",
+      "es": "Día del Trabajo"
+    },
+    {
+      "date": "2026-10-12",
+      "type": "HOL",
+      "en": "Indigenous Peoples' Day",
+      "es": "Día de los Pueblos Indígenas"
+    },
+    {
+      "date": "2026-10-13",
+      "type": "PTC",
+      "en": "Parent-Teacher Conferences (No School for Students)",
+      "es": "Conferencias de Padres y Maestros (No Hay Clases)"
+    },
+    {
+      "date": "2026-10-30",
+      "type": "PD",
+      "en": "Professional Development Day",
+      "es": "Día de Desarrollo Profesional"
+    },
+    {
+      "date": "2026-11-02",
+      "type": "NS",
+      "en": "Records & Wellness Day",
+      "es": "Día de Registros y Bienestar"
+    },
+    {
+      "date": "2026-11-03",
+      "type": "NS",
+      "en": "No School",
+      "es": "No Hay Clases"
+    },
+    {
+      "date": "2026-11-11",
+      "type": "HOL",
+      "en": "Veterans Day",
+      "es": "Día de los Veteranos"
+    },
+    {
+      "date": "2026-11-25",
+      "type": "NS",
+      "en": "Thanksgiving Recess",
+      "es": "Receso de Acción de Gracias"
+    },
+    {
+      "date": "2026-11-26",
+      "type": "HOL",
+      "en": "Thanksgiving Recess",
+      "es": "Receso de Acción de Gracias"
+    },
+    {
+      "date": "2026-11-27",
+      "type": "NS",
+      "en": "Thanksgiving Recess",
+      "es": "Receso de Acción de Gracias"
+    },
+    {
+      "date": "2026-12-21",
+      "type": "PD",
+      "en": "Professional Development Day",
+      "es": "Día de Desarrollo Profesional"
+    },
+    {
+      "date": "2026-12-22",
+      "type": "NS",
+      "en": "Winter Recess",
+      "es": "Receso de Invierno"
+    },
+    {
+      "date": "2026-12-23",
+      "type": "NS",
+      "en": "Winter Recess",
+      "es": "Receso de Invierno"
+    },
+    {
+      "date": "2026-12-24",
+      "type": "NS",
+      "en": "Winter Recess",
+      "es": "Receso de Invierno"
+    },
+    {
+      "date": "2026-12-25",
+      "type": "HOL",
+      "en": "Christmas Day",
+      "es": "Navidad"
+    },
+    {
+      "date": "2026-12-28",
+      "type": "NS",
+      "en": "Winter Recess",
+      "es": "Receso de Invierno"
+    },
+    {
+      "date": "2026-12-29",
+      "type": "NS",
+      "en": "Winter Recess",
+      "es": "Receso de Invierno"
+    },
+    {
+      "date": "2026-12-30",
+      "type": "NS",
+      "en": "Winter Recess",
+      "es": "Receso de Invierno"
+    },
+    {
+      "date": "2026-12-31",
+      "type": "NS",
+      "en": "Winter Recess",
+      "es": "Receso de Invierno"
+    },
+    {
+      "date": "2027-01-01",
+      "type": "HOL",
+      "en": "New Year's Day",
+      "es": "Año Nuevo"
+    },
+    {
+      "date": "2027-01-18",
+      "type": "HOL",
+      "en": "Martin Luther King Jr. Day",
+      "es": "Día de Martin Luther King Jr."
+    },
+    {
+      "date": "2027-01-26",
+      "type": "NS",
+      "en": "End of Term / Records Day",
+      "es": "Fin de Período / Día de Registros"
+    },
+    {
+      "date": "2027-02-11",
+      "type": "PTC",
+      "en": "Parent-Teacher Conferences (No School for Students)",
+      "es": "Conferencias de Padres y Maestros (No Hay Clases)"
+    },
+    {
+      "date": "2027-02-12",
+      "type": "PD",
+      "en": "Professional Development Day",
+      "es": "Día de Desarrollo Profesional"
+    },
+    {
+      "date": "2027-02-15",
+      "type": "HOL",
+      "en": "Presidents' Day",
+      "es": "Día de los Presidentes"
+    },
+    {
+      "date": "2027-03-22",
+      "type": "NS",
+      "en": "Spring Recess",
+      "es": "Receso de Primavera"
+    },
+    {
+      "date": "2027-03-23",
+      "type": "NS",
+      "en": "Spring Recess",
+      "es": "Receso de Primavera"
+    },
+    {
+      "date": "2027-03-24",
+      "type": "NS",
+      "en": "Spring Recess",
+      "es": "Receso de Primavera"
+    },
+    {
+      "date": "2027-03-25",
+      "type": "NS",
+      "en": "Spring Recess",
+      "es": "Receso de Primavera"
+    },
+    {
+      "date": "2027-03-26",
+      "type": "NS",
+      "en": "Spring Recess",
+      "es": "Receso de Primavera"
+    },
+    {
+      "date": "2027-04-09",
+      "type": "NS",
+      "en": "Records & Wellness Day",
+      "es": "Día de Registros y Bienestar"
+    },
+    {
+      "date": "2027-04-16",
+      "type": "HOL",
+      "en": "DC Emancipation Day",
+      "es": "Día de la Emancipación de DC"
+    },
+    {
+      "date": "2027-05-14",
+      "type": "NS",
+      "en": "Wellness Day",
+      "es": "Día de Bienestar"
+    },
+    {
+      "date": "2027-05-31",
+      "type": "HOL",
+      "en": "Memorial Day",
+      "es": "Día de los Caídos"
+    },
+    {
+      "date": "2027-06-17",
+      "type": "END",
+      "en": "Last Day of School",
+      "es": "Último Día de Clases"
+    },
+    {
+      "date": "2027-06-18",
+      "type": "HOL",
+      "en": "Juneteenth (observed)",
+      "es": "Juneteenth (observado)"
+    }
+  ],
+  "typeLabels": {
+    "en": {
+      "HOL": "No School",
+      "PD": "No School",
+      "PTC": "No School",
+      "NS": "No School",
+      "END": "Last Day"
+    },
+    "es": {
+      "HOL": "No Hay Clases",
+      "PD": "No Hay Clases",
+      "PTC": "No Hay Clases",
+      "NS": "No Hay Clases",
+      "END": "Último Día"
+    }
+  }
+}
