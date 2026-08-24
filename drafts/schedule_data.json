@@ -1,0 +1,632 @@
+{
+ "math": [
+  {
+   "cat": "collab",
+   "start": 480,
+   "end": 515,
+   "name": "Morning Collaboration",
+   "meta": "Tuesday LEAP 8:10\u20139:10",
+   "title": "Morning Collaboration \u00b7 8:00\u20138:35 \u00b7 35 min"
+  },
+  {
+   "cat": "routine",
+   "start": 515,
+   "end": 530,
+   "name": "Breakfast",
+   "meta": "8:35\u20138:50 \u00b7 15 min",
+   "title": "Breakfast \u00b7 8:35\u20138:50 \u00b7 15 min"
+  },
+  {
+   "cat": "routine",
+   "start": 530,
+   "end": 545,
+   "name": "Strong Start",
+   "meta": "8:50\u20139:05 \u00b7 15 min",
+   "title": "Strong Start \u00b7 8:50\u20139:05 \u00b7 15 min"
+  },
+  {
+   "cat": "fluidez",
+   "start": 545,
+   "end": 550,
+   "name": "Fluidez",
+   "meta": "9:05\u20139:10",
+   "title": "Fluidez \u00b7 9:05\u20139:10 \u00b7 5 min \u00b7 Math fluency"
+  },
+  {
+   "cat": "launch",
+   "start": 550,
+   "end": 555,
+   "name": "Launch",
+   "meta": "9:10\u20139:15",
+   "title": "Launch \u00b7 9:10\u20139:15 \u00b7 5 min \u00b7 Workshop \u2014 launch"
+  },
+  {
+   "cat": "learn",
+   "start": 555,
+   "end": 575,
+   "name": "Learn Rotation 1",
+   "meta": "9:15\u20139:35 \u00b7 20 min",
+   "title": "Learn Rotation 1 \u00b7 9:15\u20139:35 \u00b7 20 min \u00b7 Workshop \u2014 learn"
+  },
+  {
+   "cat": "learn",
+   "start": 575,
+   "end": 595,
+   "name": "Learn Rotation 2",
+   "meta": "9:35\u20139:55 \u00b7 20 min",
+   "title": "Learn Rotation 2 \u00b7 9:35\u20139:55 \u00b7 20 min \u00b7 Workshop \u2014 learn"
+  },
+  {
+   "cat": "land",
+   "start": 595,
+   "end": 600,
+   "name": "Land",
+   "meta": "9:55\u201310:00",
+   "title": "Land \u00b7 9:55\u201310:00 \u00b7 5 min \u00b7 Workshop \u2014 land"
+  },
+  {
+   "cat": "nbsg",
+   "start": 600,
+   "end": 620,
+   "name": "NBSG",
+   "meta": "10:00\u201310:20 \u00b7 20 min",
+   "title": "NBSG \u00b7 10:00\u201310:20 \u00b7 20 min \u00b7 Needs-based small group"
+  },
+  {
+   "cat": "transition",
+   "start": 620,
+   "end": 625,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 10:20\u201310:25 \u00b7 5 min"
+  },
+  {
+   "cat": "fluidez",
+   "start": 625,
+   "end": 630,
+   "name": "Fluidez",
+   "meta": "10:25\u201310:30",
+   "title": "Fluidez \u00b7 10:25\u201310:30 \u00b7 5 min \u00b7 Math fluency"
+  },
+  {
+   "cat": "launch",
+   "start": 630,
+   "end": 640,
+   "name": "Launch",
+   "meta": "10:30\u201310:40 \u00b7 10 min",
+   "title": "Launch \u00b7 10:30\u201310:40 \u00b7 10 min \u00b7 Workshop \u2014 launch"
+  },
+  {
+   "cat": "learn",
+   "start": 640,
+   "end": 660,
+   "name": "Learn Rotation 1",
+   "meta": "10:40\u201311:00 \u00b7 20 min",
+   "title": "Learn Rotation 1 \u00b7 10:40\u201311:00 \u00b7 20 min \u00b7 Workshop \u2014 learn"
+  },
+  {
+   "cat": "learn",
+   "start": 660,
+   "end": 680,
+   "name": "Learn Rotation 2",
+   "meta": "11:00\u201311:20 \u00b7 20 min",
+   "title": "Learn Rotation 2 \u00b7 11:00\u201311:20 \u00b7 20 min \u00b7 Workshop \u2014 learn"
+  },
+  {
+   "cat": "land",
+   "start": 680,
+   "end": 685,
+   "name": "Land",
+   "meta": "11:20\u201311:25",
+   "title": "Land \u00b7 11:20\u201311:25 \u00b7 5 min \u00b7 Workshop \u2014 land"
+  },
+  {
+   "cat": "transition",
+   "start": 685,
+   "end": 690,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 11:25\u201311:30 \u00b7 5 min"
+  },
+  {
+   "cat": "routine",
+   "start": 690,
+   "end": 720,
+   "name": "Lunch",
+   "meta": "11:30\u201312:00 \u00b7 30 min",
+   "title": "Lunch \u00b7 11:30\u201312:00 \u00b7 30 min"
+  },
+  {
+   "cat": "transition",
+   "start": 720,
+   "end": 725,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 12:00\u201312:05 \u00b7 5 min"
+  },
+  {
+   "cat": "nbsg",
+   "start": 725,
+   "end": 745,
+   "name": "NBSG",
+   "meta": "12:05\u201312:25 \u00b7 20 min",
+   "title": "NBSG \u00b7 12:05\u201312:25 \u00b7 20 min \u00b7 Needs-based small group"
+  },
+  {
+   "cat": "transition",
+   "start": 745,
+   "end": 750,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 12:25\u201312:30 \u00b7 5 min"
+  },
+  {
+   "cat": "nbsg",
+   "start": 750,
+   "end": 775,
+   "name": "NBSG",
+   "meta": "12:30\u201312:55 \u00b7 25 min",
+   "title": "NBSG \u00b7 12:30\u201312:55 \u00b7 25 min \u00b7 Needs-based small group"
+  },
+  {
+   "cat": "transition",
+   "start": 775,
+   "end": 780,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 12:55\u20131:00 \u00b7 5 min"
+  },
+  {
+   "cat": "routine",
+   "start": 780,
+   "end": 810,
+   "name": "Recess",
+   "meta": "1:00\u20131:30 \u00b7 30 min",
+   "title": "Recess \u00b7 1:00\u20131:30 \u00b7 30 min"
+  },
+  {
+   "cat": "routine",
+   "start": 810,
+   "end": 855,
+   "name": "Specials",
+   "meta": "1:30\u20132:15 \u00b7 45 min",
+   "title": "Specials \u00b7 1:30\u20132:15 \u00b7 45 min"
+  },
+  {
+   "cat": "transition",
+   "start": 855,
+   "end": 860,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 2:15\u20132:20 \u00b7 5 min"
+  },
+  {
+   "cat": "fluidez",
+   "start": 860,
+   "end": 865,
+   "name": "Fluidez",
+   "meta": "2:20\u20132:25",
+   "title": "Fluidez \u00b7 2:20\u20132:25 \u00b7 5 min \u00b7 Math fluency"
+  },
+  {
+   "cat": "launch",
+   "start": 865,
+   "end": 870,
+   "name": "Launch",
+   "meta": "2:25\u20132:30",
+   "title": "Launch \u00b7 2:25\u20132:30 \u00b7 5 min \u00b7 Workshop \u2014 launch"
+  },
+  {
+   "cat": "learn",
+   "start": 870,
+   "end": 890,
+   "name": "Learn Rotation 1",
+   "meta": "2:30\u20132:50 \u00b7 20 min",
+   "title": "Learn Rotation 1 \u00b7 2:30\u20132:50 \u00b7 20 min \u00b7 Workshop \u2014 learn"
+  },
+  {
+   "cat": "learn",
+   "start": 890,
+   "end": 905,
+   "name": "Learn Rotation 2",
+   "meta": "2:50\u20133:05 \u00b7 15 min",
+   "title": "Learn Rotation 2 \u00b7 2:50\u20133:05 \u00b7 15 min \u00b7 Workshop \u2014 learn"
+  },
+  {
+   "cat": "land",
+   "start": 905,
+   "end": 910,
+   "name": "Land",
+   "meta": "3:05\u20133:10",
+   "title": "Land \u00b7 3:05\u20133:10 \u00b7 5 min \u00b7 Workshop \u2014 land"
+  },
+  {
+   "cat": "routine",
+   "start": 910,
+   "end": 915,
+   "name": "Pack Up",
+   "meta": "3:10\u20133:15",
+   "title": "Pack Up \u00b7 3:10\u20133:15 \u00b7 5 min"
+  }
+ ],
+ "sla": [
+  {
+   "cat": "collab",
+   "start": 480,
+   "end": 515,
+   "name": "Morning Collaboration",
+   "meta": "Tuesday LEAP 8:10\u20139:10",
+   "title": "Morning Collaboration \u00b7 8:00\u20138:35 \u00b7 35 min"
+  },
+  {
+   "cat": "routine",
+   "start": 515,
+   "end": 530,
+   "name": "Breakfast",
+   "meta": "8:35\u20138:50 \u00b7 15 min",
+   "title": "Breakfast \u00b7 8:35\u20138:50 \u00b7 15 min"
+  },
+  {
+   "cat": "routine",
+   "start": 530,
+   "end": 545,
+   "name": "Strong Start",
+   "meta": "8:50\u20139:05 \u00b7 15 min",
+   "title": "Strong Start \u00b7 8:50\u20139:05 \u00b7 15 min"
+  },
+  {
+   "cat": "estudio",
+   "start": 545,
+   "end": 560,
+   "name": "Estudio de Palabras",
+   "meta": "9:05\u20139:20 \u00b7 15 min",
+   "title": "Estudio de Palabras \u00b7 9:05\u20139:20 \u00b7 15 min \u00b7 Spanish word study"
+  },
+  {
+   "cat": "nbsg",
+   "start": 560,
+   "end": 580,
+   "name": "NBSG",
+   "meta": "9:20\u20139:40 \u00b7 20 min",
+   "title": "NBSG \u00b7 9:20\u20139:40 \u00b7 20 min \u00b7 Needs-based small group"
+  },
+  {
+   "cat": "arc",
+   "start": 580,
+   "end": 620,
+   "name": "ARC Close Reading",
+   "meta": "9:40\u201310:20 \u00b7 40 min",
+   "title": "ARC Close Reading \u00b7 9:40\u201310:20 \u00b7 40 min \u00b7 American Reading Company"
+  },
+  {
+   "cat": "transition",
+   "start": 620,
+   "end": 625,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 10:20\u201310:25 \u00b7 5 min"
+  },
+  {
+   "cat": "estudio",
+   "start": 625,
+   "end": 640,
+   "name": "Estudio de Palabras",
+   "meta": "10:25\u201310:40 \u00b7 15 min",
+   "title": "Estudio de Palabras \u00b7 10:25\u201310:40 \u00b7 15 min \u00b7 Spanish word study"
+  },
+  {
+   "cat": "arc",
+   "start": 640,
+   "end": 685,
+   "name": "ARC Close Reading",
+   "meta": "10:40\u201311:25 \u00b7 45 min",
+   "title": "ARC Close Reading \u00b7 10:40\u201311:25 \u00b7 45 min \u00b7 American Reading Company"
+  },
+  {
+   "cat": "transition",
+   "start": 685,
+   "end": 690,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 11:25\u201311:30 \u00b7 5 min"
+  },
+  {
+   "cat": "routine",
+   "start": 690,
+   "end": 720,
+   "name": "Lunch",
+   "meta": "11:30\u201312:00 \u00b7 30 min",
+   "title": "Lunch \u00b7 11:30\u201312:00 \u00b7 30 min"
+  },
+  {
+   "cat": "transition",
+   "start": 720,
+   "end": 725,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 12:00\u201312:05 \u00b7 5 min"
+  },
+  {
+   "cat": "nbsg",
+   "start": 725,
+   "end": 745,
+   "name": "NBSG",
+   "meta": "12:05\u201312:25 \u00b7 20 min",
+   "title": "NBSG \u00b7 12:05\u201312:25 \u00b7 20 min \u00b7 Needs-based small group"
+  },
+  {
+   "cat": "transition",
+   "start": 745,
+   "end": 750,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 12:25\u201312:30 \u00b7 5 min"
+  },
+  {
+   "cat": "nbsg",
+   "start": 750,
+   "end": 775,
+   "name": "NBSG",
+   "meta": "12:30\u201312:55 \u00b7 25 min",
+   "title": "NBSG \u00b7 12:30\u201312:55 \u00b7 25 min \u00b7 Needs-based small group"
+  },
+  {
+   "cat": "transition",
+   "start": 775,
+   "end": 780,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 12:55\u20131:00 \u00b7 5 min"
+  },
+  {
+   "cat": "routine",
+   "start": 780,
+   "end": 810,
+   "name": "Recess",
+   "meta": "1:00\u20131:30 \u00b7 30 min",
+   "title": "Recess \u00b7 1:00\u20131:30 \u00b7 30 min"
+  },
+  {
+   "cat": "routine",
+   "start": 810,
+   "end": 855,
+   "name": "Specials",
+   "meta": "1:30\u20132:15 \u00b7 45 min",
+   "title": "Specials \u00b7 1:30\u20132:15 \u00b7 45 min"
+  },
+  {
+   "cat": "transition",
+   "start": 855,
+   "end": 860,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 2:15\u20132:20 \u00b7 5 min"
+  },
+  {
+   "cat": "estudio",
+   "start": 860,
+   "end": 875,
+   "name": "Estudio de Palabras",
+   "meta": "2:20\u20132:35 \u00b7 15 min",
+   "title": "Estudio de Palabras \u00b7 2:20\u20132:35 \u00b7 15 min \u00b7 Spanish word study"
+  },
+  {
+   "cat": "arc",
+   "start": 875,
+   "end": 910,
+   "name": "ARC Close Reading",
+   "meta": "2:35\u20133:10 \u00b7 35 min",
+   "title": "ARC Close Reading \u00b7 2:35\u20133:10 \u00b7 35 min \u00b7 American Reading Company"
+  },
+  {
+   "cat": "routine",
+   "start": 910,
+   "end": 915,
+   "name": "Pack Up",
+   "meta": "3:10\u20133:15",
+   "title": "Pack Up \u00b7 3:10\u20133:15 \u00b7 5 min"
+  }
+ ],
+ "ela": [
+  {
+   "cat": "collab",
+   "start": 480,
+   "end": 515,
+   "name": "Morning Collaboration",
+   "meta": "Tuesday LEAP 8:10\u20139:10",
+   "title": "Morning Collaboration \u00b7 8:00\u20138:35 \u00b7 35 min"
+  },
+  {
+   "cat": "routine",
+   "start": 515,
+   "end": 530,
+   "name": "Breakfast",
+   "meta": "8:35\u20138:50 \u00b7 15 min",
+   "title": "Breakfast \u00b7 8:35\u20138:50 \u00b7 15 min"
+  },
+  {
+   "cat": "routine",
+   "start": 530,
+   "end": 545,
+   "name": "Strong Start",
+   "meta": "8:50\u20139:05 \u00b7 15 min",
+   "title": "Strong Start \u00b7 8:50\u20139:05 \u00b7 15 min"
+  },
+  {
+   "cat": "heggerty",
+   "start": 545,
+   "end": 555,
+   "name": "Heggerty",
+   "meta": "9:05\u20139:15 \u00b7 10 min",
+   "title": "Heggerty \u00b7 9:05\u20139:15 \u00b7 10 min \u00b7 Phonemic awareness"
+  },
+  {
+   "cat": "ufli",
+   "start": 555,
+   "end": 575,
+   "name": "UFLI",
+   "meta": "9:15\u20139:35 \u00b7 20 min",
+   "title": "UFLI \u00b7 9:15\u20139:35 \u00b7 20 min \u00b7 Foundational phonics"
+  },
+  {
+   "cat": "nbsg",
+   "start": 575,
+   "end": 585,
+   "name": "NBSG",
+   "meta": "9:35\u20139:45 \u00b7 10 min",
+   "title": "NBSG \u00b7 9:35\u20139:45 \u00b7 10 min \u00b7 Needs-based small group"
+  },
+  {
+   "cat": "arc",
+   "start": 585,
+   "end": 620,
+   "name": "ARC Close Reading",
+   "meta": "9:45\u201310:20 \u00b7 35 min",
+   "title": "ARC Close Reading \u00b7 9:45\u201310:20 \u00b7 35 min \u00b7 American Reading Company"
+  },
+  {
+   "cat": "transition",
+   "start": 620,
+   "end": 625,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 10:20\u201310:25 \u00b7 5 min"
+  },
+  {
+   "cat": "arc",
+   "start": 625,
+   "end": 665,
+   "name": "ARC Close Reading",
+   "meta": "10:25\u201311:05 \u00b7 40 min",
+   "title": "ARC Close Reading \u00b7 10:25\u201311:05 \u00b7 40 min \u00b7 American Reading Company"
+  },
+  {
+   "cat": "ufli",
+   "start": 665,
+   "end": 685,
+   "name": "UFLI",
+   "meta": "11:05\u201311:25 \u00b7 20 min",
+   "title": "UFLI \u00b7 11:05\u201311:25 \u00b7 20 min \u00b7 Foundational phonics"
+  },
+  {
+   "cat": "transition",
+   "start": 685,
+   "end": 690,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 11:25\u201311:30 \u00b7 5 min"
+  },
+  {
+   "cat": "routine",
+   "start": 690,
+   "end": 720,
+   "name": "Lunch",
+   "meta": "11:30\u201312:00 \u00b7 30 min",
+   "title": "Lunch \u00b7 11:30\u201312:00 \u00b7 30 min"
+  },
+  {
+   "cat": "transition",
+   "start": 720,
+   "end": 725,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 12:00\u201312:05 \u00b7 5 min"
+  },
+  {
+   "cat": "heggerty",
+   "start": 725,
+   "end": 735,
+   "name": "Heggerty",
+   "meta": "12:05\u201312:15 \u00b7 10 min",
+   "title": "Heggerty \u00b7 12:05\u201312:15 \u00b7 10 min \u00b7 Phonemic awareness"
+  },
+  {
+   "cat": "nbsg",
+   "start": 735,
+   "end": 745,
+   "name": "NBSG",
+   "meta": "12:15\u201312:25 \u00b7 10 min",
+   "title": "NBSG \u00b7 12:15\u201312:25 \u00b7 10 min \u00b7 Needs-based small group"
+  },
+  {
+   "cat": "transition",
+   "start": 745,
+   "end": 750,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 12:25\u201312:30 \u00b7 5 min"
+  },
+  {
+   "cat": "heggerty",
+   "start": 750,
+   "end": 760,
+   "name": "Heggerty",
+   "meta": "12:30\u201312:40 \u00b7 10 min",
+   "title": "Heggerty \u00b7 12:30\u201312:40 \u00b7 10 min \u00b7 Phonemic awareness"
+  },
+  {
+   "cat": "nbsg",
+   "start": 760,
+   "end": 775,
+   "name": "NBSG",
+   "meta": "12:40\u201312:55 \u00b7 15 min",
+   "title": "NBSG \u00b7 12:40\u201312:55 \u00b7 15 min \u00b7 Needs-based small group"
+  },
+  {
+   "cat": "transition",
+   "start": 775,
+   "end": 780,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 12:55\u20131:00 \u00b7 5 min"
+  },
+  {
+   "cat": "routine",
+   "start": 780,
+   "end": 810,
+   "name": "Recess",
+   "meta": "1:00\u20131:30 \u00b7 30 min",
+   "title": "Recess \u00b7 1:00\u20131:30 \u00b7 30 min"
+  },
+  {
+   "cat": "routine",
+   "start": 810,
+   "end": 855,
+   "name": "Specials",
+   "meta": "1:30\u20132:15 \u00b7 45 min",
+   "title": "Specials \u00b7 1:30\u20132:15 \u00b7 45 min"
+  },
+  {
+   "cat": "transition",
+   "start": 855,
+   "end": 860,
+   "name": "Transition",
+   "meta": "",
+   "title": "Transition \u00b7 2:15\u20132:20 \u00b7 5 min"
+  },
+  {
+   "cat": "ufli",
+   "start": 860,
+   "end": 880,
+   "name": "UFLI",
+   "meta": "2:20\u20132:40 \u00b7 20 min",
+   "title": "UFLI \u00b7 2:20\u20132:40 \u00b7 20 min \u00b7 Foundational phonics"
+  },
+  {
+   "cat": "arc",
+   "start": 880,
+   "end": 910,
+   "name": "ARC Close Reading",
+   "meta": "2:40\u20133:10 \u00b7 30 min",
+   "title": "ARC Close Reading \u00b7 2:40\u20133:10 \u00b7 30 min \u00b7 American Reading Company"
+  },
+  {
+   "cat": "routine",
+   "start": 910,
+   "end": 915,
+   "name": "Pack Up",
+   "meta": "3:10\u20133:15",
+   "title": "Pack Up \u00b7 3:10\u20133:15 \u00b7 5 min"
+  }
+ ]
+}

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Your Child's Day — First Grade · Bancroft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF9F5; --card:#FFFFFF; --ink:#1F2933; --mute:#6B7A8A;
+  --rule:#E4DED4; --hair:#F0EBE3;
+  --math-bg:#E0F0EE; --math-tx:#0B4340; --math-bar:#1F8079;
+  --sla-bg:#FCEBDD;  --sla-tx:#8F4415;  --sla-bar:#C6641F;
+  --ela-bg:#F1E7F7;  --ela-tx:#56236B;  --ela-bar:#8B45A8;
+  --meal-bg:#FBF3E2; --meal-tx:#6B5522; --meal-bar:#C8A54A;
+  --play-bg:#E7F1E4; --play-tx:#2C4A25; --play-bar:#5E9450;
+  --spec-bg:#E5EDF8; --spec-tx:#1B3E6F; --spec-bar:#2F5FA0;
+  --quiet:#9AA6B2;
+  --display:'Fraunces',Georgia,serif;
+  --body:'Public Sans','Helvetica Neue',Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;padding:0 0 72px;background:var(--paper);color:var(--ink);
+  font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+
+.draft{background:#7A2E2E;color:#fff;text-align:center;font-family:var(--mono);
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:7px 12px}
+
+/* masthead */
+.mast{padding:26px 0 18px;border-bottom:2px solid var(--ink);margin-bottom:20px;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--mute);margin:0 0 7px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,5.4vw,42px);line-height:1.04;
+  letter-spacing:-.015em;margin:0 0 6px}
+.sub{margin:0;color:var(--mute);font-size:15px;max-width:46ch}
+.langbtn{flex:0 0 auto;appearance:none;border:1px solid var(--rule);background:var(--card);
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  padding:10px 15px;border-radius:99px;cursor:pointer;color:var(--ink);min-height:42px}
+.langbtn:hover{background:var(--hair)}
+.langbtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* class picker */
+.picker{margin-bottom:22px}
+.plabel{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mute);margin:0 0 9px}
+.triad{margin-bottom:11px}
+.triad-t{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--quiet);margin:0 0 6px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tab{appearance:none;background:var(--card);border:1px solid var(--rule);border-radius:10px;
+  padding:11px 9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;
+  min-height:82px;justify-content:center;transition:border-color .15s,box-shadow .15s,transform .1s}
+.tab:hover{border-color:var(--ink)}
+.tab:active{transform:translateY(1px)}
+.tab:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.tab img{width:34px;height:23px;object-fit:cover;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.09)}
+.tab .cn{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:-.01em;line-height:1.1;text-align:center}
+.tab .ct{font-family:var(--mono);font-size:9px;letter-spacing:.05em;color:var(--mute)}
+.tab[aria-selected="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink),0 6px 16px -8px rgba(31,41,51,.4)}
+
+/* class header */
+.chead{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:16px 17px;margin-bottom:14px}
+.chead-top{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+.chead img{width:52px;height:35px;object-fit:cover;border-radius:4px;box-shadow:0 0 0 1px rgba(0,0,0,.09)}
+.chead h2{font-family:var(--display);font-weight:700;font-size:25px;letter-spacing:-.015em;margin:0;line-height:1.1}
+.chead .tt{font-size:13.5px;color:var(--mute);margin-top:1px}
+.rot{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:13px;padding-top:12px;
+  border-top:1px solid var(--hair)}
+.rot-l{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);
+  flex:1 0 100%;margin-bottom:3px}
+.rpill{display:inline-flex;align-items:baseline;gap:6px;padding:5px 11px;border-radius:99px;
+  font-size:13px;font-weight:600}
+.rpill i{font-style:normal;font-family:var(--mono);font-size:9px;opacity:.7}
+.rarrow{color:var(--quiet);font-size:13px}
+.rpill.math{background:var(--math-bg);color:var(--math-tx)}
+.rpill.sla{background:var(--sla-bg);color:var(--sla-tx)}
+.rpill.ela{background:var(--ela-bg);color:var(--ela-tx)}
+
+/* specials strip */
+.spec{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:14px 15px;margin-bottom:22px}
+.spec h3{font-family:var(--display);font-weight:600;font-size:16px;margin:0 0 3px;letter-spacing:-.01em}
+.spec .when{font-family:var(--mono);font-size:10.5px;color:var(--mute);margin:0 0 11px}
+.specgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.sday{background:var(--spec-bg);border-radius:8px;padding:9px 5px;text-align:center;min-width:0}
+.sday .d{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--spec-tx);opacity:.7}
+.sday .e{font-size:20px;line-height:1.5;display:block}
+.sday .n{font-size:11.5px;font-weight:600;color:var(--spec-tx);line-height:1.2;overflow-wrap:anywhere}
+.spec .note{font-size:11.5px;color:var(--mute);margin:11px 0 0;font-style:italic}
+
+/* timeline */
+.tl-h{font-family:var(--display);font-weight:600;font-size:19px;margin:0 0 4px;letter-spacing:-.01em}
+.tl-s{font-size:13.5px;color:var(--mute);margin:0 0 14px}
+.row{display:grid;grid-template-columns:62px 1fr;gap:12px;margin-bottom:6px;align-items:stretch}
+.time{font-family:var(--mono);font-size:12px;color:#4E5C6A;text-align:right;padding-top:12px;
+  white-space:nowrap;font-weight:500}
+.ev{min-width:0;background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--rule);
+  border-radius:9px;padding:11px 13px}
+.ev .n{font-family:var(--display);font-weight:600;font-size:16.5px;letter-spacing:-.01em;line-height:1.22;
+  overflow-wrap:anywhere}
+.ev .m{font-family:var(--mono);font-size:10.5px;margin-top:3px;opacity:.7}
+.ev .d{font-size:13px;margin-top:5px;opacity:.85;overflow-wrap:anywhere}
+.ev .real{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;opacity:.55;margin-top:4px}
+.ev.math{background:var(--math-bg);border-color:transparent;border-left-color:var(--math-bar);color:var(--math-tx)}
+.ev.sla{background:var(--sla-bg);border-color:transparent;border-left-color:var(--sla-bar);color:var(--sla-tx)}
+.ev.ela{background:var(--ela-bg);border-color:transparent;border-left-color:var(--ela-bar);color:var(--ela-tx)}
+.ev.meal{background:var(--meal-bg);border-color:transparent;border-left-color:var(--meal-bar);color:var(--meal-tx)}
+.ev.play{background:var(--play-bg);border-color:transparent;border-left-color:var(--play-bar);color:var(--play-tx)}
+.ev.spec{background:var(--spec-bg);border-color:transparent;border-left-color:var(--spec-bar);color:var(--spec-tx)}
+
+.sep{display:flex;align-items:baseline;gap:10px;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+.sep b{font-family:var(--display);font-size:14px;letter-spacing:-.01em}
+.sep em{font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--mute);margin-left:auto}
+.sep.math b{color:var(--math-tx)} .sep.sla b{color:var(--sla-tx)} .sep.ela b{color:var(--ela-tx)}
+
+.row.move{margin:2px 0}
+.row.move .time{padding-top:1px;font-size:9.5px;opacity:.55}
+.move-l{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--quiet);padding-left:4px}
+.move-l::after{content:"";flex:1;border-top:1px dashed #DCD5C9}
+
+footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--mute)}
+footer p{margin:0 0 6px}
+
+@media (max-width:620px){
+  body{font-size:15px}
+  .wrap{padding:0 12px}
+  .tabs{gap:6px}
+  .tab{min-height:74px;padding:9px 5px}
+  .tab .cn{font-size:13px} .tab img{width:28px;height:19px}
+  .specgrid{grid-template-columns:repeat(5,1fr);gap:4px}
+  .sday{padding:7px 2px} .sday .n{font-size:9.5px} .sday .e{font-size:16px}
+  .row{grid-template-columns:50px 1fr;gap:9px}
+  .time{font-size:11px}
+  .ev .n{font-size:15px}
+}
+</style>
+</head>
+<body>
+<div class="draft">Draft — not published · Borrador — no publicado</div>
+<div class="wrap">
+
+  <header class="mast">
+    <div>
+      <p class="kicker" data-en="Bancroft Elementary · Dual Language Immersion"
+                        data-es="Escuela Bancroft · Inmersión en Dos Idiomas">Bancroft Elementary · Dual Language Immersion</p>
+      <h1 data-en="Your Child's Day" data-es="El Día de Su Niño/a">Your Child's Day</h1>
+      <p class="sub" data-en="First grade, hour by hour. Choose your child's class to see where they are all day."
+                     data-es="Primer grado, hora por hora. Elija la clase de su niño/a para ver dónde está durante el día.">First grade, hour by hour. Choose your child's class to see where they are all day.</p>
+    </div>
+    <button class="langbtn" id="lang" type="button">Español</button>
+  </header>
+
+  <section class="picker">
+    <p class="plabel" data-en="Choose a class" data-es="Elija una clase">Choose a class</p>
+    <div id="tabs"></div>
+  </section>
+
+  <div id="panel"></div>
+
+  <footer>
+    <p data-en="The school day runs 8:35 AM to 3:15 PM. Specials are every day from 1:30 to 2:15."
+       data-es="El día escolar es de 8:35 AM a 3:15 PM. Los Especiales son todos los días de 1:30 a 2:15."></p>
+    <p id="src"></p>
+  </footer>
+</div>
+
+<script>
+var DATA = {"classes": [{"id": "cartagena", "name": "Cartagena", "teacher": "Colon", "triad": 1, "flag": "cartagena.svg", "rot": {"b1": "math", "b2": "sla", "b3": "ela"}}, {"id": "colombia", "name": "Colombia", "teacher": "E. Chapoñan", "triad": 1, "flag": "colombia.svg", "rot": {"b1": "sla", "b2": "ela", "b3": "math"}}, {"id": "espana", "name": "España", "teacher": "Hopkins", "triad": 1, "flag": "espana.svg", "rot": {"b1": "ela", "b2": "math", "b3": "sla"}}, {"id": "venezuela", "name": "Venezuela", "teacher": "Ortiz", "triad": 2, "flag": "venezuela.svg", "rot": {"b1": "math", "b2": "sla", "b3": "ela"}}, {"id": "managua", "name": "Managua", "teacher": "J. Rivera", "triad": 2, "flag": "managua.svg", "rot": {"b1": "sla", "b2": "ela", "b3": "math"}}, {"id": "dr", "name": "DR", "teacher": "Alvarez", "triad": 2, "flag": "dr.svg", "rot": {"b1": "ela", "b2": "math", "b3": "sla"}}], "days": {"cartagena": [{"cat": "routine", "start": 515, "end": 530, "name": "Breakfast", "meta": "8:35–8:50 · 15 min", "title": "Breakfast · 8:35–8:50 · 15 min", "src": "spine"}, {"cat": "routine", "start": 530, "end": 545, "name": "Strong Start", "meta": "8:50–9:05 · 15 min", "title": "Strong Start · 8:50–9:05 · 15 min", "src": "spine"}, {"cat": "fluidez", "start": 545, "end": 550, "name": "Fluidez", "meta": "9:05–9:10", "title": "Fluidez · 9:05–9:10 · 5 min · Math fluency", "src": "math", "block": "b1"}, {"cat": "launch", "start": 550, "end": 555, "name": "Launch", "meta": "9:10–9:15", "title": "Launch · 9:10–9:15 · 5 min · Workshop — launch", "src": "math", "block": "b1"}, {"cat": "learn", "start": 555, "end": 575, "name": "Learn Rotation 1", "meta": "9:15–9:35 · 20 min", "title": "Learn Rotation 1 · 9:15–9:35 · 20 min · Workshop — learn", "src": "math", "block": "b1"}, {"cat": "learn", "start": 575, "end": 595, "name": "Learn Rotation 2", "meta": "9:35–9:55 · 20 min", "title": "Learn Rotation 2 · 9:35–9:55 · 20 min · Workshop — learn", "src": "math", "block": "b1"}, {"cat": "land", "start": 595, "end": 600, "name": "Land", "meta": "9:55–10:00", "title": "Land · 9:55–10:00 · 5 min · Workshop — land", "src": "math", "block": "b1"}, {"cat": "nbsg", "start": 600, "end": 620, "name": "NBSG", "meta": "10:00–10:20 · 20 min", "title": "NBSG · 10:00–10:20 · 20 min · Needs-based small group", "src": "math", "block": "b1"}, {"cat": "transition", "start": 620, "end": 625, "name": "Transition", "meta": "", "title": "Transition · 10:20–10:25 · 5 min", "src": "spine"}, {"cat": "estudio", "start": 625, "end": 640, "name": "Estudio de Palabras", "meta": "10:25–10:40 · 15 min", "title": "Estudio de Palabras · 10:25–10:40 · 15 min · Spanish word study", "src": "sla", "block": "b2"}, {"cat": "arc", "start": 640, "end": 685, "name": "ARC Close Reading", "meta": "10:40–11:25 · 45 min", "title": "ARC Close Reading · 10:40–11:25 · 45 min · American Reading Company", "src": "sla", "block": "b2"}, {"cat": "transition", "start": 685, "end": 690, "name": "Transition", "meta": "", "title": "Transition · 11:25–11:30 · 5 min", "src": "spine"}, {"cat": "routine", "start": 690, "end": 720, "name": "Lunch", "meta": "11:30–12:00 · 30 min", "title": "Lunch · 11:30–12:00 · 30 min", "src": "spine"}, {"cat": "transition", "start": 720, "end": 725, "name": "Transition", "meta": "", "title": "Transition · 12:00–12:05 · 5 min", "src": "spine"}, {"cat": "nbsg", "start": 725, "end": 745, "name": "NBSG", "meta": "12:05–12:25 · 20 min", "title": "NBSG · 12:05–12:25 · 20 min · Needs-based small group", "src": "sla", "block": "b2"}, {"cat": "transition", "start": 745, "end": 750, "name": "Transition", "meta": "", "title": "Transition · 12:25–12:30 · 5 min", "src": "spine"}, {"cat": "heggerty", "start": 750, "end": 760, "name": "Heggerty", "meta": "12:30–12:40 · 10 min", "title": "Heggerty · 12:30–12:40 · 10 min · Phonemic awareness", "src": "ela", "block": "b3"}, {"cat": "nbsg", "start": 760, "end": 775, "name": "NBSG", "meta": "12:40–12:55 · 15 min", "title": "NBSG · 12:40–12:55 · 15 min · Needs-based small group", "src": "ela", "block": "b3"}, {"cat": "transition", "start": 775, "end": 780, "name": "Transition", "meta": "", "title": "Transition · 12:55–1:00 · 5 min", "src": "spine"}, {"cat": "routine", "start": 780, "end": 810, "name": "Recess", "meta": "1:00–1:30 · 30 min", "title": "Recess · 1:00–1:30 · 30 min", "src": "spine"}, {"cat": "routine", "start": 810, "end": 855, "name": "Specials", "meta": "1:30–2:15 · 45 min", "title": "Specials · 1:30–2:15 · 45 min", "src": "spine"}, {"cat": "transition", "start": 855, "end": 860, "name": "Transition", "meta": "", "title": "Transition · 2:15–2:20 · 5 min", "src": "spine"}, {"cat": "ufli", "start": 860, "end": 880, "name": "UFLI", "meta": "2:20–2:40 · 20 min", "title": "UFLI · 2:20–2:40 · 20 min · Foundational phonics", "src": "ela", "block": "b3"}, {"cat": "arc", "start": 880, "end": 910, "name": "ARC Close Reading", "meta": "2:40–3:10 · 30 min", "title": "ARC Close Reading · 2:40–3:10 · 30 min · American Reading Company", "src": "ela", "block": "b3"}, {"cat": "routine", "start": 910, "end": 915, "name": "Pack Up", "meta": "3:10–3:15", "title": "Pack Up · 3:10–3:15 · 5 min", "src": "spine"}], "colombia": [{"cat": "routine", "start": 515, "end": 530, "name": "Breakfast", "meta": "8:35–8:50 · 15 min", "title": "Breakfast · 8:35–8:50 · 15 min", "src": "spine"}, {"cat": "routine", "start": 530, "end": 545, "name": "Strong Start", "meta": "8:50–9:05 · 15 min", "title": "Strong Start · 8:50–9:05 · 15 min", "src": "spine"}, {"cat": "estudio", "start": 545, "end": 560, "name": "Estudio de Palabras", "meta": "9:05–9:20 · 15 min", "title": "Estudio de Palabras · 9:05–9:20 · 15 min · Spanish word study", "src": "sla", "block": "b1"}, {"cat": "nbsg", "start": 560, "end": 580, "name": "NBSG", "meta": "9:20–9:40 · 20 min", "title": "NBSG · 9:20–9:40 · 20 min · Needs-based small group", "src": "sla", "block": "b1"}, {"cat": "arc", "start": 580, "end": 620, "name": "ARC Close Reading", "meta": "9:40–10:20 · 40 min", "title": "ARC Close Reading · 9:40–10:20 · 40 min · American Reading Company", "src": "sla", "block": "b1"}, {"cat": "transition", "start": 620, "end": 625, "name": "Transition", "meta": "", "title": "Transition · 10:20–10:25 · 5 min", "src": "spine"}, {"cat": "arc", "start": 625, "end": 665, "name": "ARC Close Reading", "meta": "10:25–11:05 · 40 min", "title": "ARC Close Reading · 10:25–11:05 · 40 min · American Reading Company", "src": "ela", "block": "b2"}, {"cat": "ufli", "start": 665, "end": 685, "name": "UFLI", "meta": "11:05–11:25 · 20 min", "title": "UFLI · 11:05–11:25 · 20 min · Foundational phonics", "src": "ela", "block": "b2"}, {"cat": "transition", "start": 685, "end": 690, "name": "Transition", "meta": "", "title": "Transition · 11:25–11:30 · 5 min", "src": "spine"}, {"cat": "routine", "start": 690, "end": 720, "name": "Lunch", "meta": "11:30–12:00 · 30 min", "title": "Lunch · 11:30–12:00 · 30 min", "src": "spine"}, {"cat": "transition", "start": 720, "end": 725, "name": "Transition", "meta": "", "title": "Transition · 12:00–12:05 · 5 min", "src": "spine"}, {"cat": "heggerty", "start": 725, "end": 735, "name": "Heggerty", "meta": "12:05–12:15 · 10 min", "title": "Heggerty · 12:05–12:15 · 10 min · Phonemic awareness", "src": "ela", "block": "b2"}, {"cat": "nbsg", "start": 735, "end": 745, "name": "NBSG", "meta": "12:15–12:25 · 10 min", "title": "NBSG · 12:15–12:25 · 10 min · Needs-based small group", "src": "ela", "block": "b2"}, {"cat": "transition", "start": 745, "end": 750, "name": "Transition", "meta": "", "title": "Transition · 12:25–12:30 · 5 min", "src": "spine"}, {"cat": "nbsg", "start": 750, "end": 775, "name": "NBSG", "meta": "12:30–12:55 · 25 min", "title": "NBSG · 12:30–12:55 · 25 min · Needs-based small group", "src": "math", "block": "b3"}, {"cat": "transition", "start": 775, "end": 780, "name": "Transition", "meta": "", "title": "Transition · 12:55–1:00 · 5 min", "src": "spine"}, {"cat": "routine", "start": 780, "end": 810, "name": "Recess", "meta": "1:00–1:30 · 30 min", "title": "Recess · 1:00–1:30 · 30 min", "src": "spine"}, {"cat": "routine", "start": 810, "end": 855, "name": "Specials", "meta": "1:30–2:15 · 45 min", "title": "Specials · 1:30–2:15 · 45 min", "src": "spine"}, {"cat": "transition", "start": 855, "end": 860, "name": "Transition", "meta": "", "title": "Transition · 2:15–2:20 · 5 min", "src": "spine"}, {"cat": "fluidez", "start": 860, "end": 865, "name": "Fluidez", "meta": "2:20–2:25", "title": "Fluidez · 2:20–2:25 · 5 min · Math fluency", "src": "math", "block": "b3"}, {"cat": "launch", "start": 865, "end": 870, "name": "Launch", "meta": "2:25–2:30", "title": "Launch · 2:25–2:30 · 5 min · Workshop — launch", "src": "math", "block": "b3"}, {"cat": "learn", "start": 870, "end": 890, "name": "Learn Rotation 1", "meta": "2:30–2:50 · 20 min", "title": "Learn Rotation 1 · 2:30–2:50 · 20 min · Workshop — learn", "src": "math", "block": "b3"}, {"cat": "learn", "start": 890, "end": 905, "name": "Learn Rotation 2", "meta": "2:50–3:05 · 15 min", "title": "Learn Rotation 2 · 2:50–3:05 · 15 min · Workshop — learn", "src": "math", "block": "b3"}, {"cat": "land", "start": 905, "end": 910, "name": "Land", "meta": "3:05–3:10", "title": "Land · 3:05–3:10 · 5 min · Workshop — land", "src": "math", "block": "b3"}, {"cat": "routine", "start": 910, "end": 915, "name": "Pack Up", "meta": "3:10–3:15", "title": "Pack Up · 3:10–3:15 · 5 min", "src": "spine"}], "espana": [{"cat": "routine", "start": 515, "end": 530, "name": "Breakfast", "meta": "8:35–8:50 · 15 min", "title": "Breakfast · 8:35–8:50 · 15 min", "src": "spine"}, {"cat": "routine", "start": 530, "end": 545, "name": "Strong Start", "meta": "8:50–9:05 · 15 min", "title": "Strong Start · 8:50–9:05 · 15 min", "src": "spine"}, {"cat": "heggerty", "start": 545, "end": 555, "name": "Heggerty", "meta": "9:05–9:15 · 10 min", "title": "Heggerty · 9:05–9:15 · 10 min · Phonemic awareness", "src": "ela", "block": "b1"}, {"cat": "ufli", "start": 555, "end": 575, "name": "UFLI", "meta": "9:15–9:35 · 20 min", "title": "UFLI · 9:15–9:35 · 20 min · Foundational phonics", "src": "ela", "block": "b1"}, {"cat": "nbsg", "start": 575, "end": 585, "name": "NBSG", "meta": "9:35–9:45 · 10 min", "title": "NBSG · 9:35–9:45 · 10 min · Needs-based small group", "src": "ela", "block": "b1"}, {"cat": "arc", "start": 585, "end": 620, "name": "ARC Close Reading", "meta": "9:45–10:20 · 35 min", "title": "ARC Close Reading · 9:45–10:20 · 35 min · American Reading Company", "src": "ela", "block": "b1"}, {"cat": "transition", "start": 620, "end": 625, "name": "Transition", "meta": "", "title": "Transition · 10:20–10:25 · 5 min", "src": "spine"}, {"cat": "fluidez", "start": 625, "end": 630, "name": "Fluidez", "meta": "10:25–10:30", "title": "Fluidez · 10:25–10:30 · 5 min · Math fluency", "src": "math", "block": "b2"}, {"cat": "launch", "start": 630, "end": 640, "name": "Launch", "meta": "10:30–10:40 · 10 min", "title": "Launch · 10:30–10:40 · 10 min · Workshop — launch", "src": "math", "block": "b2"}, {"cat": "learn", "start": 640, "end": 660, "name": "Learn Rotation 1", "meta": "10:40–11:00 · 20 min", "title": "Learn Rotation 1 · 10:40–11:00 · 20 min · Workshop — learn", "src": "math", "block": "b2"}, {"cat": "learn", "start": 660, "end": 680, "name": "Learn Rotation 2", "meta": "11:00–11:20 · 20 min", "title": "Learn Rotation 2 · 11:00–11:20 · 20 min · Workshop — learn", "src": "math", "block": "b2"}, {"cat": "land", "start": 680, "end": 685, "name": "Land", "meta": "11:20–11:25", "title": "Land · 11:20–11:25 · 5 min · Workshop — land", "src": "math", "block": "b2"}, {"cat": "transition", "start": 685, "end": 690, "name": "Transition", "meta": "", "title": "Transition · 11:25–11:30 · 5 min", "src": "spine"}, {"cat": "routine", "start": 690, "end": 720, "name": "Lunch", "meta": "11:30–12:00 · 30 min", "title": "Lunch · 11:30–12:00 · 30 min", "src": "spine"}, {"cat": "transition", "start": 720, "end": 725, "name": "Transition", "meta": "", "title": "Transition · 12:00–12:05 · 5 min", "src": "spine"}, {"cat": "nbsg", "start": 725, "end": 745, "name": "NBSG", "meta": "12:05–12:25 · 20 min", "title": "NBSG · 12:05–12:25 · 20 min · Needs-based small group", "src": "math", "block": "b2"}, {"cat": "transition", "start": 745, "end": 750, "name": "Transition", "meta": "", "title": "Transition · 12:25–12:30 · 5 min", "src": "spine"}, {"cat": "nbsg", "start": 750, "end": 775, "name": "NBSG", "meta": "12:30–12:55 · 25 min", "title": "NBSG · 12:30–12:55 · 25 min · Needs-based small group", "src": "sla", "block": "b3"}, {"cat": "transition", "start": 775, "end": 780, "name": "Transition", "meta": "", "title": "Transition · 12:55–1:00 · 5 min", "src": "spine"}, {"cat": "routine", "start": 780, "end": 810, "name": "Recess", "meta": "1:00–1:30 · 30 min", "title": "Recess · 1:00–1:30 · 30 min", "src": "spine"}, {"cat": "routine", "start": 810, "end": 855, "name": "Specials", "meta": "1:30–2:15 · 45 min", "title": "Specials · 1:30–2:15 · 45 min", "src": "spine"}, {"cat": "transition", "start": 855, "end": 860, "name": "Transition", "meta": "", "title": "Transition · 2:15–2:20 · 5 min", "src": "spine"}, {"cat": "estudio", "start": 860, "end": 875, "name": "Estudio de Palabras", "meta": "2:20–2:35 · 15 min", "title": "Estudio de Palabras · 2:20–2:35 · 15 min · Spanish word study", "src": "sla", "block": "b3"}, {"cat": "arc", "start": 875, "end": 910, "name": "ARC Close Reading", "meta": "2:35–3:10 · 35 min", "title": "ARC Close Reading · 2:35–3:10 · 35 min · American Reading Company", "src": "sla", "block": "b3"}, {"cat": "routine", "start": 910, "end": 915, "name": "Pack Up", "meta": "3:10–3:15", "title": "Pack Up · 3:10–3:15 · 5 min", "src": "spine"}], "venezuela": [{"cat": "routine", "start": 515, "end": 530, "name": "Breakfast", "meta": "8:35–8:50 · 15 min", "title": "Breakfast · 8:35–8:50 · 15 min", "src": "spine"}, {"cat": "routine", "start": 530, "end": 545, "name": "Strong Start", "meta": "8:50–9:05 · 15 min", "title": "Strong Start · 8:50–9:05 · 15 min", "src": "spine"}, {"cat": "fluidez", "start": 545, "end": 550, "name": "Fluidez", "meta": "9:05–9:10", "title": "Fluidez · 9:05–9:10 · 5 min · Math fluency", "src": "math", "block": "b1"}, {"cat": "launch", "start": 550, "end": 555, "name": "Launch", "meta": "9:10–9:15", "title": "Launch · 9:10–9:15 · 5 min · Workshop — launch", "src": "math", "block": "b1"}, {"cat": "learn", "start": 555, "end": 575, "name": "Learn Rotation 1", "meta": "9:15–9:35 · 20 min", "title": "Learn Rotation 1 · 9:15–9:35 · 20 min · Workshop — learn", "src": "math", "block": "b1"}, {"cat": "learn", "start": 575, "end": 595, "name": "Learn Rotation 2", "meta": "9:35–9:55 · 20 min", "title": "Learn Rotation 2 · 9:35–9:55 · 20 min · Workshop — learn", "src": "math", "block": "b1"}, {"cat": "land", "start": 595, "end": 600, "name": "Land", "meta": "9:55–10:00", "title": "Land · 9:55–10:00 · 5 min · Workshop — land", "src": "math", "block": "b1"}, {"cat": "nbsg", "start": 600, "end": 620, "name": "NBSG", "meta": "10:00–10:20 · 20 min", "title": "NBSG · 10:00–10:20 · 20 min · Needs-based small group", "src": "math", "block": "b1"}, {"cat": "transition", "start": 620, "end": 625, "name": "Transition", "meta": "", "title": "Transition · 10:20–10:25 · 5 min", "src": "spine"}, {"cat": "estudio", "start": 625, "end": 640, "name": "Estudio de Palabras", "meta": "10:25–10:40 · 15 min", "title": "Estudio de Palabras · 10:25–10:40 · 15 min · Spanish word study", "src": "sla", "block": "b2"}, {"cat": "arc", "start": 640, "end": 685, "name": "ARC Close Reading", "meta": "10:40–11:25 · 45 min", "title": "ARC Close Reading · 10:40–11:25 · 45 min · American Reading Company", "src": "sla", "block": "b2"}, {"cat": "transition", "start": 685, "end": 690, "name": "Transition", "meta": "", "title": "Transition · 11:25–11:30 · 5 min", "src": "spine"}, {"cat": "routine", "start": 690, "end": 720, "name": "Lunch", "meta": "11:30–12:00 · 30 min", "title": "Lunch · 11:30–12:00 · 30 min", "src": "spine"}, {"cat": "transition", "start": 720, "end": 725, "name": "Transition", "meta": "", "title": "Transition · 12:00–12:05 · 5 min", "src": "spine"}, {"cat": "nbsg", "start": 725, "end": 745, "name": "NBSG", "meta": "12:05–12:25 · 20 min", "title": "NBSG · 12:05–12:25 · 20 min · Needs-based small group", "src": "sla", "block": "b2"}, {"cat": "transition", "start": 745, "end": 750, "name": "Transition", "meta": "", "title": "Transition · 12:25–12:30 · 5 min", "src": "spine"}, {"cat": "heggerty", "start": 750, "end": 760, "name": "Heggerty", "meta": "12:30–12:40 · 10 min", "title": "Heggerty · 12:30–12:40 · 10 min · Phonemic awareness", "src": "ela", "block": "b3"}, {"cat": "nbsg", "start": 760, "end": 775, "name": "NBSG", "meta": "12:40–12:55 · 15 min", "title": "NBSG · 12:40–12:55 · 15 min · Needs-based small group", "src": "ela", "block": "b3"}, {"cat": "transition", "start": 775, "end": 780, "name": "Transition", "meta": "", "title": "Transition · 12:55–1:00 · 5 min", "src": "spine"}, {"cat": "routine", "start": 780, "end": 810, "name": "Recess", "meta": "1:00–1:30 · 30 min", "title": "Recess · 1:00–1:30 · 30 min", "src": "spine"}, {"cat": "routine", "start": 810, "end": 855, "name": "Specials", "meta": "1:30–2:15 · 45 min", "title": "Specials · 1:30–2:15 · 45 min", "src": "spine"}, {"cat": "transition", "start": 855, "end": 860, "name": "Transition", "meta": "", "title": "Transition · 2:15–2:20 · 5 min", "src": "spine"}, {"cat": "ufli", "start": 860, "end": 880, "name": "UFLI", "meta": "2:20–2:40 · 20 min", "title": "UFLI · 2:20–2:40 · 20 min · Foundational phonics", "src": "ela", "block": "b3"}, {"cat": "arc", "start": 880, "end": 910, "name": "ARC Close Reading", "meta": "2:40–3:10 · 30 min", "title": "ARC Close Reading · 2:40–3:10 · 30 min · American Reading Company", "src": "ela", "block": "b3"}, {"cat": "routine", "start": 910, "end": 915, "name": "Pack Up", "meta": "3:10–3:15", "title": "Pack Up · 3:10–3:15 · 5 min", "src": "spine"}], "managua": [{"cat": "routine", "start": 515, "end": 530, "name": "Breakfast", "meta": "8:35–8:50 · 15 min", "title": "Breakfast · 8:35–8:50 · 15 min", "src": "spine"}, {"cat": "routine", "start": 530, "end": 545, "name": "Strong Start", "meta": "8:50–9:05 · 15 min", "title": "Strong Start · 8:50–9:05 · 15 min", "src": "spine"}, {"cat": "estudio", "start": 545, "end": 560, "name": "Estudio de Palabras", "meta": "9:05–9:20 · 15 min", "title": "Estudio de Palabras · 9:05–9:20 · 15 min · Spanish word study", "src": "sla", "block": "b1"}, {"cat": "nbsg", "start": 560, "end": 580, "name": "NBSG", "meta": "9:20–9:40 · 20 min", "title": "NBSG · 9:20–9:40 · 20 min · Needs-based small group", "src": "sla", "block": "b1"}, {"cat": "arc", "start": 580, "end": 620, "name": "ARC Close Reading", "meta": "9:40–10:20 · 40 min", "title": "ARC Close Reading · 9:40–10:20 · 40 min · American Reading Company", "src": "sla", "block": "b1"}, {"cat": "transition", "start": 620, "end": 625, "name": "Transition", "meta": "", "title": "Transition · 10:20–10:25 · 5 min", "src": "spine"}, {"cat": "arc", "start": 625, "end": 665, "name": "ARC Close Reading", "meta": "10:25–11:05 · 40 min", "title": "ARC Close Reading · 10:25–11:05 · 40 min · American Reading Company", "src": "ela", "block": "b2"}, {"cat": "ufli", "start": 665, "end": 685, "name": "UFLI", "meta": "11:05–11:25 · 20 min", "title": "UFLI · 11:05–11:25 · 20 min · Foundational phonics", "src": "ela", "block": "b2"}, {"cat": "transition", "start": 685, "end": 690, "name": "Transition", "meta": "", "title": "Transition · 11:25–11:30 · 5 min", "src": "spine"}, {"cat": "routine", "start": 690, "end": 720, "name": "Lunch", "meta": "11:30–12:00 · 30 min", "title": "Lunch · 11:30–12:00 · 30 min", "src": "spine"}, {"cat": "transition", "start": 720, "end": 725, "name": "Transition", "meta": "", "title": "Transition · 12:00–12:05 · 5 min", "src": "spine"}, {"cat": "heggerty", "start": 725, "end": 735, "name": "Heggerty", "meta": "12:05–12:15 · 10 min", "title": "Heggerty · 12:05–12:15 · 10 min · Phonemic awareness", "src": "ela", "block": "b2"}, {"cat": "nbsg", "start": 735, "end": 745, "name": "NBSG", "meta": "12:15–12:25 · 10 min", "title": "NBSG · 12:15–12:25 · 10 min · Needs-based small group", "src": "ela", "block": "b2"}, {"cat": "transition", "start": 745, "end": 750, "name": "Transition", "meta": "", "title": "Transition · 12:25–12:30 · 5 min", "src": "spine"}, {"cat": "nbsg", "start": 750, "end": 775, "name": "NBSG", "meta": "12:30–12:55 · 25 min", "title": "NBSG · 12:30–12:55 · 25 min · Needs-based small group", "src": "math", "block": "b3"}, {"cat": "transition", "start": 775, "end": 780, "name": "Transition", "meta": "", "title": "Transition · 12:55–1:00 · 5 min", "src": "spine"}, {"cat": "routine", "start": 780, "end": 810, "name": "Recess", "meta": "1:00–1:30 · 30 min", "title": "Recess · 1:00–1:30 · 30 min", "src": "spine"}, {"cat": "routine", "start": 810, "end": 855, "name": "Specials", "meta": "1:30–2:15 · 45 min", "title": "Specials · 1:30–2:15 · 45 min", "src": "spine"}, {"cat": "transition", "start": 855, "end": 860, "name": "Transition", "meta": "", "title": "Transition · 2:15–2:20 · 5 min", "src": "spine"}, {"cat": "fluidez", "start": 860, "end": 865, "name": "Fluidez", "meta": "2:20–2:25", "title": "Fluidez · 2:20–2:25 · 5 min · Math fluency", "src": "math", "block": "b3"}, {"cat": "launch", "start": 865, "end": 870, "name": "Launch", "meta": "2:25–2:30", "title": "Launch · 2:25–2:30 · 5 min · Workshop — launch", "src": "math", "block": "b3"}, {"cat": "learn", "start": 870, "end": 890, "name": "Learn Rotation 1", "meta": "2:30–2:50 · 20 min", "title": "Learn Rotation 1 · 2:30–2:50 · 20 min · Workshop — learn", "src": "math", "block": "b3"}, {"cat": "learn", "start": 890, "end": 905, "name": "Learn Rotation 2", "meta": "2:50–3:05 · 15 min", "title": "Learn Rotation 2 · 2:50–3:05 · 15 min · Workshop — learn", "src": "math", "block": "b3"}, {"cat": "land", "start": 905, "end": 910, "name": "Land", "meta": "3:05–3:10", "title": "Land · 3:05–3:10 · 5 min · Workshop — land", "src": "math", "block": "b3"}, {"cat": "routine", "start": 910, "end": 915, "name": "Pack Up", "meta": "3:10–3:15", "title": "Pack Up · 3:10–3:15 · 5 min", "src": "spine"}], "dr": [{"cat": "routine", "start": 515, "end": 530, "name": "Breakfast", "meta": "8:35–8:50 · 15 min", "title": "Breakfast · 8:35–8:50 · 15 min", "src": "spine"}, {"cat": "routine", "start": 530, "end": 545, "name": "Strong Start", "meta": "8:50–9:05 · 15 min", "title": "Strong Start · 8:50–9:05 · 15 min", "src": "spine"}, {"cat": "heggerty", "start": 545, "end": 555, "name": "Heggerty", "meta": "9:05–9:15 · 10 min", "title": "Heggerty · 9:05–9:15 · 10 min · Phonemic awareness", "src": "ela", "block": "b1"}, {"cat": "ufli", "start": 555, "end": 575, "name": "UFLI", "meta": "9:15–9:35 · 20 min", "title": "UFLI · 9:15–9:35 · 20 min · Foundational phonics", "src": "ela", "block": "b1"}, {"cat": "nbsg", "start": 575, "end": 585, "name": "NBSG", "meta": "9:35–9:45 · 10 min", "title": "NBSG · 9:35–9:45 · 10 min · Needs-based small group", "src": "ela", "block": "b1"}, {"cat": "arc", "start": 585, "end": 620, "name": "ARC Close Reading", "meta": "9:45–10:20 · 35 min", "title": "ARC Close Reading · 9:45–10:20 · 35 min · American Reading Company", "src": "ela", "block": "b1"}, {"cat": "transition", "start": 620, "end": 625, "name": "Transition", "meta": "", "title": "Transition · 10:20–10:25 · 5 min", "src": "spine"}, {"cat": "fluidez", "start": 625, "end": 630, "name": "Fluidez", "meta": "10:25–10:30", "title": "Fluidez · 10:25–10:30 · 5 min · Math fluency", "src": "math", "block": "b2"}, {"cat": "launch", "start": 630, "end": 640, "name": "Launch", "meta": "10:30–10:40 · 10 min", "title": "Launch · 10:30–10:40 · 10 min · Workshop — launch", "src": "math", "block": "b2"}, {"cat": "learn", "start": 640, "end": 660, "name": "Learn Rotation 1", "meta": "10:40–11:00 · 20 min", "title": "Learn Rotation 1 · 10:40–11:00 · 20 min · Workshop — learn", "src": "math", "block": "b2"}, {"cat": "learn", "start": 660, "end": 680, "name": "Learn Rotation 2", "meta": "11:00–11:20 · 20 min", "title": "Learn Rotation 2 · 11:00–11:20 · 20 min · Workshop — learn", "src": "math", "block": "b2"}, {"cat": "land", "start": 680, "end": 685, "name": "Land", "meta": "11:20–11:25", "title": "Land · 11:20–11:25 · 5 min · Workshop — land", "src": "math", "block": "b2"}, {"cat": "transition", "start": 685, "end": 690, "name": "Transition", "meta": "", "title": "Transition · 11:25–11:30 · 5 min", "src": "spine"}, {"cat": "routine", "start": 690, "end": 720, "name": "Lunch", "meta": "11:30–12:00 · 30 min", "title": "Lunch · 11:30–12:00 · 30 min", "src": "spine"}, {"cat": "transition", "start": 720, "end": 725, "name": "Transition", "meta": "", "title": "Transition · 12:00–12:05 · 5 min", "src": "spine"}, {"cat": "nbsg", "start": 725, "end": 745, "name": "NBSG", "meta": "12:05–12:25 · 20 min", "title": "NBSG · 12:05–12:25 · 20 min · Needs-based small group", "src": "math", "block": "b2"}, {"cat": "transition", "start": 745, "end": 750, "name": "Transition", "meta": "", "title": "Transition · 12:25–12:30 · 5 min", "src": "spine"}, {"cat": "nbsg", "start": 750, "end": 775, "name": "NBSG", "meta": "12:30–12:55 · 25 min", "title": "NBSG · 12:30–12:55 · 25 min · Needs-based small group", "src": "sla", "block": "b3"}, {"cat": "transition", "start": 775, "end": 780, "name": "Transition", "meta": "", "title": "Transition · 12:55–1:00 · 5 min", "src": "spine"}, {"cat": "routine", "start": 780, "end": 810, "name": "Recess", "meta": "1:00–1:30 · 30 min", "title": "Recess · 1:00–1:30 · 30 min", "src": "spine"}, {"cat": "routine", "start": 810, "end": 855, "name": "Specials", "meta": "1:30–2:15 · 45 min", "title": "Specials · 1:30–2:15 · 45 min", "src": "spine"}, {"cat": "transition", "start": 855, "end": 860, "name": "Transition", "meta": "", "title": "Transition · 2:15–2:20 · 5 min", "src": "spine"}, {"cat": "estudio", "start": 860, "end": 875, "name": "Estudio de Palabras", "meta": "2:20–2:35 · 15 min", "title": "Estudio de Palabras · 2:20–2:35 · 15 min · Spanish word study", "src": "sla", "block": "b3"}, {"cat": "arc", "start": 875, "end": 910, "name": "ARC Close Reading", "meta": "2:35–3:10 · 35 min", "title": "ARC Close Reading · 2:35–3:10 · 35 min · American Reading Company", "src": "sla", "block": "b3"}, {"cat": "routine", "start": 910, "end": 915, "name": "Pack Up", "meta": "3:10–3:15", "title": "Pack Up · 3:10–3:15 · 5 min", "src": "spine"}]}, "labels": {"Breakfast": {"en": "Breakfast", "es": "Desayuno"}, "Strong Start": {"en": "Strong Start", "es": "Comienzo Fuerte", "noteEn": "Morning meeting and greeting", "noteEs": "Reunión y saludo de la mañana"}, "Fluidez": {"en": "Math Fluency", "es": "Fluidez Matemática", "real": "Fluidez", "noteEn": "Quick number practice to warm up", "noteEs": "Práctica rápida de números para empezar"}, "Launch": {"en": "Lesson Start", "es": "Inicio de la Lección", "real": "Launch", "noteEn": "The teacher introduces today's math idea", "noteEs": "La maestra presenta la idea de matemáticas del día"}, "Learn Rotation 1": {"en": "Learning Stations 1", "es": "Estaciones 1", "real": "Learn Rotation 1", "noteEn": "Small groups rotate through math activities", "noteEs": "Grupos pequeños rotan por actividades de matemáticas"}, "Learn Rotation 2": {"en": "Learning Stations 2", "es": "Estaciones 2", "real": "Learn Rotation 2", "noteEn": "Small groups rotate through math activities", "noteEs": "Grupos pequeños rotan por actividades de matemáticas"}, "Land": {"en": "Wrap-Up", "es": "Cierre", "real": "Land", "noteEn": "The class shares what they figured out", "noteEs": "La clase comparte lo que descubrió"}, "Estudio de Palabras": {"en": "Spanish Word Study", "es": "Estudio de Palabras", "real": "Estudio de Palabras", "noteEn": "Spelling and word patterns in Spanish", "noteEs": "Ortografía y patrones de palabras en español"}, "Heggerty": {"en": "Sound Practice", "es": "Práctica de Sonidos", "real": "Heggerty", "noteEn": "Hearing and playing with the sounds in words", "noteEs": "Escuchar y jugar con los sonidos de las palabras"}, "UFLI": {"en": "Phonics", "es": "Fonética", "real": "UFLI", "noteEn": "Letters, sounds and sounding out words", "noteEs": "Letras, sonidos y cómo pronunciar palabras"}, "ARC Close Reading": {"en": "Close Reading", "es": "Lectura Detallada", "real": "ARC Close Reading", "noteEn": "Reading a text carefully, more than once", "noteEs": "Leer un texto con atención, más de una vez"}, "NBSG": {"en": "Small Group", "es": "Grupo Pequeño", "real": "NBSG", "noteEn": "Extra practice in a small group with the teacher", "noteEs": "Práctica adicional en grupo pequeño con la maestra"}, "Lunch": {"en": "Lunch", "es": "Almuerzo"}, "Recess": {"en": "Recess", "es": "Recreo"}, "Specials": {"en": "Specials", "es": "Especiales"}, "Pack Up": {"en": "Pack Up & Dismissal", "es": "Recoger y Salida"}, "Transition": {"en": "Moving", "es": "Transición"}}, "subjects": {"math": {"en": "Math", "es": "Matemáticas"}, "sla": {"en": "Spanish Language Arts", "es": "Lectoescritura en Español"}, "ela": {"en": "English Language Arts", "es": "Lectoescritura en Inglés"}}, "specialsRot": {"Cartagena": {"A": "Music", "B": "Science", "C": "PE", "D": "PE", "E": "Library", "F": "Art"}, "Colombia": {"A": "Science", "B": "PE", "C": "PE", "D": "Library", "E": "Art", "F": "Music"}, "España": {"A": "PE", "B": "PE", "C": "Library", "D": "Art", "E": "Music", "F": "Science"}, "DR": {"A": "Library", "B": "Art", "C": "Music", "D": "Science", "E": "PE", "F": "PE"}, "Managua": {"A": "PE", "B": "Library", "C": "Art", "D": "Music", "E": "Science", "F": "PE"}, "Venezuela": {"A": "Art", "B": "Music", "C": "Science", "D": "PE", "E": "PE", "F": "Library"}}, "specialsTr": {"Music": "Música", "Science": "Ciencias", "PE": "Educación Física", "Library": "Biblioteca", "Art": "Arte"}, "specialsIcons": {"Music": "🎵", "Science": "🔬", "PE": "🏀", "Library": "📚", "Art": "🎨"}, "week": {"date": "2026-08-24", "specials": {"monday": "A", "tuesday": "B", "wednesday": "C", "thursday": "D", "friday": "E"}}};
+(function(){
+  // set true to also print the program name teachers use (Fluidez, NBSG, UFLI...)
+  var SHOW_REAL = false;
+  var lang = 'en';
+  var current = DATA.classes[0].id;
+  var DAYNAMES = { en:['Monday','Tuesday','Wednesday','Thursday','Friday'],
+                   es:['Lunes','Martes','Miércoles','Jueves','Viernes'] };
+  var DAYKEYS = ['monday','tuesday','wednesday','thursday','friday'];
+  var MEAL = {'Breakfast':1,'Lunch':1}, PLAY = {'Recess':1}, SPEC = {'Specials':1};
+
+  function esc(s){ var d=document.createElement('div'); d.textContent=s==null?'':s; return d.innerHTML; }
+  function t(o,k){ return (o && (o[k+(lang==='es'?'Es':'En')] !== undefined ? o[k+(lang==='es'?'Es':'En')] : o[lang])) || ''; }
+  function fmt(m){ var h=Math.floor(m/60), mm=m%60, hh=h%12; if(hh===0)hh=12;
+    return hh+':'+(mm<10?'0':'')+mm; }
+  function flag(c){ return '../public/images/flags/'+c.flag; }
+
+  function label(name){
+    var e = DATA.labels[name];
+    if(!e) return { n:name, d:'', real:'' };
+    return { n: (lang==='es'? e.es : e.en),
+             d: (lang==='es'? (e.noteEs||'') : (e.noteEn||'')),
+             real: e.real || '' };
+  }
+  function subjName(k){ var s=DATA.subjects[k]; return s ? (lang==='es'?s.es:s.en) : k; }
+
+  function renderTabs(){
+    var h='';
+    [1,2].forEach(function(tri){
+      h += '<div class="triad"><p class="triad-t">'
+         + (lang==='es' ? 'Equipo '+tri : 'Team '+tri) + '</p><div class="tabs" role="tablist">';
+      DATA.classes.filter(function(c){return c.triad===tri;}).forEach(function(c){
+        h += '<button class="tab" type="button" role="tab" data-id="'+c.id+'"'
+           + ' aria-selected="'+(c.id===current)+'">'
+           + '<img src="'+flag(c)+'" alt="" onerror="this.style.display=\'none\'">'
+           + '<span class="cn">'+esc(c.name)+'</span>'
+           + '<span class="ct">'+esc(c.teacher)+'</span></button>';
+      });
+      h += '</div></div>';
+    });
+    document.getElementById('tabs').innerHTML = h;
+    [].forEach.call(document.querySelectorAll('.tab'), function(b){
+      b.addEventListener('click', function(){ current=b.getAttribute('data-id'); render(); });
+    });
+  }
+
+  function renderPanel(){
+    var c = DATA.classes.filter(function(x){return x.id===current;})[0];
+    var day = DATA.days[current];
+
+    // header + rotation
+    var rot='';
+    ['b1','b2','b3'].forEach(function(b,i){
+      var s=c.rot[b];
+      if(i) rot += '<span class="rarrow">→</span>';
+      rot += '<span class="rpill '+s+'"><i>'+(lang==='es'?'Bloque ':'Block ')+(i+1)+'</i>'+esc(subjName(s))+'</span>';
+    });
+    var h = '<div class="chead"><div class="chead-top">'
+      + '<img src="'+flag(c)+'" alt="" onerror="this.style.display=\'none\'">'
+      + '<div><h2>'+esc(c.name)+'</h2><div class="tt">'
+      + (lang==='es'?'Maestra/o: ':'Teacher: ')+esc(c.teacher)+'</div></div></div>'
+      + '<div class="rot"><span class="rot-l">'
+      + (lang==='es'?'El orden del día para esta clase':'This class\'s order for the day')
+      + '</span>'+rot+'</div></div>';
+
+    // specials for the week
+    var sp='';
+    DAYKEYS.forEach(function(dk,i){
+      var letter = DATA.week.specials[dk];
+      var subj = letter ? (DATA.specialsRot[c.name]||{})[letter] : '';
+      var nm = subj ? (lang==='es' ? (DATA.specialsTr[subj]||subj) : subj) : '—';
+      sp += '<div class="sday"><div class="d">'+esc(DAYNAMES[lang][i].slice(0,3))+'</div>'
+          + '<span class="e">'+(DATA.specialsIcons[subj]||'')+'</span>'
+          + '<div class="n">'+esc(nm)+'</div></div>';
+    });
+    h += '<div class="spec"><h3>'+(lang==='es'?'Especiales de esta semana':'Specials this week')+'</h3>'
+       + '<p class="when">1:30–2:15 · '+(lang==='es'?'Semana del ':'Week of ')+esc(DATA.week.date)+'</p>'
+       + '<div class="specgrid">'+sp+'</div>'
+       + '<p class="note">'+(lang==='es'
+            ? 'Los Especiales cambian cada semana según la rotación A–F de la clase.'
+            : 'Specials change week to week following this class\'s A–F rotation.')+'</p></div>';
+
+    // timeline
+    h += '<h3 class="tl-h">'+(lang==='es'?'El día completo':'The whole day')+'</h3>'
+       + '<p class="tl-s">'+(lang==='es'
+           ? 'De 8:35 AM a 3:15 PM. Los colores muestran la materia.'
+           : 'From 8:35 AM to 3:15 PM. Colours show the subject.')+'</p>';
+
+    var seen={};
+    day.forEach(function(r){
+      var lab = label(r.name);
+      if(r.name==='Transition'){
+        h += '<div class="row move"><div class="time">'+fmt(r.start)+'</div>'
+           + '<div class="move-l">'+esc(lab.n)+'</div></div>';
+        return;
+      }
+      if(r.block && !seen[r.block]){
+        seen[r.block]=1;
+        var s=c.rot[r.block];
+        h += '<div class="sep '+s+'"><b>'+esc(subjName(s))+'</b><em>'
+           + (lang==='es'?'Bloque ':'Block ')+r.block.slice(1)+'</em></div>';
+      }
+      var cls = r.block ? c.rot[r.block]
+              : (MEAL[r.name]?'meal': PLAY[r.name]?'play': SPEC[r.name]?'spec':'');
+      var mins = r.end-r.start;
+      h += '<div class="row"><div class="time">'+fmt(r.start)+'</div>'
+         + '<div class="ev '+cls+'"><div class="n">'+esc(lab.n)+'</div>'
+         + '<div class="m">'+fmt(r.start)+'–'+fmt(r.end)+' · '+mins+' min</div>'
+         + (lab.d ? '<div class="d">'+esc(lab.d)+'</div>' : '')
+         + (SHOW_REAL && lab.real ? '<div class="real">'+esc(lab.real)+'</div>' : '')
+         + '</div></div>';
+    });
+    document.getElementById('panel').innerHTML = h;
+  }
+
+  function applyLang(){
+    document.documentElement.lang = lang;
+    [].forEach.call(document.querySelectorAll('[data-en]'), function(el){
+      el.textContent = el.getAttribute('data-'+lang);
+    });
+    document.getElementById('lang').textContent = (lang==='es' ? 'English' : 'Español');
+    document.getElementById('src').textContent = (lang==='es'
+      ? 'Borrador para revisión interna. Creado del horario maestro del SY 2026–27.'
+      : 'Draft for internal review. Built from the SY 2026–27 master schedule.');
+  }
+
+  function render(){ applyLang(); renderTabs(); renderPanel(); }
+  document.getElementById('lang').addEventListener('click', function(){
+    lang = (lang==='en' ? 'es' : 'en'); render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>
