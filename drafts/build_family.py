@@ -15,7 +15,7 @@ import json, html, pathlib
 
 HERE = pathlib.Path(__file__).parent
 PROJ = pathlib.Path("/Users/mekocewalker/Library/CloudStorage/Dropbox/coding-projects/bancroft-newsletter-astro")
-OUT  = PROJ / "drafts" / "family-schedule.html"
+OUT  = PROJ / "public" / "schedule" / "family" / "index.html"
 
 SUBJ = json.load(open(HERE / "schedule_data.json"))
 
@@ -46,52 +46,52 @@ CLASSES = [
 ]
 
 SUBJ_LABEL = {
-    "math": dict(en="Math",                   es="Matemáticas"),
-    "sla":  dict(en="Spanish Language Arts",  es="Lectoescritura en Español"),
-    "ela":  dict(en="English Language Arts",  es="Lectoescritura en Inglés"),
+    "math": dict(en="Math",                   es="Matemáticas",                 icon="🧮"),
+    "sla":  dict(en="Spanish Language Arts",  es="Lectoescritura en Español",   icon="📙"),
+    "ela":  dict(en="English Language Arts",  es="Lectoescritura en Inglés",    icon="📘"),
 }
 
 # ── family wording. `real` is the program name teachers use. ──────────
 L = {
-  "Breakfast":            dict(en="Breakfast",            es="Desayuno"),
-  "Strong Start":         dict(en="Strong Start",         es="Comienzo Fuerte",
+  "Breakfast":            dict(icon="🥣", en="Breakfast",            es="Desayuno"),
+  "Strong Start":         dict(icon="👋", en="Strong Start",         es="Comienzo Fuerte",
                                noteEn="Morning meeting and greeting",
                                noteEs="Reunión y saludo de la mañana"),
-  "Fluidez":              dict(en="Math Fluency",         es="Fluidez Matemática", real="Fluidez",
+  "Fluidez":              dict(icon="🔢", en="Math Fluency",         es="Fluidez Matemática", real="Fluidez",
                                noteEn="Quick number practice to warm up",
                                noteEs="Práctica rápida de números para empezar"),
-  "Launch":               dict(en="Lesson Start",         es="Inicio de la Lección", real="Launch",
+  "Launch":               dict(icon="🚀", en="Lesson Start",         es="Inicio de la Lección", real="Launch",
                                noteEn="The teacher introduces today's math idea",
                                noteEs="La maestra presenta la idea de matemáticas del día"),
-  "Learn Rotation 1":     dict(en="Learning Stations 1",  es="Estaciones 1", real="Learn Rotation 1",
+  "Learn Rotation 1":     dict(icon="🧩", en="Learning Stations 1",  es="Estaciones 1", real="Learn Rotation 1",
                                noteEn="Small groups rotate through math activities",
                                noteEs="Grupos pequeños rotan por actividades de matemáticas"),
-  "Learn Rotation 2":     dict(en="Learning Stations 2",  es="Estaciones 2", real="Learn Rotation 2",
+  "Learn Rotation 2":     dict(icon="🧩", en="Learning Stations 2",  es="Estaciones 2", real="Learn Rotation 2",
                                noteEn="Small groups rotate through math activities",
                                noteEs="Grupos pequeños rotan por actividades de matemáticas"),
-  "Land":                 dict(en="Wrap-Up",              es="Cierre", real="Land",
+  "Land":                 dict(icon="🛬", en="Wrap-Up",              es="Cierre", real="Land",
                                noteEn="The class shares what they figured out",
                                noteEs="La clase comparte lo que descubrió"),
-  "Estudio de Palabras":  dict(en="Spanish Word Study",   es="Estudio de Palabras", real="Estudio de Palabras",
+  "Estudio de Palabras":  dict(icon="✏️", en="Spanish Word Study",   es="Estudio de Palabras", real="Estudio de Palabras",
                                noteEn="Spelling and word patterns in Spanish",
                                noteEs="Ortografía y patrones de palabras en español"),
-  "Heggerty":             dict(en="Sound Practice",       es="Práctica de Sonidos", real="Heggerty",
+  "Heggerty":             dict(icon="👂", en="Sound Practice",       es="Práctica de Sonidos", real="Heggerty",
                                noteEn="Hearing and playing with the sounds in words",
                                noteEs="Escuchar y jugar con los sonidos de las palabras"),
-  "UFLI":                 dict(en="Phonics",              es="Fonética", real="UFLI",
+  "UFLI":                 dict(icon="🔡", en="Phonics",              es="Fonética", real="UFLI",
                                noteEn="Letters, sounds and sounding out words",
                                noteEs="Letras, sonidos y cómo pronunciar palabras"),
-  "ARC Close Reading":    dict(en="Close Reading",        es="Lectura Detallada", real="ARC Close Reading",
+  "ARC Close Reading":    dict(icon="📖", en="Close Reading",        es="Lectura Detallada", real="ARC Close Reading",
                                noteEn="Reading a text carefully, more than once",
                                noteEs="Leer un texto con atención, más de una vez"),
-  "NBSG":                 dict(en="Small Group",          es="Grupo Pequeño", real="NBSG",
+  "NBSG":                 dict(icon="👥", en="Small Group",          es="Grupo Pequeño", real="NBSG",
                                noteEn="Extra practice in a small group with the teacher",
                                noteEs="Práctica adicional en grupo pequeño con la maestra"),
-  "Lunch":                dict(en="Lunch",                es="Almuerzo"),
-  "Recess":               dict(en="Recess",               es="Recreo"),
-  "Specials":             dict(en="Specials",             es="Especiales"),
-  "Pack Up":              dict(en="Pack Up & Dismissal",  es="Recoger y Salida"),
-  "Transition":           dict(en="Moving",               es="Transición"),
+  "Lunch":                dict(icon="🍽️", en="Lunch",                es="Almuerzo"),
+  "Recess":               dict(icon="🛝", en="Recess",               es="Recreo"),
+  "Specials":             dict(icon="✨", en="Specials",             es="Especiales"),
+  "Pack Up":              dict(icon="🎒", en="Pack Up & Dismissal",  es="Recoger y Salida"),
+  "Transition":           dict(icon="🚶", en="Moving",               es="Transición"),
 }
 
 SPECIALS_ROT = json.load(open(PROJ / "src/data/config.json"))["rotations"]

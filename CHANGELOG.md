@@ -5,6 +5,16 @@ All notable changes to the Bancroft Newsletter Astro build. Newest first.
 ## 2026-08-24
 
 ### Added
+- **`/schedule/family` — family-facing per-class schedule (unlisted).** Six schedules, one per
+  homeroom (Cartagena, Colombia, España, Venezuela, Managua, DR), showing each class's real day
+  from the *student* perspective rather than the subject-room perspective. Built by combining the
+  shared spine (breakfast, lunch, recess, specials, pack up) with the block segments from whichever
+  subject that class is in during Blocks 1/2/3, per the `Rotation Order` sheet of
+  `SY26-27 Master Schedule.xlsx`. Plain-language block names, an emoji for every block, bilingual
+  EN/ES, and each class's specials for the week read from `config.rotations` + the week JSON's
+  letter days. `noindex, nofollow` and **not linked from anywhere** — it is out for teacher review.
+  Regenerate with `drafts/build_family.py`, which asserts every class day is contiguous 8:35–3:15
+  and totals exactly 230 core instructional minutes.
 - **Phone layout for `/schedule`.** At ≤720px the three-column grid is replaced by a tabbed
   single-column view — one tab per section (1st Math / 1st SLA / 1st ELA) — so the schedule
   needs **no horizontal scrolling at all**, verified down to a 320px viewport. Each row shows
