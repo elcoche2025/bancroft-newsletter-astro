@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>First Grade Master Schedule — 2026–27</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAFBFC; --card:#FFFFFF; --ink:#16202B; --mute:#65758A;
+  --rule:#DEE4EB; --hair:#EDF0F4;
+  --spine-bg:#EEF1F5; --spine-tx:#51637A;
+  --nav:#1E3350;   --collab-bg:#ECEAF4; --collab-tx:#40355F; --collab-bar:#6B5B9A;
+  --routine-bg:#F1EEE8; --routine-tx:#594F3E; --routine-bar:#8C7C60;
+  --transition-bg:#F7F7F7; --transition-tx:#8A8A8A; --transition-bar:#C9C9C9;
+  --fluidez-bg:#FCF1DA; --fluidez-tx:#7C5710; --fluidez-bar:#C89216;
+  --launch-bg:#E6F2F1; --launch-tx:#0E4E4B; --launch-bar:#58ADA8;
+  --learn-bg:#D2E8E6; --learn-tx:#0B4340; --learn-bar:#1F8079;
+  --land-bg:#E6F2F1; --land-tx:#0E4E4B; --land-bar:#58ADA8;
+  --estudio-bg:#FCEBDD; --estudio-tx:#8F4415; --estudio-bar:#C6641F;
+  --heggerty-bg:#FBE6EC; --heggerty-tx:#85234A; --heggerty-bar:#C13B68;
+  --ufli-bg:#F3E7F7; --ufli-tx:#56236B; --ufli-bar:#8B45A8;
+  --nbsg-bg:#E3F0E7; --nbsg-tx:#1B4B2E; --nbsg-bar:#2E7D51;
+  --arc-bg:#E4ECF6; --arc-tx:#1B3E6F; --arc-bar:#2F5FA0;
+  --row:15px;
+  --display:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --body:'Public Sans','Helvetica Neue',Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;padding:32px 20px 64px;background:var(--paper);color:var(--ink);
+  font-family:var(--body);font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto}
+
+/* ── masthead ─────────────────────────────────────────────── */
+.mast{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  padding-bottom:14px;border-bottom:2px solid var(--ink);margin-bottom:22px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,4.6vw,42px);
+  line-height:1.02;letter-spacing:-.022em;margin:0 0 6px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mute);margin:0 0 10px}
+.sub{margin:0;color:var(--mute);font-size:14px}
+.clock{font-family:var(--mono);font-size:12px;color:var(--mute);text-align:right;white-space:nowrap}
+.clock b{display:block;font-size:22px;color:var(--ink);font-weight:600;letter-spacing:-.02em}
+.clock .state{display:inline-block;margin-top:4px;padding:2px 8px;border-radius:999px;
+  background:var(--hair);color:var(--mute);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.clock .state.live{background:#E3F0E7;color:#1B4B2E}
+
+/* ── stats ────────────────────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.stat{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:12px 14px 10px}
+.stat-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  padding-bottom:9px;border-bottom:1px solid var(--hair);margin-bottom:8px}
+.stat-label{font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:-.01em}
+.stat-total{display:flex;align-items:baseline;gap:6px;text-align:right}
+.stat-total b{font-family:var(--display);font-size:26px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.stat-total small{font-family:var(--mono);font-size:8.5px;color:var(--mute);letter-spacing:.05em;
+  line-height:1.25;text-align:left}
+.stat-list{list-style:none;margin:0;padding:0}
+.stat-list li{display:flex;align-items:center;gap:7px;padding:2.5px 0;font-size:12.5px}
+.stat-list .pip{width:8px;height:8px;border-radius:2px;flex:none}
+.stat-list .pn{flex:1;color:#3D4A59;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-list .pm{font-family:var(--mono);font-size:12px;font-weight:500}
+.stat-list li.collab .pip{background:var(--collab-bar)}.stat-list li.collab .pm{color:var(--collab-tx)}.stat-list li.routine .pip{background:var(--routine-bar)}.stat-list li.routine .pm{color:var(--routine-tx)}.stat-list li.transition .pip{background:var(--transition-bar)}.stat-list li.transition .pm{color:var(--transition-tx)}.stat-list li.fluidez .pip{background:var(--fluidez-bar)}.stat-list li.fluidez .pm{color:var(--fluidez-tx)}.stat-list li.launch .pip{background:var(--launch-bar)}.stat-list li.launch .pm{color:var(--launch-tx)}.stat-list li.learn .pip{background:var(--learn-bar)}.stat-list li.learn .pm{color:var(--learn-tx)}.stat-list li.land .pip{background:var(--land-bar)}.stat-list li.land .pm{color:var(--land-tx)}.stat-list li.estudio .pip{background:var(--estudio-bar)}.stat-list li.estudio .pm{color:var(--estudio-tx)}.stat-list li.heggerty .pip{background:var(--heggerty-bar)}.stat-list li.heggerty .pm{color:var(--heggerty-tx)}.stat-list li.ufli .pip{background:var(--ufli-bar)}.stat-list li.ufli .pm{color:var(--ufli-tx)}.stat-list li.nbsg .pip{background:var(--nbsg-bar)}.stat-list li.nbsg .pm{color:var(--nbsg-tx)}.stat-list li.arc .pip{background:var(--arc-bar)}.stat-list li.arc .pm{color:var(--arc-tx)}
+
+/* ── filter chips ─────────────────────────────────────────── */
+.bandstrip{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
+.bs{display:inline-flex;align-items:baseline;gap:7px;padding:5px 11px;border-radius:2px;
+  background:var(--bt);color:#fff;font-family:var(--mono);font-size:11.5px}
+.bs i{font-style:normal;font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:-.005em}
+.bs em{font-style:normal;opacity:.62;font-size:10px}
+.bs .seg{white-space:nowrap}
+.bs .seg.sg{border-bottom:1.5px dashed rgba(255,255,255,.6);padding-bottom:1px}
+.filters{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:14px}
+.filters .fl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mute);margin-right:4px}
+.chip{font-family:var(--body);font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:7px;
+  padding:5px 11px;border:1px solid var(--rule);background:var(--card);border-radius:999px;
+  cursor:pointer;color:var(--ink);transition:background .13s,border-color .13s,transform .13s}
+.chip .dot{width:9px;height:9px;border-radius:2px;flex:none}
+.chip-sub{color:var(--mute);font-size:11px}
+.chip:hover{border-color:var(--ink);transform:translateY(-1px)}
+.chip:focus-visible{outline:2px solid var(--nav);outline-offset:2px}
+.chip.collab .dot{background:var(--collab-bar)}.chip.collab[aria-pressed="true"]{background:var(--collab-bg);border-color:var(--collab-bar);color:var(--collab-tx);font-weight:600}.chip.routine .dot{background:var(--routine-bar)}.chip.routine[aria-pressed="true"]{background:var(--routine-bg);border-color:var(--routine-bar);color:var(--routine-tx);font-weight:600}.chip.transition .dot{background:var(--transition-bar)}.chip.transition[aria-pressed="true"]{background:var(--transition-bg);border-color:var(--transition-bar);color:var(--transition-tx);font-weight:600}.chip.fluidez .dot{background:var(--fluidez-bar)}.chip.fluidez[aria-pressed="true"]{background:var(--fluidez-bg);border-color:var(--fluidez-bar);color:var(--fluidez-tx);font-weight:600}.chip.launch .dot{background:var(--launch-bar)}.chip.launch[aria-pressed="true"]{background:var(--launch-bg);border-color:var(--launch-bar);color:var(--launch-tx);font-weight:600}.chip.learn .dot{background:var(--learn-bar)}.chip.learn[aria-pressed="true"]{background:var(--learn-bg);border-color:var(--learn-bar);color:var(--learn-tx);font-weight:600}.chip.land .dot{background:var(--land-bar)}.chip.land[aria-pressed="true"]{background:var(--land-bg);border-color:var(--land-bar);color:var(--land-tx);font-weight:600}.chip.estudio .dot{background:var(--estudio-bar)}.chip.estudio[aria-pressed="true"]{background:var(--estudio-bg);border-color:var(--estudio-bar);color:var(--estudio-tx);font-weight:600}.chip.heggerty .dot{background:var(--heggerty-bar)}.chip.heggerty[aria-pressed="true"]{background:var(--heggerty-bg);border-color:var(--heggerty-bar);color:var(--heggerty-tx);font-weight:600}.chip.ufli .dot{background:var(--ufli-bar)}.chip.ufli[aria-pressed="true"]{background:var(--ufli-bg);border-color:var(--ufli-bar);color:var(--ufli-tx);font-weight:600}.chip.nbsg .dot{background:var(--nbsg-bar)}.chip.nbsg[aria-pressed="true"]{background:var(--nbsg-bg);border-color:var(--nbsg-bar);color:var(--nbsg-tx);font-weight:600}.chip.arc .dot{background:var(--arc-bar)}.chip.arc[aria-pressed="true"]{background:var(--arc-bg);border-color:var(--arc-bar);color:var(--arc-tx);font-weight:600}
+
+/* ── grid ─────────────────────────────────────────────────── */
+.sheet{background:var(--card);border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.head{display:grid;grid-template-columns:var(--tw,84px) var(--rw,30px) repeat(3,1fr);background:var(--nav);color:#fff}
+.head .hcell{padding:11px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;
+  border-left:1px solid rgba(255,255,255,.12)}
+.head .htime{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:#9FB2CA;display:flex;align-items:center;justify-content:center}
+.hlabel{font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:-.01em}
+.hlong{font-size:11.5px;color:#B9C8DB;margin-top:1px}
+.hteam{font-size:11px;color:#8FA3BC;margin-top:4px}
+
+.body{display:grid;grid-template-columns:var(--tw,84px) var(--rw,30px) repeat(3,1fr);position:relative}
+.spine{position:relative;background:var(--spine-bg);border-right:1px solid var(--rule)}
+.tick{position:absolute;left:0;right:0;height:var(--row);border-top:1px solid #E2E7ED}
+.tick.hour{border-top-color:#C6D0DA}
+.tl{position:absolute;right:9px;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:10.5px;color:var(--spine-tx);white-space:nowrap}
+.tick.hour .tl{font-weight:600;color:#2E4258}
+.ap{font-size:8.5px;margin-left:2px;letter-spacing:.04em}
+
+.rail{position:relative;background:#F4F6F8;border-right:1px solid var(--rule)}
+.head .hrail{border-left:1px solid rgba(255,255,255,.12)}
+.band{position:absolute;left:3px;right:3px;display:flex;align-items:center;justify-content:center;
+  border-radius:2px;overflow:hidden;background:var(--bt)}
+.band.sg::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.22) 0 2px,
+    transparent 2px 5px)}
+.brot{position:relative;z-index:1;writing-mode:vertical-rl;transform:rotate(180deg);
+  display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;
+  letter-spacing:.13em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.bnum{font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:0}
+.link{position:absolute;left:50%;width:0;transform:translateX(-50%);
+  border-left:2px dotted var(--bt);opacity:.6}
+.b1{--bt:#1E3350} .b2{--bt:#2A5A4A} .b3{--bt:#5B3A63}
+.edge{position:absolute;left:calc(var(--tw,84px) + var(--rw,30px));right:0;
+  border-top:1.5px solid var(--bt);border-bottom:1.5px solid var(--bt);
+  pointer-events:none;z-index:4}
+.edge.sg{border-top-style:dashed;border-bottom-style:dashed}
+.col{position:relative;border-left:1px solid var(--rule)}
+.track{position:relative}
+.b{position:absolute;left:0;right:0;border-left:4px solid transparent;
+  border-top:1px solid rgba(0,0,0,.055);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;overflow:hidden;
+  padding:0 8px;transition:opacity .16s,filter .16s}
+.b.collab{background:var(--collab-bg);color:var(--collab-tx);border-left-color:var(--collab-bar);}
+.b.routine{background:var(--routine-bg);color:var(--routine-tx);border-left-color:var(--routine-bar);}
+.b.transition{background:var(--transition-bg);color:var(--transition-tx);border-left-color:var(--transition-bar);}
+.b.fluidez{background:var(--fluidez-bg);color:var(--fluidez-tx);border-left-color:var(--fluidez-bar);}
+.b.launch{background:var(--launch-bg);color:var(--launch-tx);border-left-color:var(--launch-bar);}
+.b.learn{background:var(--learn-bg);color:var(--learn-tx);border-left-color:var(--learn-bar);}
+.b.land{background:var(--land-bg);color:var(--land-tx);border-left-color:var(--land-bar);}
+.b.estudio{background:var(--estudio-bg);color:var(--estudio-tx);border-left-color:var(--estudio-bar);}
+.b.heggerty{background:var(--heggerty-bg);color:var(--heggerty-tx);border-left-color:var(--heggerty-bar);}
+.b.ufli{background:var(--ufli-bg);color:var(--ufli-tx);border-left-color:var(--ufli-bar);}
+.b.nbsg{background:var(--nbsg-bg);color:var(--nbsg-tx);border-left-color:var(--nbsg-bar);}
+.b.arc{background:var(--arc-bg);color:var(--arc-tx);border-left-color:var(--arc-bar);}
+.b.transition{border-left-width:1px;border-left-color:#D6D6D6}
+.t-name{font-weight:700;letter-spacing:-.005em;line-height:1.15}
+.t-meta{font-family:var(--mono);font-size:10.5px;opacity:.82;line-height:1.3;margin-top:2px}
+.t-meta i{font-style:normal;opacity:.5;margin:0 2px}
+.t-tiny{font-size:9.5px;font-style:italic;color:#9AA0A6;letter-spacing:.02em}
+.s-big .t-name{font-size:14px}
+.s-mid .t-name{font-size:12px}
+.s-mid .t-meta{font-size:10px;margin-top:0}
+.s-tiny{flex-direction:row;gap:7px}
+.s-tiny .t-name{font-size:10.5px}
+.s-tiny .t-meta{font-size:9.5px;margin-top:0}
+
+/* now line */
+.now{position:absolute;left:0;right:0;height:0;border-top:2px solid #C0392B;z-index:6;pointer-events:none;display:none}
+.now::before{content:"NOW";position:absolute;left:0;top:-8px;background:#C0392B;color:#fff;
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;padding:2px 5px;border-radius:2px}
+.now.on{display:block}
+
+/* filtering */
+.sheet.filtering .b{opacity:.16;filter:saturate(.25)}
+.sheet.filtering .b.match{opacity:1;filter:none;box-shadow:inset 0 0 0 1.5px currentColor}
+
+/* ── notes ────────────────────────────────────────────────── */
+.swipe{display:none;font-size:11.5px;color:var(--mute);margin:0 0 7px;font-style:italic}
+.notes{margin-top:36px}
+.notes h2{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:-.01em;
+  margin:0 0 4px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.note{display:grid;grid-template-columns:220px 1fr;gap:20px;padding:12px 0;border-bottom:1px solid var(--hair)}
+.note dt{font-weight:600;font-size:13px}
+.note dd{margin:0;color:#43505E;font-size:13.5px}
+.src{margin-top:26px;font-size:12px;color:var(--mute)}
+
+@media (max-width:720px){
+  body{padding:18px 12px 44px}
+  .mast{gap:10px;padding-bottom:10px;margin-bottom:16px}
+  .kicker{font-size:9.5px;letter-spacing:.1em;margin-bottom:6px}
+  .sub{font-size:13px}
+  .clock{text-align:left;flex:1 0 100%;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:11px}
+  .clock b{display:inline;font-size:16px}
+  .clock br{display:none}
+  .stats{grid-template-columns:1fr;gap:6px;margin-bottom:16px}
+  .stat{padding:9px 11px 7px}
+  .stat-head{padding-bottom:7px;margin-bottom:6px}
+  .stat-total b{font-size:21px}
+  .stat-list{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+  .stat-list li{font-size:11.5px}
+  .bandstrip{gap:4px;margin-bottom:10px}
+  .bandstrip .fl{flex:1 0 100%;margin-bottom:2px}
+  .bs{padding:4px 8px;font-size:10.5px;gap:5px} .bs i{font-size:11px}
+  .filters{gap:5px;margin-bottom:10px}
+  .filters .fl{flex:1 0 100%;margin-bottom:2px}
+  .chip{padding:4px 9px;font-size:11.5px;gap:5px}
+  .chip-sub{display:none}
+  .scroller{overflow-x:auto;-webkit-overflow-scrolling:touch;
+    border:1px solid var(--rule);border-radius:3px}
+  .sheet{min-width:660px;border:0;border-radius:0;overflow:visible}
+  .head,.body{--tw:46px;--rw:22px}
+  .brot{font-size:8px;letter-spacing:.06em;gap:3px} .bnum{font-size:11px}
+  .band{left:2px;right:2px}
+  .head .hrail{font-size:0}
+  .head .htime,.spine{position:sticky;left:0;z-index:7}
+  .head .hrail,.rail{position:sticky;left:46px;z-index:7}
+  .head .hrail{background:var(--nav)}
+  .head .htime{background:var(--nav)}
+  .spine{box-shadow:1px 0 0 var(--rule)}
+  .hlong{display:none} .hteam{font-size:9.5px}
+  .hlabel{font-size:13px}
+  .tl{right:5px;font-size:9px} .ap{display:none}
+  .s-big .t-name{font-size:11.5px} .s-mid .t-name{font-size:10px}
+  .t-meta{font-size:9px} .s-tiny .t-name{font-size:9px}
+  .b{padding:0 4px}
+  .swipe{display:block}
+  .note{grid-template-columns:1fr;gap:3px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  body{background:#fff;padding:0;font-size:11px}
+  .filters,.clock,.now,.swipe,.stats{display:none!important}
+  .bandstrip{margin-bottom:8px;gap:4px;flex-wrap:nowrap}
+  .bandstrip .fl{display:none}
+  .bs{-webkit-print-color-adjust:exact;print-color-adjust:exact;
+    padding:3px 7px;font-size:8.5px;gap:5px}
+  .bs i{font-size:9.5px} .bs em{font-size:8px}
+  .mast h1{font-size:27px} .sub{font-size:11px}
+  .mast{padding-bottom:8px;margin-bottom:12px}
+  .scroller{overflow:visible;border:0}
+  .sheet{border-color:#CCC;min-width:0;zoom:.60}
+  .notes{page-break-before:always}
+  .b{opacity:1!important;filter:none!important}
+  a{text-decoration:none;color:inherit}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div>
+      <p class="kicker">Bancroft Elementary · Dual Language Immersion · 2026–27</p>
+      <h1>First Grade Master Schedule</h1>
+      <p class="sub">All three first-grade sections on one clock — read across any row to see what each is doing at the same moment.</p>
+    </div>
+    <div class="clock" id="clock">
+      <b id="clock-time">—</b>
+      <span id="clock-what">School day runs 8:00 AM – 3:15 PM</span><br>
+      <span class="state" id="clock-state">Outside school hours</span>
+    </div>
+  </header>
+
+  <section class="stats">
+<div class="stat"><div class="stat-head"><div class="stat-label">1st Math</div><div class="stat-total"><b>230</b><small>min core<br>instruction</small></div></div><ul class="stat-list"><li class="fluidez"><span class="pip"></span><span class="pn">Fluidez</span><span class="pm">15</span></li><li class="launch"><span class="pip"></span><span class="pn">Launch</span><span class="pm">20</span></li><li class="learn"><span class="pip"></span><span class="pn">Learn rotation</span><span class="pm">115</span></li><li class="land"><span class="pip"></span><span class="pn">Land</span><span class="pm">15</span></li><li class="nbsg"><span class="pip"></span><span class="pn">NBSG small group</span><span class="pm">65</span></li></ul></div>
+<div class="stat"><div class="stat-head"><div class="stat-label">1st SLA</div><div class="stat-total"><b>230</b><small>min core<br>instruction</small></div></div><ul class="stat-list"><li class="estudio"><span class="pip"></span><span class="pn">Estudio de Palabras</span><span class="pm">45</span></li><li class="nbsg"><span class="pip"></span><span class="pn">NBSG small group</span><span class="pm">65</span></li><li class="arc"><span class="pip"></span><span class="pn">ARC Close Reading</span><span class="pm">120</span></li></ul></div>
+<div class="stat"><div class="stat-head"><div class="stat-label">1st ELA</div><div class="stat-total"><b>230</b><small>min core<br>instruction</small></div></div><ul class="stat-list"><li class="heggerty"><span class="pip"></span><span class="pn">Heggerty</span><span class="pm">30</span></li><li class="ufli"><span class="pip"></span><span class="pn">UFLI</span><span class="pm">60</span></li><li class="nbsg"><span class="pip"></span><span class="pn">NBSG small group</span><span class="pm">35</span></li><li class="arc"><span class="pip"></span><span class="pn">ARC Close Reading</span><span class="pm">105</span></li></ul></div>
+  </section>
+
+  <div class="bandstrip">
+    <span class="fl">Academic blocks</span>
+<span class="bs b1"><i>Block 1</i><span class="seg">8:35–10:20</span><em>75 min</em></span><span class="bs b2"><i>Block 2</i><span class="seg">10:25–11:25</span> + <span class="seg sg">12:05–12:25</span><em>80 min</em></span><span class="bs b3"><i>Block 3</i><span class="seg sg">12:30–12:55</span> + <span class="seg">2:20–3:10</span><em>75 min</em></span>
+  </div>
+
+  <div class="filters">
+    <span class="fl">Highlight</span>
+<button class="chip fluidez" data-cat="fluidez" type="button"><span class="dot"></span>Fluidez<span class="chip-sub">Math fluency</span></button>
+<button class="chip launch" data-cat="launch" type="button"><span class="dot"></span>Launch<span class="chip-sub">Workshop — launch</span></button>
+<button class="chip learn" data-cat="learn" type="button"><span class="dot"></span>Learn rotation<span class="chip-sub">Workshop — learn</span></button>
+<button class="chip land" data-cat="land" type="button"><span class="dot"></span>Land<span class="chip-sub">Workshop — land</span></button>
+<button class="chip estudio" data-cat="estudio" type="button"><span class="dot"></span>Estudio de Palabras<span class="chip-sub">Spanish word study</span></button>
+<button class="chip heggerty" data-cat="heggerty" type="button"><span class="dot"></span>Heggerty<span class="chip-sub">Phonemic awareness</span></button>
+<button class="chip ufli" data-cat="ufli" type="button"><span class="dot"></span>UFLI<span class="chip-sub">Foundational phonics</span></button>
+<button class="chip nbsg" data-cat="nbsg" type="button"><span class="dot"></span>NBSG small group<span class="chip-sub">Needs-based small group</span></button>
+<button class="chip arc" data-cat="arc" type="button"><span class="dot"></span>ARC Close Reading<span class="chip-sub">American Reading Company</span></button>
+<button class="chip routine" data-cat="routine" type="button"><span class="dot"></span>Arrival &amp; Routines</button>
+<button class="chip collab" data-cat="collab" type="button"><span class="dot"></span>Morning Collaboration</button>
+<button class="chip transition" data-cat="transition" type="button"><span class="dot"></span>Transition</button>
+  </div>
+
+  <p class="swipe">Swipe the grid sideways to reach 1st ELA →</p>
+  <div class="scroller">
+  <div class="sheet" id="sheet">
+    <div class="head">
+      <div class="hcell htime">Time</div>
+      <div class="hcell hrail htime">Block</div>
+<div class="hcell" data-track="math"><span class="hlabel">1st Math</span><span class="hlong">Mathematics</span><span class="hteam">Ortiz (Venezuela)  ·  Colon (Cartagena)</span></div>
+<div class="hcell" data-track="sla"><span class="hlabel">1st SLA</span><span class="hlong">Spanish Language Arts</span><span class="hteam">E. Chapoñan (Colombia)  ·  J. Rivera (Managua)</span></div>
+<div class="hcell" data-track="ela"><span class="hlabel">1st ELA</span><span class="hlong">English Language Arts</span><span class="hteam">Hopkins (España)  ·  Alvarez (DR)</span></div>
+    </div>
+    <div class="body" style="height:1305px">
+      <div class="spine">
+<div class="tick hour" style="top:0px"><span class="tl">8:00<span class='ap'>AM</span></span></div>
+<div class="tick" style="top:45px"><span class="tl">8:15</span></div>
+<div class="tick" style="top:90px"><span class="tl">8:30</span></div>
+<div class="tick" style="top:135px"><span class="tl">8:45</span></div>
+<div class="tick hour" style="top:180px"><span class="tl">9:00<span class='ap'>AM</span></span></div>
+<div class="tick" style="top:225px"><span class="tl">9:15</span></div>
+<div class="tick" style="top:270px"><span class="tl">9:30</span></div>
+<div class="tick" style="top:315px"><span class="tl">9:45</span></div>
+<div class="tick hour" style="top:360px"><span class="tl">10:00<span class='ap'>AM</span></span></div>
+<div class="tick" style="top:405px"><span class="tl">10:15</span></div>
+<div class="tick" style="top:450px"><span class="tl">10:30</span></div>
+<div class="tick" style="top:495px"><span class="tl">10:45</span></div>
+<div class="tick hour" style="top:540px"><span class="tl">11:00<span class='ap'>AM</span></span></div>
+<div class="tick" style="top:585px"><span class="tl">11:15</span></div>
+<div class="tick" style="top:630px"><span class="tl">11:30</span></div>
+<div class="tick" style="top:675px"><span class="tl">11:45</span></div>
+<div class="tick hour" style="top:720px"><span class="tl">12:00<span class='ap'>PM</span></span></div>
+<div class="tick" style="top:765px"><span class="tl">12:15</span></div>
+<div class="tick" style="top:810px"><span class="tl">12:30</span></div>
+<div class="tick" style="top:855px"><span class="tl">12:45</span></div>
+<div class="tick hour" style="top:900px"><span class="tl">1:00<span class='ap'>PM</span></span></div>
+<div class="tick" style="top:945px"><span class="tl">1:15</span></div>
+<div class="tick" style="top:990px"><span class="tl">1:30</span></div>
+<div class="tick" style="top:1035px"><span class="tl">1:45</span></div>
+<div class="tick hour" style="top:1080px"><span class="tl">2:00<span class='ap'>PM</span></span></div>
+<div class="tick" style="top:1125px"><span class="tl">2:15</span></div>
+<div class="tick" style="top:1170px"><span class="tl">2:30</span></div>
+<div class="tick" style="top:1215px"><span class="tl">2:45</span></div>
+<div class="tick hour" style="top:1260px"><span class="tl">3:00<span class='ap'>PM</span></span></div>
+      </div>
+      <div class="rail">
+<div class="band b1" style="top:105px;height:315px" title="Block 1 · 8:35–10:20"><span class="brot"><span class="bname">Block</span><span class="bnum">1</span></span></div>
+<div class="band b2" style="top:435px;height:180px" title="Block 2 · 10:25–11:25"><span class="brot"><span class="bname">Block</span><span class="bnum">2</span></span></div>
+<div class="link b2" style="top:615px;height:120px"></div>
+<div class="band b2 sg" style="top:735px;height:60px" title="Block 2 · small group · 12:05–12:25"><span class="brot"><span class="bname">SG</span><span class="bnum">2</span></span></div>
+<div class="band b3 sg" style="top:810px;height:75px" title="Block 3 · small group · 12:30–12:55"><span class="brot"><span class="bname">SG</span><span class="bnum">3</span></span></div>
+<div class="link b3" style="top:885px;height:255px"></div>
+<div class="band b3" style="top:1140px;height:150px" title="Block 3 · 2:20–3:10"><span class="brot"><span class="bname">Block</span><span class="bnum">3</span></span></div>
+      </div>
+<div class="col" data-track="math">
+<div class="track" style="height:1305px">
+<div class="b collab s-big" data-cat="collab" data-start="480" data-end="515" style="top:0px;height:105px" title="Morning Collaboration · 8:00–8:35 · 35 min"><span class="t-name">Morning Collaboration</span><span class="t-meta">Tuesday LEAP 8:10–9:10</span></div>
+<div class="b routine s-mid" data-cat="routine" data-start="515" data-end="530" style="top:105px;height:45px" title="Breakfast · 8:35–8:50 · 15 min"><span class="t-name">Breakfast</span><span class="t-meta">8:35–8:50 <i>&middot;</i> 15 min</span></div>
+<div class="b routine s-mid" data-cat="routine" data-start="530" data-end="545" style="top:150px;height:45px" title="Strong Start · 8:50–9:05 · 15 min"><span class="t-name">Strong Start</span><span class="t-meta">8:50–9:05 <i>&middot;</i> 15 min</span></div>
+<div class="b fluidez s-tiny" data-cat="fluidez" data-start="545" data-end="550" style="top:195px;height:15px" title="Fluidez · 9:05–9:10 · 5 min · Math fluency"><span class="t-name">Fluidez</span><span class="t-meta">9:05–9:10</span></div>
+<div class="b launch s-tiny" data-cat="launch" data-start="550" data-end="555" style="top:210px;height:15px" title="Launch · 9:10–9:15 · 5 min · Workshop — launch"><span class="t-name">Launch</span><span class="t-meta">9:10–9:15</span></div>
+<div class="b learn s-big" data-cat="learn" data-start="555" data-end="575" style="top:225px;height:60px" title="Learn Rotation 1 · 9:15–9:35 · 20 min · Workshop — learn"><span class="t-name">Learn Rotation 1</span><span class="t-meta">9:15–9:35 <i>&middot;</i> 20 min</span></div>
+<div class="b learn s-big" data-cat="learn" data-start="575" data-end="595" style="top:285px;height:60px" title="Learn Rotation 2 · 9:35–9:55 · 20 min · Workshop — learn"><span class="t-name">Learn Rotation 2</span><span class="t-meta">9:35–9:55 <i>&middot;</i> 20 min</span></div>
+<div class="b land s-tiny" data-cat="land" data-start="595" data-end="600" style="top:345px;height:15px" title="Land · 9:55–10:00 · 5 min · Workshop — land"><span class="t-name">Land</span><span class="t-meta">9:55–10:00</span></div>
+<div class="b nbsg s-big" data-cat="nbsg" data-start="600" data-end="620" style="top:360px;height:60px" title="NBSG · 10:00–10:20 · 20 min · Needs-based small group"><span class="t-name">NBSG</span><span class="t-meta">10:00–10:20 <i>&middot;</i> 20 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="620" data-end="625" style="top:420px;height:15px" title="Transition · 10:20–10:25 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b fluidez s-tiny" data-cat="fluidez" data-start="625" data-end="630" style="top:435px;height:15px" title="Fluidez · 10:25–10:30 · 5 min · Math fluency"><span class="t-name">Fluidez</span><span class="t-meta">10:25–10:30</span></div>
+<div class="b launch s-mid" data-cat="launch" data-start="630" data-end="640" style="top:450px;height:30px" title="Launch · 10:30–10:40 · 10 min · Workshop — launch"><span class="t-name">Launch</span><span class="t-meta">10:30–10:40 <i>&middot;</i> 10 min</span></div>
+<div class="b learn s-big" data-cat="learn" data-start="640" data-end="660" style="top:480px;height:60px" title="Learn Rotation 1 · 10:40–11:00 · 20 min · Workshop — learn"><span class="t-name">Learn Rotation 1</span><span class="t-meta">10:40–11:00 <i>&middot;</i> 20 min</span></div>
+<div class="b learn s-big" data-cat="learn" data-start="660" data-end="680" style="top:540px;height:60px" title="Learn Rotation 2 · 11:00–11:20 · 20 min · Workshop — learn"><span class="t-name">Learn Rotation 2</span><span class="t-meta">11:00–11:20 <i>&middot;</i> 20 min</span></div>
+<div class="b land s-tiny" data-cat="land" data-start="680" data-end="685" style="top:600px;height:15px" title="Land · 11:20–11:25 · 5 min · Workshop — land"><span class="t-name">Land</span><span class="t-meta">11:20–11:25</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="685" data-end="690" style="top:615px;height:15px" title="Transition · 11:25–11:30 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b routine s-big" data-cat="routine" data-start="690" data-end="720" style="top:630px;height:90px" title="Lunch · 11:30–12:00 · 30 min"><span class="t-name">Lunch</span><span class="t-meta">11:30–12:00 <i>&middot;</i> 30 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="720" data-end="725" style="top:720px;height:15px" title="Transition · 12:00–12:05 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b nbsg s-big" data-cat="nbsg" data-start="725" data-end="745" style="top:735px;height:60px" title="NBSG · 12:05–12:25 · 20 min · Needs-based small group"><span class="t-name">NBSG</span><span class="t-meta">12:05–12:25 <i>&middot;</i> 20 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="745" data-end="750" style="top:795px;height:15px" title="Transition · 12:25–12:30 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b nbsg s-big" data-cat="nbsg" data-start="750" data-end="775" style="top:810px;height:75px" title="NBSG · 12:30–12:55 · 25 min · Needs-based small group"><span class="t-name">NBSG</span><span class="t-meta">12:30–12:55 <i>&middot;</i> 25 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="775" data-end="780" style="top:885px;height:15px" title="Transition · 12:55–1:00 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b routine s-big" data-cat="routine" data-start="780" data-end="810" style="top:900px;height:90px" title="Recess · 1:00–1:30 · 30 min"><span class="t-name">Recess</span><span class="t-meta">1:00–1:30 <i>&middot;</i> 30 min</span></div>
+<div class="b routine s-big" data-cat="routine" data-start="810" data-end="855" style="top:990px;height:135px" title="Specials · 1:30–2:15 · 45 min"><span class="t-name">Specials</span><span class="t-meta">1:30–2:15 <i>&middot;</i> 45 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="855" data-end="860" style="top:1125px;height:15px" title="Transition · 2:15–2:20 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b fluidez s-tiny" data-cat="fluidez" data-start="860" data-end="865" style="top:1140px;height:15px" title="Fluidez · 2:20–2:25 · 5 min · Math fluency"><span class="t-name">Fluidez</span><span class="t-meta">2:20–2:25</span></div>
+<div class="b launch s-tiny" data-cat="launch" data-start="865" data-end="870" style="top:1155px;height:15px" title="Launch · 2:25–2:30 · 5 min · Workshop — launch"><span class="t-name">Launch</span><span class="t-meta">2:25–2:30</span></div>
+<div class="b learn s-big" data-cat="learn" data-start="870" data-end="890" style="top:1170px;height:60px" title="Learn Rotation 1 · 2:30–2:50 · 20 min · Workshop — learn"><span class="t-name">Learn Rotation 1</span><span class="t-meta">2:30–2:50 <i>&middot;</i> 20 min</span></div>
+<div class="b learn s-mid" data-cat="learn" data-start="890" data-end="905" style="top:1230px;height:45px" title="Learn Rotation 2 · 2:50–3:05 · 15 min · Workshop — learn"><span class="t-name">Learn Rotation 2</span><span class="t-meta">2:50–3:05 <i>&middot;</i> 15 min</span></div>
+<div class="b land s-tiny" data-cat="land" data-start="905" data-end="910" style="top:1275px;height:15px" title="Land · 3:05–3:10 · 5 min · Workshop — land"><span class="t-name">Land</span><span class="t-meta">3:05–3:10</span></div>
+<div class="b routine s-tiny" data-cat="routine" data-start="910" data-end="915" style="top:1290px;height:15px" title="Pack Up · 3:10–3:15 · 5 min"><span class="t-name">Pack Up</span><span class="t-meta">3:10–3:15</span></div>
+</div>
+</div>
+<div class="col" data-track="sla">
+<div class="track" style="height:1305px">
+<div class="b collab s-big" data-cat="collab" data-start="480" data-end="515" style="top:0px;height:105px" title="Morning Collaboration · 8:00–8:35 · 35 min"><span class="t-name">Morning Collaboration</span><span class="t-meta">Tuesday LEAP 8:10–9:10</span></div>
+<div class="b routine s-mid" data-cat="routine" data-start="515" data-end="530" style="top:105px;height:45px" title="Breakfast · 8:35–8:50 · 15 min"><span class="t-name">Breakfast</span><span class="t-meta">8:35–8:50 <i>&middot;</i> 15 min</span></div>
+<div class="b routine s-mid" data-cat="routine" data-start="530" data-end="545" style="top:150px;height:45px" title="Strong Start · 8:50–9:05 · 15 min"><span class="t-name">Strong Start</span><span class="t-meta">8:50–9:05 <i>&middot;</i> 15 min</span></div>
+<div class="b estudio s-mid" data-cat="estudio" data-start="545" data-end="560" style="top:195px;height:45px" title="Estudio de Palabras · 9:05–9:20 · 15 min · Spanish word study"><span class="t-name">Estudio de Palabras</span><span class="t-meta">9:05–9:20 <i>&middot;</i> 15 min</span></div>
+<div class="b nbsg s-big" data-cat="nbsg" data-start="560" data-end="580" style="top:240px;height:60px" title="NBSG · 9:20–9:40 · 20 min · Needs-based small group"><span class="t-name">NBSG</span><span class="t-meta">9:20–9:40 <i>&middot;</i> 20 min</span></div>
+<div class="b arc s-big" data-cat="arc" data-start="580" data-end="620" style="top:300px;height:120px" title="ARC Close Reading · 9:40–10:20 · 40 min · American Reading Company"><span class="t-name">ARC Close Reading</span><span class="t-meta">9:40–10:20 <i>&middot;</i> 40 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="620" data-end="625" style="top:420px;height:15px" title="Transition · 10:20–10:25 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b estudio s-mid" data-cat="estudio" data-start="625" data-end="640" style="top:435px;height:45px" title="Estudio de Palabras · 10:25–10:40 · 15 min · Spanish word study"><span class="t-name">Estudio de Palabras</span><span class="t-meta">10:25–10:40 <i>&middot;</i> 15 min</span></div>
+<div class="b arc s-big" data-cat="arc" data-start="640" data-end="685" style="top:480px;height:135px" title="ARC Close Reading · 10:40–11:25 · 45 min · American Reading Company"><span class="t-name">ARC Close Reading</span><span class="t-meta">10:40–11:25 <i>&middot;</i> 45 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="685" data-end="690" style="top:615px;height:15px" title="Transition · 11:25–11:30 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b routine s-big" data-cat="routine" data-start="690" data-end="720" style="top:630px;height:90px" title="Lunch · 11:30–12:00 · 30 min"><span class="t-name">Lunch</span><span class="t-meta">11:30–12:00 <i>&middot;</i> 30 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="720" data-end="725" style="top:720px;height:15px" title="Transition · 12:00–12:05 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b nbsg s-big" data-cat="nbsg" data-start="725" data-end="745" style="top:735px;height:60px" title="NBSG · 12:05–12:25 · 20 min · Needs-based small group"><span class="t-name">NBSG</span><span class="t-meta">12:05–12:25 <i>&middot;</i> 20 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="745" data-end="750" style="top:795px;height:15px" title="Transition · 12:25–12:30 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b nbsg s-big" data-cat="nbsg" data-start="750" data-end="775" style="top:810px;height:75px" title="NBSG · 12:30–12:55 · 25 min · Needs-based small group"><span class="t-name">NBSG</span><span class="t-meta">12:30–12:55 <i>&middot;</i> 25 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="775" data-end="780" style="top:885px;height:15px" title="Transition · 12:55–1:00 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b routine s-big" data-cat="routine" data-start="780" data-end="810" style="top:900px;height:90px" title="Recess · 1:00–1:30 · 30 min"><span class="t-name">Recess</span><span class="t-meta">1:00–1:30 <i>&middot;</i> 30 min</span></div>
+<div class="b routine s-big" data-cat="routine" data-start="810" data-end="855" style="top:990px;height:135px" title="Specials · 1:30–2:15 · 45 min"><span class="t-name">Specials</span><span class="t-meta">1:30–2:15 <i>&middot;</i> 45 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="855" data-end="860" style="top:1125px;height:15px" title="Transition · 2:15–2:20 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b estudio s-mid" data-cat="estudio" data-start="860" data-end="875" style="top:1140px;height:45px" title="Estudio de Palabras · 2:20–2:35 · 15 min · Spanish word study"><span class="t-name">Estudio de Palabras</span><span class="t-meta">2:20–2:35 <i>&middot;</i> 15 min</span></div>
+<div class="b arc s-big" data-cat="arc" data-start="875" data-end="910" style="top:1185px;height:105px" title="ARC Close Reading · 2:35–3:10 · 35 min · American Reading Company"><span class="t-name">ARC Close Reading</span><span class="t-meta">2:35–3:10 <i>&middot;</i> 35 min</span></div>
+<div class="b routine s-tiny" data-cat="routine" data-start="910" data-end="915" style="top:1290px;height:15px" title="Pack Up · 3:10–3:15 · 5 min"><span class="t-name">Pack Up</span><span class="t-meta">3:10–3:15</span></div>
+</div>
+</div>
+<div class="col" data-track="ela">
+<div class="track" style="height:1305px">
+<div class="b collab s-big" data-cat="collab" data-start="480" data-end="515" style="top:0px;height:105px" title="Morning Collaboration · 8:00–8:35 · 35 min"><span class="t-name">Morning Collaboration</span><span class="t-meta">Tuesday LEAP 8:10–9:10</span></div>
+<div class="b routine s-mid" data-cat="routine" data-start="515" data-end="530" style="top:105px;height:45px" title="Breakfast · 8:35–8:50 · 15 min"><span class="t-name">Breakfast</span><span class="t-meta">8:35–8:50 <i>&middot;</i> 15 min</span></div>
+<div class="b routine s-mid" data-cat="routine" data-start="530" data-end="545" style="top:150px;height:45px" title="Strong Start · 8:50–9:05 · 15 min"><span class="t-name">Strong Start</span><span class="t-meta">8:50–9:05 <i>&middot;</i> 15 min</span></div>
+<div class="b heggerty s-mid" data-cat="heggerty" data-start="545" data-end="555" style="top:195px;height:30px" title="Heggerty · 9:05–9:15 · 10 min · Phonemic awareness"><span class="t-name">Heggerty</span><span class="t-meta">9:05–9:15 <i>&middot;</i> 10 min</span></div>
+<div class="b ufli s-big" data-cat="ufli" data-start="555" data-end="575" style="top:225px;height:60px" title="UFLI · 9:15–9:35 · 20 min · Foundational phonics"><span class="t-name">UFLI</span><span class="t-meta">9:15–9:35 <i>&middot;</i> 20 min</span></div>
+<div class="b nbsg s-mid" data-cat="nbsg" data-start="575" data-end="585" style="top:285px;height:30px" title="NBSG · 9:35–9:45 · 10 min · Needs-based small group"><span class="t-name">NBSG</span><span class="t-meta">9:35–9:45 <i>&middot;</i> 10 min</span></div>
+<div class="b arc s-big" data-cat="arc" data-start="585" data-end="620" style="top:315px;height:105px" title="ARC Close Reading · 9:45–10:20 · 35 min · American Reading Company"><span class="t-name">ARC Close Reading</span><span class="t-meta">9:45–10:20 <i>&middot;</i> 35 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="620" data-end="625" style="top:420px;height:15px" title="Transition · 10:20–10:25 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b arc s-big" data-cat="arc" data-start="625" data-end="665" style="top:435px;height:120px" title="ARC Close Reading · 10:25–11:05 · 40 min · American Reading Company"><span class="t-name">ARC Close Reading</span><span class="t-meta">10:25–11:05 <i>&middot;</i> 40 min</span></div>
+<div class="b ufli s-big" data-cat="ufli" data-start="665" data-end="685" style="top:555px;height:60px" title="UFLI · 11:05–11:25 · 20 min · Foundational phonics"><span class="t-name">UFLI</span><span class="t-meta">11:05–11:25 <i>&middot;</i> 20 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="685" data-end="690" style="top:615px;height:15px" title="Transition · 11:25–11:30 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b routine s-big" data-cat="routine" data-start="690" data-end="720" style="top:630px;height:90px" title="Lunch · 11:30–12:00 · 30 min"><span class="t-name">Lunch</span><span class="t-meta">11:30–12:00 <i>&middot;</i> 30 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="720" data-end="725" style="top:720px;height:15px" title="Transition · 12:00–12:05 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b heggerty s-mid" data-cat="heggerty" data-start="725" data-end="735" style="top:735px;height:30px" title="Heggerty · 12:05–12:15 · 10 min · Phonemic awareness"><span class="t-name">Heggerty</span><span class="t-meta">12:05–12:15 <i>&middot;</i> 10 min</span></div>
+<div class="b nbsg s-mid" data-cat="nbsg" data-start="735" data-end="745" style="top:765px;height:30px" title="NBSG · 12:15–12:25 · 10 min · Needs-based small group"><span class="t-name">NBSG</span><span class="t-meta">12:15–12:25 <i>&middot;</i> 10 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="745" data-end="750" style="top:795px;height:15px" title="Transition · 12:25–12:30 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b heggerty s-mid" data-cat="heggerty" data-start="750" data-end="760" style="top:810px;height:30px" title="Heggerty · 12:30–12:40 · 10 min · Phonemic awareness"><span class="t-name">Heggerty</span><span class="t-meta">12:30–12:40 <i>&middot;</i> 10 min</span></div>
+<div class="b nbsg s-mid" data-cat="nbsg" data-start="760" data-end="775" style="top:840px;height:45px" title="NBSG · 12:40–12:55 · 15 min · Needs-based small group"><span class="t-name">NBSG</span><span class="t-meta">12:40–12:55 <i>&middot;</i> 15 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="775" data-end="780" style="top:885px;height:15px" title="Transition · 12:55–1:00 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b routine s-big" data-cat="routine" data-start="780" data-end="810" style="top:900px;height:90px" title="Recess · 1:00–1:30 · 30 min"><span class="t-name">Recess</span><span class="t-meta">1:00–1:30 <i>&middot;</i> 30 min</span></div>
+<div class="b routine s-big" data-cat="routine" data-start="810" data-end="855" style="top:990px;height:135px" title="Specials · 1:30–2:15 · 45 min"><span class="t-name">Specials</span><span class="t-meta">1:30–2:15 <i>&middot;</i> 45 min</span></div>
+<div class="b transition s-tiny" data-cat="transition" data-start="855" data-end="860" style="top:1125px;height:15px" title="Transition · 2:15–2:20 · 5 min"><span class="t-tiny">Transition</span></div>
+<div class="b ufli s-big" data-cat="ufli" data-start="860" data-end="880" style="top:1140px;height:60px" title="UFLI · 2:20–2:40 · 20 min · Foundational phonics"><span class="t-name">UFLI</span><span class="t-meta">2:20–2:40 <i>&middot;</i> 20 min</span></div>
+<div class="b arc s-big" data-cat="arc" data-start="880" data-end="910" style="top:1200px;height:90px" title="ARC Close Reading · 2:40–3:10 · 30 min · American Reading Company"><span class="t-name">ARC Close Reading</span><span class="t-meta">2:40–3:10 <i>&middot;</i> 30 min</span></div>
+<div class="b routine s-tiny" data-cat="routine" data-start="910" data-end="915" style="top:1290px;height:15px" title="Pack Up · 3:10–3:15 · 5 min"><span class="t-name">Pack Up</span><span class="t-meta">3:10–3:15</span></div>
+</div>
+</div>
+<div class="edge b1" style="top:105px;height:315px"></div>
+<div class="edge b2" style="top:435px;height:180px"></div>
+<div class="edge b2 sg" style="top:735px;height:60px"></div>
+<div class="edge b3 sg" style="top:810px;height:75px"></div>
+<div class="edge b3" style="top:1140px;height:150px"></div>
+      <div class="now" id="nowline"></div>
+    </div>
+  </div>
+  </div>
+
+  <section class="notes">
+    <h2>Notes on the source schedule</h2>
+<div class="note"><dt>Academic blocks</dt><dd>Three blocks per section, each holding exactly one small-group (NBSG) session. Block 1 runs 8:35–10:20 with its small group inside it. Blocks 2 and 3 are non-contiguous — their small groups sit in the midday window, so Block 2 is 10:25–11:25 plus 12:05–12:25, and Block 3 is 12:30–12:55 plus 2:20–3:10.</dd></div>
+<div class="note"><dt>Block minutes</dt><dd>Block 1 carries 75 instructional minutes, Block 2 carries 80, and Block 3 carries 75 — 230 in total, identical in all three sections. The dashed hatching on the rail marks each block’s small-group segment; the dotted line bridges a block’s two halves.</dd></div>
+<div class="note"><dt>Block 1 end time</dt><dd>Drawn to 10:20 rather than 10:15 so the band closes where ARC and Math NBSG actually end. At 10:15 the boundary would cut through the middle of a block in all three sections.</dd></div>
+<div class="note"><dt>Transitions</dt><dd>All six transitions fall between blocks or between a block’s two segments. None interrupts instruction inside a segment.</dd></div>
+<div class="note"><dt>Grid</dt><dd>The source workbook runs on a 5-minute grid from 8:00 AM to 3:15 PM. That grid is preserved here, so every block’s height is true to how long it actually runs.</dd></div>
+<div class="note"><dt>Instructional minutes</dt><dd>All three sections total exactly 230 minutes of core instruction. Adding Strong Start (15 min) gives 245 minutes — the “4 hr 5 m” noted in the source file.</dd></div>
+<div class="note"><dt>1st ELA · ARC 9:45–10:20</dt><dd>The label reads “45 min,” but the times given are 35 minutes. Shown here as 35 min — worth confirming which was intended.</dd></div>
+<div class="note"><dt>1st ELA · NBSG 12:15–12:25</dt><dd>The label reads “15 min,” but the times given are 10 minutes. Shown here as 10 min — worth confirming which was intended.</dd></div>
+<div class="note"><dt>1st ELA · afternoon</dt><dd>UFLI and ARC carry durations but no clock times. Their merged cells place UFLI at 2:20–2:40 and ARC at 2:40–3:10.</dd></div>
+<div class="note"><dt>1st Math · afternoon</dt><dd>Learn Rotation 2 runs 15 minutes in the afternoon block, against 20 minutes in both morning blocks.</dd></div>
+<div class="note"><dt>Morning Collaboration</dt><dd>The Tuesday LEAP window of 8:10–9:10 overlaps Breakfast and Strong Start, exactly as written in the source.</dd></div>
+    <p class="src">Rebuilt from <span style="font-family:var(--mono)">SY26-27_1st_Grade_Schedule.xlsx</span>. Block heights are drawn to scale on the original 5-minute grid.</p>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  var META = {"gridStart": 480, "gridEnd": 915, "row": 15, "step": 5};
+  var D_LABELS = ["1st Math", "1st SLA", "1st ELA"];
+
+  // ── highlight filter ───────────────────────────────────────
+  var sheet = document.getElementById('sheet');
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+  var blocks = Array.prototype.slice.call(document.querySelectorAll('.b'));
+  var active = null;
+
+  function apply(){
+    if(!active){
+      sheet.classList.remove('filtering');
+      blocks.forEach(function(b){ b.classList.remove('match'); });
+    } else {
+      sheet.classList.add('filtering');
+      blocks.forEach(function(b){
+        b.classList.toggle('match', b.getAttribute('data-cat') === active);
+      });
+    }
+    chips.forEach(function(c){
+      c.setAttribute('aria-pressed', String(c.getAttribute('data-cat') === active));
+    });
+  }
+
+  chips.forEach(function(c){
+    c.setAttribute('aria-pressed','false');
+    c.addEventListener('click', function(){
+      var cat = c.getAttribute('data-cat');
+      active = (active === cat) ? null : cat;
+      apply();
+    });
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && active){ active = null; apply(); }
+  });
+
+  // ── live "now" marker ──────────────────────────────────────
+  var nowline = document.getElementById('nowline');
+  var ctime = document.getElementById('clock-time');
+  var cwhat = document.getElementById('clock-what');
+  var cstate = document.getElementById('clock-state');
+
+  function fmt(m){
+    var h = Math.floor(m/60), mm = m%60;
+    var ap = h < 12 ? 'AM' : 'PM';
+    var hh = h % 12; if(hh === 0) hh = 12;
+    return hh + ':' + (mm < 10 ? '0' : '') + mm + ' ' + ap;
+  }
+
+  function tick(){
+    var d = new Date();
+    var mins = d.getHours()*60 + d.getMinutes();
+    var weekday = d.getDay() >= 1 && d.getDay() <= 5;
+    ctime.textContent = fmt(mins);
+
+    var inDay = weekday && mins >= META.gridStart && mins < META.gridEnd;
+    nowline.classList.toggle('on', inDay);
+
+    if(inDay){
+      nowline.style.top = ((mins - META.gridStart) / META.step * META.row) + 'px';
+      var here = [];
+      blocks.forEach(function(b){
+        var s = +b.getAttribute('data-start'), e = +b.getAttribute('data-end');
+        if(mins >= s && mins < e){
+          var n = b.querySelector('.t-name') || b.querySelector('.t-tiny');
+          if(n) here.push(n.textContent);
+        }
+      });
+      var uniq = here.filter(function(v,i){ return here.indexOf(v) === i; });
+      cwhat.textContent = uniq.length > 1
+        ? here.map(function(v,i){ return D_LABELS[i] + ': ' + v; }).join('   \u00b7   ')
+        : (here[0] ? 'All three rooms: ' + here[0] : '');
+      cstate.textContent = 'In session';
+      cstate.classList.add('live');
+    } else {
+      cwhat.textContent = 'School day runs 8:00 AM \u2013 3:15 PM';
+      cstate.textContent = weekday ? 'Outside school hours' : 'Weekend';
+      cstate.classList.remove('live');
+    }
+  }
+  tick();
+  setInterval(tick, 20000);
+})();
+</script>
+</body>
+</html>
