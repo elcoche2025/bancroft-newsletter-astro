@@ -2,6 +2,17 @@
 
 All notable changes to the Bancroft Newsletter Astro build. Newest first.
 
+## 2026-08-24
+
+### Added
+- **`/schedule`** — the SY 2026-27 First Grade Master Schedule, served at `bancroft1.org/schedule`.
+  A standalone self-contained HTML file dropped into `public/schedule/index.html`; Astro copies
+  `public/` verbatim, so it is not a component and the build does not touch it. **Deliberately
+  unlisted:** nothing on the site links to it, the page itself contains zero `<a>` tags, and it
+  carries `<meta name="robots" content="noindex, nofollow">`. Public URL, no password.
+  Source of truth is `Bancroft ES/2026-2027/Schedules/SY26-27_1st_Grade_Schedule.html` — the
+  committed copy is byte-identical apart from the added robots meta line.
+
 ## 2026-08-19
 
 ### Added
