@@ -1,16 +1,63 @@
 {
   "schoolName": "Bancroft ES",
-  "classrooms": ["Cartagena", "Colombia", "España", "DR", "Managua", "Venezuela"],
-
+  "classrooms": [
+    "Cartagena",
+    "Colombia",
+    "España",
+    "DR",
+    "Managua",
+    "Venezuela"
+  ],
   "rotations": {
-    "Cartagena":  { "A": "Music",   "B": "Science", "C": "PE",      "D": "PE",      "E": "Library", "F": "Art" },
-    "Colombia":   { "A": "Science", "B": "PE",      "C": "PE",      "D": "Library", "E": "Art",     "F": "Music" },
-    "España":     { "A": "PE",      "B": "PE",      "C": "Library", "D": "Art",     "E": "Music",   "F": "Science" },
-    "DR":         { "A": "Library", "B": "Art",     "C": "Music",   "D": "Science", "E": "PE",      "F": "PE" },
-    "Managua":    { "A": "PE",      "B": "Library", "C": "Art",     "D": "Music",   "E": "Science", "F": "PE" },
-    "Venezuela":  { "A": "Art",     "B": "Music",   "C": "Science", "D": "PE",      "E": "PE",      "F": "Library" }
+    "Cartagena": {
+      "A": "Music",
+      "B": "Science",
+      "C": "PE",
+      "D": "PE",
+      "E": "Library",
+      "F": "Art"
+    },
+    "Colombia": {
+      "A": "Science",
+      "B": "PE",
+      "C": "PE",
+      "D": "Library",
+      "E": "Art",
+      "F": "Music"
+    },
+    "España": {
+      "A": "PE",
+      "B": "PE",
+      "C": "Library",
+      "D": "Art",
+      "E": "Music",
+      "F": "Science"
+    },
+    "DR": {
+      "A": "Library",
+      "B": "Art",
+      "C": "Music",
+      "D": "Science",
+      "E": "PE",
+      "F": "PE"
+    },
+    "Managua": {
+      "A": "PE",
+      "B": "Library",
+      "C": "Art",
+      "D": "Music",
+      "E": "Science",
+      "F": "PE"
+    },
+    "Venezuela": {
+      "A": "Art",
+      "B": "Music",
+      "C": "Science",
+      "D": "PE",
+      "E": "PE",
+      "F": "Library"
+    }
   },
-
   "classroomFlags": {
     "Cartagena": "img:images/flags/cartagena.svg",
     "Colombia": "img:images/flags/colombia.svg",
@@ -19,7 +66,6 @@
     "Managua": "img:images/flags/managua.svg",
     "Venezuela": "img:images/flags/venezuela.svg"
   },
-
   "subjectIcons": {
     "Music": "🎵",
     "Science": "🔬",
@@ -27,7 +73,6 @@
     "Library": "📚",
     "Art": "🎨"
   },
-
   "subjectTranslations": {
     "Music": "Música",
     "Science": "Ciencias",
@@ -35,7 +80,6 @@
     "Library": "Biblioteca",
     "Art": "Arte"
   },
-
   "seasonLogos": {
     "default": "images/logos/default.png",
     "bancroft": "images/logos/default.png",
@@ -45,7 +89,6 @@
     "summer": "images/logos/summer.png",
     "new-year": "images/logos/new-year.png"
   },
-
   "quickLinks": [
     {
       "icon": "💬",
@@ -72,7 +115,6 @@
       "es": "Menú de Almuerzo"
     }
   ],
-
   "labels": {
     "en": {
       "title": "First Grade",
@@ -86,7 +128,13 @@
       "archiveHeading": "Past Newsletters",
       "weekOf": "Week of",
       "noSchool": "No School",
-      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
       "langToggle": "Español",
       "dashboardHeading": "School Year at a Glance",
       "weekXofY": "Week {x} of {y}",
@@ -104,7 +152,8 @@
       "mathDetailsTopic": "Topic",
       "mathDetailsLesson": "Lesson",
       "linkCopied": "Link copied!",
-      "mySpecialsHeading": "My Specials This Week"
+      "mySpecialsHeading": "My Specials This Week",
+      "selThemeHeading": "This Month's Strong Start Theme"
     },
     "es": {
       "title": "Primer Grado",
@@ -118,7 +167,13 @@
       "archiveHeading": "Boletines Anteriores",
       "weekOf": "Semana del",
       "noSchool": "No Hay Clases",
-      "days": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes"
+      ],
       "langToggle": "English",
       "dashboardHeading": "El Año Escolar de un Vistazo",
       "weekXofY": "Semana {x} de {y}",
@@ -136,7 +191,54 @@
       "mathDetailsTopic": "Tema",
       "mathDetailsLesson": "Lección",
       "linkCopied": "¡Enlace copiado!",
-      "mySpecialsHeading": "Especiales de Esta Semana"
+      "mySpecialsHeading": "Especiales de Esta Semana",
+      "selThemeHeading": "El Tema de Comienzo Fuerte de Este Mes"
+    }
+  },
+  "selThemes": {
+    "8": {
+      "en": "Everyone Has a Place at Bancroft",
+      "es": "Todos Tienen un Lugar en Bancroft"
+    },
+    "9": {
+      "en": "Everyone Has a Place at Bancroft",
+      "es": "Todos Tienen un Lugar en Bancroft"
+    },
+    "10": {
+      "en": "Respecting Differences",
+      "es": "Respetar las Diferencias"
+    },
+    "11": {
+      "en": "Gratitude and Community",
+      "es": "Gratitud y Comunidad"
+    },
+    "12": {
+      "en": "Acts of Kindness",
+      "es": "Actos de Bondad"
+    },
+    "1": {
+      "en": "New Year, Stronger Community",
+      "es": "Año Nuevo, Comunidad Más Fuerte"
+    },
+    "2": {
+      "en": "Empathy and Understanding",
+      "es": "Empatía y Comprensión"
+    },
+    "3": {
+      "en": "Student Voice Matters",
+      "es": "La Voz del Estudiante Importa"
+    },
+    "4": {
+      "en": "Teamwork and Responsibility",
+      "es": "Trabajo en Equipo y Responsabilidad"
+    },
+    "5": {
+      "en": "Celebrating Growth",
+      "es": "Celebrando el Crecimiento"
+    },
+    "6": {
+      "en": "Leaving a Positive Legacy",
+      "es": "Dejando un Legado Positivo"
     }
   }
 }

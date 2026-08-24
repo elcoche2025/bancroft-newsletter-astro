@@ -5,6 +5,13 @@ All notable changes to the Bancroft Newsletter Astro build. Newest first.
 ## 2026-08-24
 
 ### Added
+- **SEL / Strong Start monthly themes** (`config.selThemes`), bilingual EN/ES, transcribed from
+  the school's "SEL / Strong Start Monthly Themes" poster. Keyed by calendar month — August and
+  September share "Everyone Has a Place at Bancroft"; July has no theme. `selThemeFor(date, lang)`
+  in `src/lib/utils.ts` resolves an issue's theme from the issue's *own* date, so archived issues
+  keep the theme that was current when they were written. Heading string lives at
+  `config.labels.{en,es}.selThemeHeading`. **Data and helper only — not yet rendered in any theme**;
+  where it appears in the newsletter is still an open design decision.
 - **`/schedule/family` — family-facing per-class schedule (unlisted).** Six schedules, one per
   homeroom (Cartagena, Colombia, España, Venezuela, Managua, DR), showing each class's real day
   from the *student* perspective rather than the subject-room perspective. Built by combining the

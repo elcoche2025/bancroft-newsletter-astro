@@ -94,6 +94,19 @@ export function getSpecialForDay(classroom: string, letterDay: string): string {
   return rotations[classroom]?.[letterDay] || '';
 }
 
+/**
+ * The SEL / Strong Start theme for the month an issue falls in.
+ * Transcribed from the school's "SEL / Strong Start Monthly Themes" poster:
+ * August and September share a theme, and July has none (returns '').
+ * Derived from the issue's own date, so archived issues keep their own month's theme.
+ */
+export function selThemeFor(dateStr: string, lang: Lang): string {
+  const month = Number(dateStr.slice(5, 7));
+  const themes = config.selThemes as Record<string, { en: string; es: string }> | undefined;
+  const entry = themes?.[String(month)];
+  return entry ? entry[lang] : '';
+}
+
 // School year progress calculations
 export function getSchoolYearProgress(currentDate: string) {
   const calendar = calendarFor(currentDate);
