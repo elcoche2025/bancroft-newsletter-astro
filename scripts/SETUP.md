@@ -37,16 +37,19 @@ This script fetches weekly newsletter data from the Google Sheet and generates J
 node scripts/fetch-week.mjs --headers
 
 # Preview what data the script finds for a specific week
-node scripts/fetch-week.mjs 2026-03-23 --preview
+node scripts/fetch-week.mjs 2026-08-31 --preview
 
 # Generate a week (dry run first)
-node scripts/fetch-week.mjs 2026-03-23 --dry-run
+node scripts/fetch-week.mjs 2026-08-31 --dry-run
 
 # Generate for real
-node scripts/fetch-week.mjs 2026-03-23
+node scripts/fetch-week.mjs 2026-08-31
 # or
-npm run new-week -- 2026-03-23
+npm run new-week -- 2026-08-31
 ```
+
+Generating the JSON is only half of posting an issue — you still have to prepend
+the date to `src/data/weeks/weeks-index.json` and deploy. See `../README.md`.
 
 ## Column Mapping
 
@@ -56,6 +59,19 @@ Run `--headers` to see the current sheet headers and how they map.
 
 ## Notes
 
-- **Reminders** are not in the Google Sheet -- add them manually to the generated JSON
-- **ROARS names** are automatically converted to "First L." format
-- The `secrets/` directory is gitignored
+- **Reminders are not in the Google Sheet** — add them by hand to the generated
+  JSON. Since 2026-08-24 they no longer render as their own section: they merge
+  with the calendar's no-school dates into the dashboard's single "Coming Up"
+  list. Two consequences when you write one:
+  - **Don't restate a date the calendar already knows.** A reminder on a covered
+    date suppresses the calendar row, so writing "Memorial Day — no school"
+    replaces a row that was already correct and bilingual. Write reminders for
+    things the calendar cannot know: events, deadlines, what to bring.
+  - **A reminder dated before the issue never renders.** It is a *coming up*
+    list. Retrospective notes belong in `welcome`.
+- **ROARS names** are automatically converted to "First L." format.
+- **The sheet does not cover every field.** `reminders`, `askYourChild`,
+  `vocabulary`, `mathDetails` and `roarsClass` are hand-added. All of them are
+  optional — a week's JSON only requires `date`, `season`, `welcome` and
+  `specials`, and any section left out simply doesn't render.
+- The `secrets/` directory is gitignored.

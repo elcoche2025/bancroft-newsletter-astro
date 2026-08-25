@@ -2,9 +2,11 @@
 name: bancroft-grade-1-weekly
 description: >
   Warm bilingual classroom newsletter for a K–1 audience. A bright, paper-feeling
-  surface (cream not paper-white) sectioned into nine softly tinted color rooms —
-  one per topic (Welcome, Math, Literacy, Specials, ROARS, Reminders, Ask Your
-  Child, Vocabulary, Books). English and Spanish are co-equal first-class
+  surface (cream not paper-white) sectioned into eight softly tinted color rooms —
+  one per topic (Welcome, Math, Literacy, Specials, ROARS, Ask Your Child,
+  Vocabulary, Books). Dated items live in one merged "Coming Up" list in the
+  dashboard, which is why the red reminders tint survives as a badge channel
+  without a room of its own. English and Spanish are co-equal first-class
   languages, never a "translate" afterthought. Display type does the emotional
   work; body type stays geometric and calm. Print-friendly, mobile-accordion,
   with a quiet dashboard up top and a celebration of named students near the bottom.
@@ -27,10 +29,10 @@ colors:
     # Section tints — one per topic, used as bg + border + heading accent
     welcome: { bg: "#fef9ee", border: "#f0d68a", accent: "#d4a017" }   # warm gold
     math:    { bg: "#f0faf0", border: "#a8dbb8", accent: "#2d8a4e" }   # forest green
-    literacy:{ bg: "#eef4fd", border: "#93b8e8", accent: "#2563a8" }   # royal blue
-    specials:{ bg: "#f3f0fa", border: "#c4b5fd", accent: "#6d28d9" }   # violet
+    literacy: { bg: "#eef4fd", border: "#93b8e8", accent: "#2563a8" }   # royal blue
+    specials: { bg: "#f3f0fa", border: "#c4b5fd", accent: "#6d28d9" }   # violet
     roars:   { bg: "#fff5ed", border: "#fed7aa", accent: "#c2410c" }   # tiger orange
-    reminders:{bg: "#fef2f2", border: "#fecaca", accent: "#dc2626" }   # alert red
+    reminders: {bg: "#fef2f2", border: "#fecaca", accent: "#dc2626" }   # alert red
     ask:     { bg: "#ecfdf5", border: "#a7f3d0", accent: "#059669" }   # conversation green
     vocab:   { bg: "#f5f3ff", border: "#ddd6fe", accent: "#7c3aed" }   # word purple
     books:   { bg: "#fdf4ff", border: "#f0abfc", accent: "#a21caf" }   # bookshop fuchsia
@@ -44,10 +46,10 @@ colors:
     text-faint: "#64648b"
     welcome: { bg: "#1c1a12", border: "#4a3f14", accent: "#eab308" }
     math:    { bg: "#0f1a14", border: "#1a3a24", accent: "#4ade80" }
-    literacy:{ bg: "#0f1420", border: "#1a2a48", accent: "#60a5fa" }
-    specials:{ bg: "#1a1428", border: "#2a1a48", accent: "#a78bfa" }
+    literacy: { bg: "#0f1420", border: "#1a2a48", accent: "#60a5fa" }
+    specials: { bg: "#1a1428", border: "#2a1a48", accent: "#a78bfa" }
     roars:   { bg: "#1c140e", border: "#3a2414", accent: "#fb923c" }
-    reminders:{bg: "#1c1010", border: "#3a1818", accent: "#f87171" }
+    reminders: {bg: "#1c1010", border: "#3a1818", accent: "#f87171" }
     ask:     { bg: "#0f1a16", border: "#1a3a2a", accent: "#34d399" }
     vocab:   { bg: "#161028", border: "#2a1a48", accent: "#a78bfa" }
     books:   { bg: "#1c1020", border: "#3a1448", accent: "#e879f9" }
@@ -167,10 +169,12 @@ components:
       grid: "3-column cards, one per classroom that has a recipient"
       card: "country-flag chip on warm-orange pill + student name in Fraunces UPPERCASE"
       tone: "this is the page's emotional climax — name + celebration, no judgment"
-  - section-reminders:
-      tint: red
-      shape: "stack of cards, each with a red date-badge (month abbr + day number)"
-      content: "short bilingual reminder text per card, sorted chronologically"
+  # No reminders room since 2026-08-24 — the calendar's no-school dates and the
+  # week's own reminders merged into the dashboard's Coming Up list.
+  - dashboard-coming-up:
+      tint: red (badge only)
+      shape: "chronological rows: date/range, bilingual label, optional NO SCHOOL badge"
+      content: "calendar closures plus teacher-written events, one list, deduped by date"
   - section-ask:
       tint: emerald
       shape: "list of bubble-cards, each prefixed with a 💬 emoji"
@@ -223,7 +227,7 @@ parity** over decorative flourish.
 - **Warm paper, not white slab.** The page tone is `#fefcf8`, a soft cream. White
   appears only on cards floating *on* the cream — never as the page itself. This
   evokes "weekly classroom letter" rather than "SaaS dashboard."
-- **Topic = color = trust.** Each of the nine content sections has its own pale
+- **Topic = color = trust.** Each of the eight content sections has its own pale
   tinted background and a saturated accent for its heading. After two weeks of
   reading, families recognize "the green box = math" before they read the word.
   Never let topics share or blur their color identity.
@@ -241,8 +245,8 @@ parity** over decorative flourish.
 
 ## Palette intent
 
-Nine section tints, each a desaturated pastel paired with a saturated heading
-accent. Read together they form a **spectrum from warm to cool**:
+Eight section tints, each a desaturated pastel paired with a saturated heading
+accent (plus red, retained as the Coming Up badge channel). Read together they form a **spectrum from warm to cool**:
 
 | Section | Why this color |
 |---|---|
@@ -251,7 +255,7 @@ accent. Read together they form a **spectrum from warm to cool**:
 | Literacy | royal blue — depth, reading-into |
 | Specials | violet — variety, art-classroom-music swirl |
 | ROARS | tiger orange — the Bancroft Tigers mascot, celebration |
-| Reminders | red — quiet alert, dates that matter |
+| Coming Up (badge only) | red — quiet alert, dates that matter |
 | Ask | emerald — fresh conversation |
 | Vocabulary | purple — language as artifact |
 | Books | fuchsia — bookshop warmth |
@@ -280,7 +284,7 @@ should still feel appropriate to a school principal forwarding it to a parent.
   mobile. This width is the contract — it's roughly the width of a standard
   letter-size print page, intentionally narrow for phone reading without zoom.
 - **Vertical stack** of one chrome group (header + quick links + dashboard +
-  classroom selector + jump-to) followed by the nine content sections.
+  classroom selector + jump-to) followed by the eight content sections.
 - **Section reordering**: when a classroom is selected, the per-classroom
   Specials card jumps to position 0 (the top of the section stack), and the
   full-classroom Specials table moves to the bottom. Personalization without
@@ -288,6 +292,12 @@ should still feel appropriate to a school principal forwarding it to a parent.
   priority order.
 - **Desktop archive sidebar**: fixed left at ≥1100px viewport, scrolls past
   weeks. **Mobile archive**: collapsed `<details>` at page bottom.
+- **One theme, from SY 2026-27 on.** This document describes *Classic*, the only
+  theme a current issue renders. Three alternates — Today First (A), Newsstand
+  (B), Pocket (C) — exist in the codebase and still render on issues from
+  2025-26 and earlier, along with the theme picker. They are archive furniture,
+  not live surfaces: don't design new features against them, and don't assume a
+  change here propagates to them.
 
 ## Elevation
 
@@ -347,8 +357,11 @@ handle that gracefully).
   chip on a warm-orange pill (classroom identifier) and the student's name in
   large Fraunces UPPERCASE. This is the only place names appear at display
   size — that's intentional.
-- **Reminders**: stack of cards with a saturated red date-badge (small uppercase
-  month abbreviation over a large day number) and bilingual reminder text.
+- **Coming Up** (in the dashboard, not a section): one chronological list mixing
+  the calendar's closures with the week's own events. Calendar rows carry a red
+  `NO SCHOOL` badge; teacher-written rows carry none, align to the top because
+  they run long, and may contain a link. When both cover the same date the
+  teacher's wording wins and the calendar row is dropped.
 - **Ask Your Child**: bubble cards prefixed with a 💬 emoji. Looks like
   conversation prompts, not assignments.
 - **Vocabulary**: flip pills. 3D rotate on click. Grouped variant supports
@@ -376,8 +389,8 @@ Print **must work**. When a family prints this to read at the kitchen counter:
   position. The toggle controls *which is visible*, never *which is primary*.
 - **Don't use pure white as the page background.** The warm cream tone
   (`#fefcf8`) is the brand. White is only for cards floating on it.
-- **Don't introduce a tenth section color.** Nine is the ceiling. If a new topic
-  appears, fold it into an existing section family, don't add a tenth tint.
+- **Don't introduce a ninth section color.** Eight is the ceiling. If a new topic
+  appears, fold it into an existing section family, don't add a tint.
 - **Don't over-illustrate.** No mascots, no stock illustrations, no flourishes.
   Color + emoji + Fraunces = enough visual identity.
 - **Don't lose the per-section color identity** by going monochrome or by
@@ -397,5 +410,8 @@ Print **must work**. When a family prints this to read at the kitchen counter:
 - **Don't make the classroom selector global.** It only personalizes the
   Specials section. Everything else stays universal so families with multiple
   children at Bancroft don't have to keep toggling.
-- **Don't use red for anything except Reminders.** Red is the alert channel.
-  Promoting it elsewhere weakens its signal.
+- **Don't use red for anything except Coming Up's date badges.** Red is the alert
+  channel. Promoting it elsewhere weakens its signal.
+- **Don't split dated information across two places.** Closures and events belong
+  in one chronological list. They were two blocks until 2026-08-24, and a quarter
+  of every reminder ever written restated a date the calendar already knew.

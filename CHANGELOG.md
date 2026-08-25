@@ -2,6 +2,37 @@
 
 All notable changes to the Bancroft Newsletter Astro build. Newest first.
 
+## 2026-08-25
+
+### Changed
+- **Every note in the repo brought up to date for SY 2026-27.** They had drifted
+  in different directions and in one case were actively wrong:
+  - **`AGENTS.md` was a verbatim copy of `CLAUDE.md` from June** — three months
+    stale, and silent on per-year calendars, `/archive`, optional sections,
+    Classic-only, the merged Coming Up list, `/schedule`, `/schedule/family` and
+    the shared-`main` hazard. Its one cross-reference pointed at a file that does
+    not exist (`../sites/bancroft1.org/AGENTS.md`; the file is `CLAUDE.md`).
+    Rewritten as a condensed orientation that **defers to `CLAUDE.md`**, matching
+    the convention in `signups/AGENTS.md`, so the two can't silently diverge again.
+  - **`README.md` was still the stock "Astro Starter Kit: Minimal" boilerplate**
+    from the initial scaffold. Replaced with the actual thing: how to post an
+    issue, the repo layout, the traps, and what each doc is for.
+  - **`DESIGN.md` described nine color rooms including Reminders**, which stopped
+    being a section on 2026-08-24. Now eight, with red retained as the Coming Up
+    badge channel, the component spec rewritten, the "don't add a tenth tint"
+    rule corrected to ninth, and a new note that the document describes *Classic*
+    — the three alternates are archive furniture, not design targets.
+  - **`scripts/SETUP.md`** now says what a reminder is *for* now that reminders
+    merge into Coming Up: don't restate a date the calendar knows (it suppresses
+    the calendar row), and a reminder dated before the issue never renders.
+    Examples moved off a March 2026 week.
+
+### Fixed
+- **`DESIGN.md` frontmatter was not valid YAML** and never had been — six
+  mappings were written `literacy:{ ... }` with no space after the colon, so the
+  block failed to parse. Nothing consumes it at build time, but it is meant to be
+  machine-readable. Fixed; the frontmatter now parses.
+
 ## 2026-08-24
 
 ### Changed
