@@ -34,6 +34,16 @@ const selThemeEs = selThemeFor(date, 'es');
 const upcomingEn = getComingUp(date, 'en', weekData);
 const upcomingEs = getComingUp(date, 'es', weekData);
 
+// "Coming Up" can run long — up to 5 calendar rows plus every future reminder.
+// On phones that pushes the week's content off the screen, so we show the first
+// few and hide the rest behind a tap. Desktop is unaffected: the cap is applied
+// purely in the phone media query, so `is-truncated` is inert above 700px.
+// COMING_UP_PHONE_CAP must stay in sync with the `nth-child(n+N+1)` rule in
+// Newsletter.astro's max-width:700px block.
+const COMING_UP_PHONE_CAP = 3;
+const comingUpOverflowEn = Math.max(0, upcomingEn.length - COMING_UP_PHONE_CAP);
+const comingUpOverflowEs = Math.max(0, upcomingEs.length - COMING_UP_PHONE_CAP);
+
 // Specials data for each classroom
 const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const;
 const specials = weekData.specials as Record<string, string>;
@@ -128,6 +138,22 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
     ))}
   </nav>
 
+  <!-- WELCOME -->
+  <section class="section section--welcome" id="welcome" data-section="welcome">
+    <div class="section-header" data-accordion>
+      <span class="section-icon">👋</span>
+      <h2 class="section-heading" data-en={labelsEn.welcomeHeading} data-es={labelsEs.welcomeHeading}>
+        {labelsEn.welcomeHeading}
+      </h2>
+      <span class="accordion-chevron"></span>
+    </div>
+    <div class="section-content">
+      <div class="section-body">
+        <p data-en={weekData.welcome.en} data-es={weekData.welcome.es} set:html={weekData.welcome.en} />
+      </div>
+    </div>
+  </section>
+
   <!-- DASHBOARD -->
   <div class="dashboard section visible">
     <div class="dashboard-heading" data-en={labelsEn.dashboardHeading} data-es={labelsEs.dashboardHeading}>
@@ -161,7 +187,7 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
     <div class="dashboard-upcoming-title" data-en={labelsEn.upcomingDates} data-es={labelsEs.upcomingDates}>
       {labelsEn.upcomingDates}
     </div>
-    <ul class="upcoming-list" data-lang-en>
+    <ul class={`upcoming-list${comingUpOverflowEn ? ' is-truncated' : ''}`} data-lang-en>
       {upcomingEn.map(item => (
         <li class={`upcoming-item${item.isEvent ? ' upcoming-item--event' : ''}`}>
           <span class="upcoming-date">{formatDateRange(item.startDate, item.endDate, 'en')}</span>
@@ -172,7 +198,13 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
         </li>
       ))}
     </ul>
-    <ul class="upcoming-list" data-lang-es style="display:none">
+    {comingUpOverflowEn > 0 && (
+      <button class="upcoming-more" type="button" data-lang-en
+              data-more={`Show ${comingUpOverflowEn} more`} data-less="Show less">
+        Show {comingUpOverflowEn} more
+      </button>
+    )}
+    <ul class={`upcoming-list${comingUpOverflowEs ? ' is-truncated' : ''}`} data-lang-es style="display:none">
       {upcomingEs.map(item => (
         <li class={`upcoming-item${item.isEvent ? ' upcoming-item--event' : ''}`}>
           <span class="upcoming-date">{formatDateRange(item.startDate, item.endDate, 'es')}</span>
@@ -183,6 +215,12 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
         </li>
       ))}
     </ul>
+    {comingUpOverflowEs > 0 && (
+      <button class="upcoming-more" type="button" data-lang-es style="display:none"
+              data-more={`Ver ${comingUpOverflowEs} más`} data-less="Ver menos">
+        Ver {comingUpOverflowEs} más
+      </button>
+    )}
   </div>
 
   <!-- CLASSROOM SELECTOR -->
@@ -303,22 +341,6 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
               ))}
             </tbody>
           </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- WELCOME -->
-    <section class="section section--welcome" id="welcome" data-section="welcome">
-      <div class="section-header" data-accordion>
-        <span class="section-icon">👋</span>
-        <h2 class="section-heading" data-en={labelsEn.welcomeHeading} data-es={labelsEs.welcomeHeading}>
-          {labelsEn.welcomeHeading}
-        </h2>
-        <span class="accordion-chevron"></span>
-      </div>
-      <div class="section-content">
-        <div class="section-body">
-          <p data-en={weekData.welcome.en} data-es={weekData.welcome.es} set:html={weekData.welcome.en} />
         </div>
       </div>
     </section>
@@ -903,10 +925,15 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
     // === ACCORDION (mobile) ===
     const isMobile = () => window.matchMedia('(max-width: 700px)').matches;
 
-    // Collapse all sections on mobile by default
+    // Collapse all sections on mobile by default — except the Welcome, which
+    // now sits above the dashboard as the issue's opening message. Collapsing it
+    // would put a tap between families and the first thing we want them to read.
+    // Tapping its header still closes it, and a jump-to link still collapses it
+    // along with everything else so the target section stands alone.
     function initAccordion() {
       document.querySelectorAll('.section[data-section]').forEach(section => {
-        if (isMobile()) {
+        const keepOpen = section.dataset.section === 'welcome';
+        if (isMobile() && !keepOpen) {
           section.classList.add('collapsed');
         } else {
           section.classList.remove('collapsed');
@@ -929,6 +956,21 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
         const section = header.closest('.section');
         if (!section) return;
         section.classList.toggle('collapsed');
+      });
+    });
+
+    // === COMING UP: phone-only expand/collapse ===
+    // Both language lists are toggled together so switching language after
+    // expanding doesn't silently re-collapse the list.
+    document.querySelectorAll('.upcoming-more').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const expanding = document.querySelector('.upcoming-list.is-truncated') !== null;
+        document.querySelectorAll('.upcoming-list').forEach(ul => {
+          ul.classList.toggle('is-truncated', !expanding);
+        });
+        document.querySelectorAll('.upcoming-more').forEach(b => {
+          b.textContent = expanding ? b.dataset.less : b.dataset.more;
+        });
       });
     });
 

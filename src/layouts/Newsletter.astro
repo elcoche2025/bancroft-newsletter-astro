@@ -809,6 +809,12 @@ const { title, showThemeSelector = true, multiTheme = true } = Astro.props;
     gap: 8px;
   }
 
+  /* Phone-only "show more" for a long Coming Up list. Hidden by default so the
+     desktop dashboard always shows every date; the phone media query turns it on.
+     The language toggle sets display:'' on the active-language copy, which lets
+     these rules decide, and display:none on the other, which correctly wins. */
+  .upcoming-more { display: none; }
+
   .upcoming-item {
     display: flex;
     align-items: center;
@@ -1329,6 +1335,24 @@ const { title, showThemeSelector = true, multiTheme = true } = Astro.props;
     .dashboard-stat-value { font-size: 1.4rem; }
     .upcoming-item { padding: 8px 10px; font-size: 0.82rem; gap: 8px; }
     .upcoming-date { min-width: 60px; }
+
+    /* Show the first COMING_UP_PHONE_CAP (3) rows; n+4 is that cap + 1.
+       Change both together — the count lives in NewsletterContent.astro. */
+    .upcoming-list.is-truncated > .upcoming-item:nth-child(n+4) { display: none; }
+    .upcoming-more {
+      display: block;
+      width: 100%;
+      margin-top: 8px;
+      padding: 8px;
+      background: none;
+      border: 1px dashed var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
 
     /* Classroom selector: 3-column grid like old version */
     .classroom-selector {
