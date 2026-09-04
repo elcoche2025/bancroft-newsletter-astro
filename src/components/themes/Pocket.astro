@@ -5,6 +5,7 @@ import {
   getSubjectIcon, getSpecialForDay, getSubjectTranslation,
   getSchoolYearProgress, calendarFor,
   hasBilingualText, stripTags, selThemeFor,
+  specialsDayLabel,
 } from '../../lib/utils';
 
 interface Props {
@@ -485,7 +486,7 @@ const weekTotal = progress.totalWeeks;
                 </div>
                 <div class="pk-spec-e" data-subject-icon>📅</div>
                 <div class="pk-spec-s">
-                  <span data-en={`Day ${letter}`} data-es={`Día ${letter}`} data-subject-label>Day {letter}</span>
+                  <span data-en={specialsDayLabel(letter, 'en')} data-es={specialsDayLabel(letter, 'es')} data-subject-label>{specialsDayLabel(letter, 'en')}</span>
                 </div>
                 <div class="pk-spec-l" data-letter-label>{letter}</div>
               </div>
@@ -509,7 +510,7 @@ const weekTotal = progress.totalWeeks;
                   {dayKeys.map((day, i) => (
                     <th data-day-col={i}>
                       <span data-en={dayAbbrevEn[i]} data-es={dayAbbrevEs[i]}>{dayAbbrevEn[i]}</span>
-                      <br /><small>Day {specials[day]}</small>
+                      <br /><small data-en={specialsDayLabel(specials[day], 'en')} data-es={specialsDayLabel(specials[day], 'es')}>{specialsDayLabel(specials[day], 'en')}</small>
                     </th>
                   ))}
                 </tr>

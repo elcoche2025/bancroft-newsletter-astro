@@ -89,6 +89,14 @@ export function getSubjectTranslation(subject: string): string {
   return (config.subjectTranslations as Record<string, string>)[subject] || subject;
 }
 
+/** "Day E" / "Día E" for a rotation letter; non-letter values (e.g. "No School") get the
+ *  no-school label instead of "Day No School". Used by every theme's specials board. */
+export function specialsDayLabel(value: string, lang: Lang): string {
+  const v = (value || '').trim();
+  if (/^[A-F]$/i.test(v)) return (lang === 'es' ? 'Día ' : 'Day ') + v.toUpperCase();
+  return lang === 'es' ? 'No hay clases' : 'No School';
+}
+
 export function getSpecialForDay(classroom: string, letterDay: string): string {
   const rotations = config.rotations as Record<string, Record<string, string>>;
   return rotations[classroom]?.[letterDay] || '';

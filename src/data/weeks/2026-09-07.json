@@ -1,0 +1,128 @@
+{
+  "date": "2026-09-07",
+  "season": "default",
+  "welcome": {
+    "en": "We hope you enjoyed a wonderful Labor Day weekend!<br><br>This is a friendly reminder that <b>Back to School Night is this Thursday, September 10, from 6:00 to 8:00 pm</b>, in the school gym at Newton, for Kindergarten through 5th grade. Enter through the soccer field. We look forward to seeing you there!<br><br>If your child will be joining you, we kindly ask that they sit with you during the teachers' presentations to help minimize distractions.<br><br>Thank you, and see you Thursday!",
+    "es": "¡Esperamos que hayan disfrutado de un maravilloso fin de semana largo del Día del Trabajo!<br><br>Les recordamos amablemente que la <b>Noche de Regreso a Clases es este jueves 10 de septiembre, de 6:00 a 8:00 pm</b>, en el gimnasio de Newton, para Kínder a 5º grado. La entrada es por la cancha de fútbol. ¡Esperamos verlos allí!<br><br>Si su hijo o hija los acompañará, les pedimos amablemente que se siente junto a ustedes durante las presentaciones de los maestros para ayudar a minimizar las distracciones.<br><br>¡Gracias, y nos vemos el jueves!"
+  },
+  "math": {
+    "en": "This week your child continues using graphs to organize, represent, and interpret data. They count objects to collect data, show it in a graph, a picture graph, or a tally chart, and then compare the categories using the greater than (>) and less than (<) symbols.\n\n<img src=\"/images/weekly/m1-ta-graphs-en.png\" alt=\"The same data about animals we see, squirrels 2, birds 7, frogs 2, shown three ways: as a graph of colored squares, as a picture graph of crossed boxes, and as a tally chart, each with a comparison sentence such as 7 is greater than 2\" style=\"max-width:100%;border-radius:8px;margin:8px 0\">\n\n<b>Key terms and symbols:</b> <i>graph, picture graph, tally chart, greater than >, less than <</i>\n\n<b>Try this at home — Make a Graph:</b> Collect data about things around you, such as the number of buttons, pockets, and zippers on your clothing, and invite your child to show it in a picture graph or tally chart. Then ask:\n\n• \"Do you have more buttons or more pockets? How do you know?\"\n• \"Can you write it with a symbol? 5 > 3.\"\n\nFor more details and at-home activities, see the Eureka Math Family Math letter: <a href=\"/docs/EM2_G1_M1_TA_FamilyMath_WCAG21_v2.pdf\" target=\"_blank\">Topic A: Count and Compare with Data</a>",
+    "es": "Esta semana su estudiante continúa usando gráficas para organizar, representar e interpretar datos. Cuenta objetos para recopilar datos, los muestra en una gráfica, un pictograma o una tabla de conteo, y luego compara las categorías usando los signos mayor que (>) y menor que (<).\n\n<img src=\"/images/weekly/m1-ta-graphs-es.png\" alt=\"Los mismos datos sobre los animales que vemos, 2 ardillas, 7 aves y 2 ranas, mostrados de tres maneras: como una gráfica de cuadros de colores, como un pictograma de casillas tachadas y como una tabla de conteo, cada una con una oración de comparación como 7 es mayor que 2\" style=\"max-width:100%;border-radius:8px;margin:8px 0\">\n\n<b>Vocabulario y símbolos clave:</b> <i>gráfica, pictograma, tabla de conteo, mayor que >, menor que <</i>\n\n<b>Para practicar en casa — Hacer una gráfica:</b> Recopilen datos sobre objetos de su entorno, como el número de botones, bolsillos y cierres de su ropa, e invite a su estudiante a mostrarlos en un pictograma o una tabla de conteo. Luego pregunte:\n\n• «¿Tienes más botones o más bolsillos? ¿Cómo lo sabes?».\n• «¿Puedes escribirlo con un signo? 5 > 3».\n\nPara más detalles y actividades para el hogar, vea la carta Matemáticas en Familia de Eureka Math: <a href=\"/docs/EM2_G1_M1_TA_FamilyMath_SPA_WCAG21.pdf\" target=\"_blank\">Tema A: Contar y comparar con datos</a>"
+  },
+  "mathDetails": {
+    "module": {
+      "en": "Module 1: Counting, Comparison, and Addition",
+      "es": "Módulo 1: Conteo, comparación y suma"
+    },
+    "topic": {
+      "en": "Topic A: Count and Compare with Data (continued)",
+      "es": "Tema A: Contar y comparar con datos (continuación)"
+    },
+    "lesson": {
+      "en": "Lessons 3–5",
+      "es": "Lecciones 3–5"
+    }
+  },
+  "literacy": {
+    "en": "SLA: This week we are exploring maps of our neighborhood. Students will read, discuss, and write as they answer the question: <b>What does a map of my neighborhood look like?</b> At home, you can support your child's learning by practicing the names and sounds of the letters in Spanish together.\n\nELA: This week in ELA we continue our unit on <b>Maps</b>. Our focus question is, <b>\"What is the world made of?\"</b> We will start with the seven continents and five oceans. At home, talk with your child about what the Earth is made of.\n\n<b>Reading at home:</b> Please make time for your child to read <b>to you</b> for at least <b>20 minutes a day, in both English and Spanish</b>, and talk together about what they read. Strong reading habits now will help them grow into confident learners.",
+    "es": "Español: Esta semana estaremos explorando los mapas de nuestro vecindario. Los estudiantes leerán, conversarán y escribirán para responder a la pregunta: <b>¿Cómo se ve un mapa de mi vecindario?</b> En casa, puede apoyar el aprendizaje de su estudiante practicando juntos los nombres y sonidos de las letras en español.\n\nInglés: Esta semana en ELA continuamos nuestra unidad sobre <b>mapas</b>. Nuestra pregunta de enfoque es: <b>«¿De qué está hecho el mundo?»</b>. Empezaremos con los siete continentes y los cinco océanos. En casa, conversen sobre de qué está compuesta la Tierra.\n\n<b>La lectura en casa:</b> Por favor, reserven tiempo para que su estudiante <b>les lea</b> por lo menos <b>20 minutos al día, en inglés y en español</b>, y conversen sobre lo que leyó. Los buenos hábitos de lectura de ahora les ayudarán a crecer como estudiantes seguros y exitosos."
+  },
+  "specials": {
+    "monday": "No School",
+    "tuesday": "E",
+    "wednesday": "F",
+    "thursday": "A",
+    "friday": "B"
+  },
+  "roars": {
+    "Cartagena": "Jared C.",
+    "Colombia": "Samara R.",
+    "España": "June T.",
+    "DR": "Zoe G.",
+    "Managua": "Samantha S.",
+    "Venezuela": "Kena D."
+  },
+  "reminders": [
+    {
+      "date": "2026-09-10",
+      "en": "<b>Back to School Night — Thursday, September 10, 6:00-8:00 pm</b> in the school gym at Newton, for Kindergarten through 5th grade. Enter through the soccer field. Children who come along should sit with you during the presentations.",
+      "es": "<b>Noche de Regreso a Clases — jueves 10 de septiembre, de 6:00 a 8:00 pm</b> en el gimnasio de Newton, para Kínder a 5º grado. La entrada es por la cancha de fútbol. Los niños que acompañen deben sentarse junto a ustedes durante las presentaciones."
+    }
+  ],
+  "vocabulary": {
+    "en": [
+      {
+        "label": "Math",
+        "words": [
+          "graph",
+          "picture graph",
+          "tally chart",
+          "greater than >",
+          "less than <"
+        ]
+      },
+      {
+        "label": "SLA",
+        "words": [
+          "map",
+          "neighborhood",
+          "letter sounds"
+        ],
+        "frontLang": "es"
+      },
+      {
+        "label": "ELA",
+        "words": [
+          "map",
+          "continent",
+          "ocean",
+          "Earth"
+        ]
+      }
+    ],
+    "es": [
+      {
+        "label": "Matemáticas",
+        "words": [
+          "gráfica",
+          "pictograma",
+          "tabla de conteo",
+          "mayor que >",
+          "menor que <"
+        ]
+      },
+      {
+        "label": "SLA",
+        "words": [
+          "mapa",
+          "vecindario",
+          "sonidos de las letras"
+        ],
+        "frontLang": "es"
+      },
+      {
+        "label": "ELA",
+        "words": [
+          "mapa",
+          "continente",
+          "océano",
+          "Tierra"
+        ]
+      }
+    ]
+  },
+  "askYourChild": [
+    {
+      "en": "What is the world made of? Can you name a continent and an ocean?",
+      "es": "¿De qué está hecho el mundo? ¿Puedes nombrar un continente y un océano?"
+    },
+    {
+      "en": "What would a map of our neighborhood show?",
+      "es": "¿Qué mostraría un mapa de nuestro vecindario?"
+    },
+    {
+      "en": "Which has more, the forks or the spoons? Show me with > or <.",
+      "es": "¿Qué hay más, tenedores o cucharas? Muéstramelo con > o <."
+    }
+  ]
+}

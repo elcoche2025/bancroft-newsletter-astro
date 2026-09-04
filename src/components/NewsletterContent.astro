@@ -6,7 +6,8 @@ import {
   getSchoolYearProgress, getComingUp,
   schoolYearOf, formatSchoolYear, calendarFor,
   hasBilingualText, weekHasRoars, selThemeFor,
-  type Lang
+  type Lang,
+  specialsDayLabel,
 } from '../lib/utils';
 
 interface Props {
@@ -286,7 +287,7 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
                     <div class="weather-slot"></div>
                     <span class="specials-day-icon">{icon}</span>
                     <div class="specials-day-subject" data-en={subject} data-es={translation}>{subject}</div>
-                    <div class="specials-day-letter">Day {letter}</div>
+                    <div class="specials-day-letter" data-en={specialsDayLabel(letter, 'en')} data-es={specialsDayLabel(letter, 'es')}>{specialsDayLabel(letter, 'en')}</div>
                   </div>
                 );
               })}
@@ -315,7 +316,7 @@ const viewingYearLabel = formatSchoolYear(viewingSchoolYear);
                 {dayKeys.map((day, i) => (
                   <th style="text-align: center; padding: 10px 8px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid var(--specials-border);" data-weather-day={i} data-day-col={i}>
                     <span data-en={config.labels.en.days[i]} data-es={config.labels.es.days[i]}>{config.labels.en.days[i]}</span>
-                    <br /><span style="color: var(--text-light); font-weight: 400;">Day {specials[day]}</span>
+                    <br /><span style="color: var(--text-light); font-weight: 400;" data-en={specialsDayLabel(specials[day], 'en')} data-es={specialsDayLabel(specials[day], 'es')}>{specialsDayLabel(specials[day], 'en')}</span>
                     <div class="weather-slot"></div>
                   </th>
                 ))}

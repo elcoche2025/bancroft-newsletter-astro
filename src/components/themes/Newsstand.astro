@@ -5,6 +5,7 @@ import {
   getSubjectIcon, getSpecialForDay, getSubjectTranslation,
   getSchoolYearProgress,
   hasBilingualText, weekHasRoars, stripTags, selThemeFor,
+  specialsDayLabel,
 } from '../../lib/utils';
 
 interface Props {
@@ -265,7 +266,7 @@ const weekDateShortEs = (() => {
         <span data-en="Today" data-es="Hoy">Today</span>
       </div>
       <div class="ns-glance-val" id="ns-today-val">
-        <span data-en={`Day ${dayLetters[0]}`} data-es={`Día ${dayLetters[0]}`}>Day {dayLetters[0]}</span>
+        <span data-en={specialsDayLabel(dayLetters[0], 'en')} data-es={specialsDayLabel(dayLetters[0], 'es')}>{specialsDayLabel(dayLetters[0], 'en')}</span>
       </div>
       <div class="ns-glance-meta" id="ns-weather-slot"></div>
     </div>
@@ -724,9 +725,12 @@ document.addEventListener('DOMContentLoaded', function () {
         var lang = document.documentElement.getAttribute('data-lang') || 'en';
         // Render as a [data-en/data-es]-tagged span so the layout's setLang
         // can swap correctly when the user toggles language afterward.
-        var visible = lang === 'es' ? ('Día ' + letter) : ('Day ' + letter);
+        var isLetter = /^[A-F]$/i.test(letter);
+        var en = isLetter ? ('Day ' + letter.toUpperCase()) : 'No School';
+        var es = isLetter ? ('Día ' + letter.toUpperCase()) : 'No hay clases';
+        var visible = lang === 'es' ? es : en;
         todayEl.innerHTML =
-          '<span data-en="Day ' + letter + '" data-es="Día ' + letter + '">' + visible + '</span>';
+          '<span data-en="' + en + '" data-es="' + es + '">' + visible + '</span>';
       }
     }
   }
