@@ -1112,9 +1112,29 @@ const { title, showThemeSelector = true, multiTheme = true } = Astro.props;
     text-align: center;
   }
 
+  /* Inside a group, pills stack one per row and fill the column width, so
+     the three groups read as tidy aligned columns instead of ragged
+     centered clusters. The phone breakpoint restores the wrapping flow. */
   .vocab-group .vocab-pills {
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
     margin-top: 8px;
+  }
+
+  .vocab-group .vocab-pill-flip,
+  .vocab-group .vocab-pill-inner,
+  .vocab-group .vocab-pill-front {
+    display: block;
+  }
+
+  .vocab-group .vocab-pill-front {
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .vocab-group .vocab-pill-flip:hover .vocab-pill-front {
+    transform: none;
   }
 
   .vocab-group-label {
@@ -1420,7 +1440,9 @@ const { title, showThemeSelector = true, multiTheme = true } = Astro.props;
     /* Vocab & books compact */
     .vocab-pills { gap: 6px; margin-top: 12px; }
     .vocab-pill { padding: 4px 12px; font-size: 0.82rem; }
-    .vocab-columns { grid-template-columns: 1fr; }
+    .vocab-columns { grid-template-columns: 1fr; gap: 1.25rem; }
+    .vocab-group .vocab-pills { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; }
+    .vocab-group .vocab-pill-flip, .vocab-group .vocab-pill-inner, .vocab-group .vocab-pill-front { display: inline-block; }
     .vocab-pill-front, .vocab-pill-back { padding: 4px 12px; font-size: 0.82rem; }
     .book-card { padding: 12px; gap: 12px; }
     .book-icon { font-size: 1.5rem; }
