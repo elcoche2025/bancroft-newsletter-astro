@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>The Bancroft Song · La canción de Bancroft</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#fdfbf4; --ink:#14213d; --blue:#1d4ed8; --gold:#8a5a00;
+  --gold-bright:#f5b700; --rule:#e6dfcc; --muted:#5b6478;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:'DM Sans',system-ui,sans-serif; line-height:1.5;
+  /* two tiger stripes down the page edge: blue and yellow Bengals */
+  background-image:linear-gradient(90deg,var(--blue) 0 10px,var(--gold-bright) 10px 20px,transparent 20px);
+  background-repeat:no-repeat;
+}
+main{max-width:640px; margin:0 auto; padding:40px 16px 56px 36px}
+header{text-align:center; padding-bottom:24px; border-bottom:2px solid var(--ink)}
+header img{width:92px; height:92px; object-fit:contain}
+h1{
+  font-family:'Fraunces',Georgia,serif; font-weight:800; font-size:clamp(2rem,7vw,3rem);
+  line-height:1.05; margin:12px 0 4px; letter-spacing:-0.01em;
+}
+h1 span{display:block; font-style:italic; font-weight:500; font-size:.55em; color:var(--gold); margin-top:6px}
+.note{color:var(--muted); font-size:.95rem; max-width:46ch; margin:14px auto 0}
+.key{display:flex; gap:18px; justify-content:center; flex-wrap:wrap; margin-top:16px; font-size:.85rem; font-weight:600}
+.key span::before{content:""; display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; background:var(--blue)}
+.key span.es::before{background:var(--gold-bright)}
+
+section{padding:26px 0 4px; border-bottom:1px solid var(--rule)}
+section:last-of-type{border-bottom:0}
+h2{
+  font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:600; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 10px;
+}
+.lyrics{font-family:'Fraunces',Georgia,serif; font-size:clamp(1.2rem,4.6vw,1.5rem); line-height:1.5; margin:0 0 22px}
+.lyrics p{margin:0}
+/* language is carried by colour + style: English upright blue-black, Spanish italic gold */
+[lang="es"]{color:var(--gold); font-style:italic}
+.chorus{border-left:4px solid var(--gold-bright); padding-left:14px}
+.shout{font-weight:800; font-style:normal; font-size:1.12em}
+.clap{font-style:normal}
+.repeat{font-family:'DM Sans',sans-serif; font-size:.9rem; color:var(--muted); margin:0 0 22px}
+
+footer{margin-top:28px; text-align:center; font-size:.9rem; color:var(--muted)}
+footer a{color:var(--blue); font-weight:600}
+.print{margin-top:14px}
+button{
+  font:600 .9rem 'DM Sans',sans-serif; color:var(--ink); background:transparent;
+  border:1.5px solid var(--ink); border-radius:999px; padding:8px 18px; cursor:pointer;
+}
+button:hover,button:focus-visible{background:var(--ink); color:var(--paper)}
+
+@media print{
+  body{background:#fff; background-image:none}
+  main{padding:0; max-width:none}
+  .lyrics{font-size:13pt; line-height:1.35; margin-bottom:10pt}
+  section{padding-top:10pt; break-inside:avoid}
+  header img{width:60px; height:60px}
+  .print,footer a{display:none}
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="/images/logos/default.png" alt="Bancroft Elementary School">
+    <h1>The Bancroft Song <span lang="es">La canción de Bancroft</span></h1>
+    <p class="note">We sing our school song together at every Community Meeting. Sing along at home!
+      <span lang="es" style="display:block;margin-top:4px">Cantamos la canción de nuestra escuela en cada Reunión Comunitaria. ¡Canten con nosotros en casa!</span></p>
+    <div class="key" aria-hidden="true"><span>English</span><span class="es">Español</span></div>
+  </header>
+
+  <section aria-labelledby="v1">
+    <h2 id="v1">Verse 1 · Estrofa 1</h2>
+    <div class="lyrics">
+      <p>Two languages shine our way,</p>
+      <p>in Washington, D.C. we stay.</p>
+      <p>Our voices rise both loud and strong,</p>
+      <p>here at Bancroft all day long.</p>
+      <p>Math and stories, art and songs,</p>
+      <p>in two languages we all belong.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="ch">
+    <h2 id="ch">Chorus · Coro</h2>
+    <div class="lyrics chorus">
+      <p lang="es">Aquí conviven culturas</p>
+      <p lang="es">con respeto y corazón.</p>
+      <p lang="es">Con amigos y maestros</p>
+      <p lang="es">crece nuestra inspiración.</p>
+      <p>Be respectful, <span lang="es">responsable,</span></p>
+      <p>learn every day, <span lang="es">aprende más.</span></p>
+      <p>With joy and pride, with <span lang="es">poesía,</span></p>
+      <p lang="es">Bancroft es nuestra alegría.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="v2">
+    <h2 id="v2">Verse 2 · Estrofa 2</h2>
+    <div class="lyrics">
+      <p>From Mt. Pleasant, <span class="clap" role="img" aria-label="clap, clap">👏👏</span>, we cheer,</p>
+      <p lang="es">nuestra infancia empezó aquí.</p>
+      <p lang="es">Aquí es donde tú aprendes</p>
+      <p lang="es">y tu alma vuela.</p>
+      <p lang="es" class="shout">¡Bancroft!</p>
+      <p lang="es" class="shout">¡Bancroft! ¡Nuestra escuela!</p>
+      <p>Reading, science, and much more,</p>
+      <p>in two languages we all explore.</p>
+    </div>
+    <p class="repeat">↻ Repeat the chorus · <span lang="es">Se repite el coro</span></p>
+  </section>
+
+  <section aria-labelledby="end">
+    <h2 id="end">Ending · Final</h2>
+    <div class="lyrics">
+      <p>We learn with joy,</p>
+      <p>we grow each day.</p>
+      <p lang="es">Feliz yo soy</p>
+      <p lang="es">si en Bancroft estoy.</p>
+      <p><span lang="es">En Washington, nuestra voz,</span></p>
+      <p>proud and strong.</p>
+      <p lang="es" class="shout">¡Somos Bancroft!</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="print"><button type="button" onclick="window.print()">Print · Imprimir</button></div>
+    <p><a href="/">← First Grade Newsletter · Boletín de primer grado</a></p>
+  </footer>
+</main>
+</body>
+</html>
