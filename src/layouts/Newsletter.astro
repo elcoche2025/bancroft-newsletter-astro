@@ -208,6 +208,12 @@ const { title, showThemeSelector = true, multiTheme = true } = Astro.props;
   th.is-today-col * {
     color: #1f2937 !important;
   }
+  /* ...except Classic in dark mode: there the translucent band sits on a dark
+     card and turns olive, so the forced-dark letters vanish. Use a pale gold. */
+  body.dark .nl-theme[data-variant="classic"] th.is-today-col,
+  body.dark .nl-theme[data-variant="classic"] th.is-today-col * {
+    color: #fde68a !important;
+  }
   /* Card-style boards (classic personal grid uses divs, not table cells) */
   .is-today-col.specials-day-card {
     background-color: var(--nl-today-col) !important;
